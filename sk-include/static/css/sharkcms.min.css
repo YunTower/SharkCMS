@@ -1,0 +1,19 @@
+.sharkcms-error-body {
+    background-color: #2d8cf0;
+    height: auto;
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sharkcms-error-content {
+    /* background-color: #fff; */
+    color: #fff;
+    font-size: 20px;
+    padding: 10px;
+    line-height: 50px;
+    vertical-align: middle;
+    margin: 0 auto;
+}
