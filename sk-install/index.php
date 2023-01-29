@@ -51,6 +51,17 @@
 	<script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
 	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
 	<script>
+		document.onreadystatechange = function() {
+      if (document.readyState == 'complete') {
+        layer.open({
+          type: 2,
+          title: 'SharkCMS 环境检查',
+          String: 1,
+          area: ['75%', '70%'],
+          content: 'sk-install/tips.php'
+        });
+      }
+    }
 		layui.use(['form', 'button', 'popup'], function() {
 			var form = layui.form;
 			var button = layui.button;

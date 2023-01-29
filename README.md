@@ -28,7 +28,7 @@ Gitee 仓库（正式版）：https://gitee.com/fish_nb/skcms<br>
 Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
 
 ## 🛠 安装要求
-
+ 不建议安装在域名的二级目录！！！
 - Nginx / Apache / IIS
 - PHP >=7.0
 - Mysql >=5.6

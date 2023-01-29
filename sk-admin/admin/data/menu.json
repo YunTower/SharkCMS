@@ -25,7 +25,7 @@
 				"id": 22,
 				"title": "所有文章",
 				"type": 1,
-				"href": "../../index.php/sk-admin/post_post",
+				"href": "../../index.php/sk-admin/post_list",
 				"openType": "_iframe"
 			},
 			{

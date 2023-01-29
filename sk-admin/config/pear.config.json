@@ -60,7 +60,7 @@
 		}
 	],
 	"other": {
-		"keepLoad": "1200",
+		"keepLoad": "800",
 		"autoHead": false,
 		"footer": true
 	},
