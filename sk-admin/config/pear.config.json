@@ -60,11 +60,11 @@
 		}
 	],
 	"other": {
-		"keepLoad": "800",
+		"keepLoad": "1200",
 		"autoHead": false,
 		"footer": true
 	},
 	"header": {
-		"message": "../../sk-admin/admin/data/message.json"
+		"message": false
 	}
 }

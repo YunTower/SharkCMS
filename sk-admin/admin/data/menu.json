@@ -25,7 +25,7 @@
 				"id": 22,
 				"title": "所有文章",
 				"type": 1,
-				"href": "../../index.php/sk-admin/post_list",
+				"href": "../../index.php/sk-admin/post_post",
 				"openType": "_iframe"
 			},
 			{
@@ -138,7 +138,7 @@
 				"id": 63,
 				"title": "系统工具",
 				"type": 1,
-				"href": "../../index.php/sk-admin/sys_tool",
+				"href": "../../index.php/sk-admin/sys_tools",
 				"openType": "_iframe"
 			},
 			{

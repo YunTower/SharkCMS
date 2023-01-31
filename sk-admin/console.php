@@ -187,6 +187,19 @@
 				table = layui.table,
 				carousel = layui.carousel;
 
+				// 版本更新检查
+				sys_check()
+				function sys_check() {
+                $.ajax({
+                    url: "https://api.sharkcms.cn/update/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
+                    type: "GET",
+                    dataType: "jsonp",
+                    jsonp: "callback",
+                    success: function(data) {
+                        layer.alert(data.msg)
+                    }
+                })
+            }
 			let cols = [
 				[{
 						type: 'checkbox'

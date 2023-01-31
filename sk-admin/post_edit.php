@@ -47,7 +47,7 @@
                         <input type="text" name="title" hover placeholder="文章密码" autocomplete="off" class="layui-input" disabled>
                     </div>
                     <div class="layui-col-md12">
-                        <select name="city">
+                        <select name="city" >
                             <option value="0">公开</option>
                             <option value="1">私密</option>
                         </select>
@@ -79,40 +79,31 @@
     <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/js/editormd.js"></script>
     <script>
         layui.use(['form', 'element', 'code'], function() {
-            var form = layui.form;
-            var element = layui.element;
-            layui.code();
+                    var form = layui.form;
+                    var element = layui.element;
+                    layui.code();
 
+                    // 退出编辑
+                    $("#edit-leave").click(function() {
+                            alert('退出后不会保存已填写的内容，请谨慎退出');
+                            alert('确认退出？');
+                            window.location.href='/';
+                        })
 
+                    });
+                var testEditor; $(function() {
+                    // You can custom @link base url.
+                    editormd.urls.atLinkBase = "https://github.com/";
 
-            // 退出编辑
-            $("#edit-leave").click(function() {
-                alert('退出后不会保存已填写的内容，请谨慎退出');
-                alert('确认退出？');
-                parent.layui.admin.jump(22, "所有文章", "<?php echo sys_domain(); ?>/index.php/sk-admin/post_list")
-
-            })
-
-        });
-        window.addEventListener("beforeunload", function(event) {
-            event.returnValue = "";
-        });
-
-        // 加载编辑器
-        var testEditor;
-        $(function() {
-            // You can custom @link base url.
-            editormd.urls.atLinkBase = "https://github.com/";
-
-            testEditor = editormd("test-editormd", {
-                width: "98%",
-                toc: true,
-                //atLink    : false,    // disable @link
-                //emailLink : false,    // disable email address auto link
-                todoList: true,
-                path: '<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/lib/'
-            });
-        });
+                    testEditor = editormd("test-editormd", {
+                        width: "98%",
+                        toc: true,
+                        //atLink    : false,    // disable @link
+                        //emailLink : false,    // disable email address auto link
+                        todoList: true,
+                        path: '<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/lib/'
+                    });
+                });
     </script>
 </body>
 

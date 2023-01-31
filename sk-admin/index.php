@@ -128,8 +128,6 @@
 				return true;
 			})
 
-			// 消息点击回调
-			admin.message(function(id, title, context, form) {});
 		})
 	</script>
 </body>

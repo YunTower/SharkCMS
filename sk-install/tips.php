@@ -34,7 +34,7 @@
         (1)加入官方QQ群，群号：<br>
         (2)添加开发者QQ：286267038<br>
         (3)在<a class="green">后台->系统设置->系统日志处</a>选择上传日志，我们会在5个工作日内给予你答复，亦或是推送系统补丁<br>
-        (4)在反馈平台提交反馈：<a href="https://support.qq.com/products/409539">https://support.qq.com/products/409539</a><br>
+        (4)在反馈平台提交反馈：<a href="https://www.yuque.com/forms/share/22763685-8937-4beb-9683-ad0442f37b2f">https://www.yuque.com/forms/share/22763685-8937-4beb-9683-ad0442f37b2f</a><br>
         
       </td>
     </tr>
