@@ -40,7 +40,7 @@ Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
   - [Layer 弹出层组件 （MIT License）](https://gitee.com/layui/layer)
   - [Pear Admin Layui （MIT License）](https://gitee.com/pear-admin/Pear-Admin-Layui)
 - [Editor.md 富文本编辑器（MIT License）](https://github.com/pandao/editor.md)
-- [jQuery.js JavaScript框架（MIT License](https://jquery.com/)
+- [jQuery.js JavaScript框架（MIT License）](https://jquery.com/)
 
 ## 💰 <a id="zanzhu">捐赠</a>
 
