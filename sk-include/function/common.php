@@ -311,7 +311,7 @@ class sql
 				if ($row[$read] == null) {
 					echo '<a style="marign:20px">查询失败，数据为空</a>';
 				} else {
-					echo $row[$read];
+					echo htmlspecialchars_decode($row[$read]);
 				}
 			}
 		} catch (PDOException $e) {

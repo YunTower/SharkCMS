@@ -128,6 +128,14 @@
 				return true;
 			})
 
+			// 未保存提示逻辑
+			$('.layui-tab-title li').click(function(){
+				var id=$('.layui-this').attr('lay-id')
+				if (id==21){
+					alert('确定离开？')
+				}
+			})
+
 		})
 	</script>
 </body>

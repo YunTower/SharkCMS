@@ -4591,11 +4591,13 @@ body .layui-table-tips .layui-layer-content {
     top: 0;
     width: 0;
     height: 5px;
-    background-color: #5fb878;
+    /* background-color: #5fb878; */
     transition: all .2s;
     -webkit-transition: all .2s;
-    pointer-events: none
+    pointer-events: none;
+
 }
+
 
 .layui-nav-bar {
     z-index: 1000
@@ -4615,6 +4617,8 @@ body .layui-table-tips .layui-layer-content {
     bottom: 0;
     width: 100%
 }
+
+
 
 .layui-nav-img {
     width: 30px;
@@ -4833,7 +4837,7 @@ body .layui-table-tips .layui-layer-content {
 .layui-nav-tree.layui-bg-gray .layui-this>a {
     background: 0 0 !important;
     color: #5fb878 !important;
-    font-weight: 700
+    font-weight: 700;
 }
 
 .layui-nav-tree.layui-bg-gray .layui-nav-bar {
@@ -4904,7 +4908,8 @@ body .layui-table-tips .layui-layer-content {
     min-width: 65px;
     padding: 0 15px;
     text-align: center;
-    cursor: pointer
+    cursor: pointer;
+    background-color: #fafafa;
 }
 
 .layui-tab-title li a {
@@ -4914,7 +4919,10 @@ body .layui-table-tips .layui-layer-content {
 }
 
 .layui-tab-title .layui-this {
-    color: #000
+    /* background-color: #ecf5ff; */
+    color: #2d8cf0;
+    border-bottom: 2px solid #2d8cf0!important;
+    background-color: #fff;
 }
 
 .layui-tab-title .layui-this:after {

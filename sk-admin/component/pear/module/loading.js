@@ -402,7 +402,7 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
 	        var fontRange = document.createRange();
 	        fontRange.selectNode(document.head);
 	        var fontFragment = fontRange.createContextualFragment(font);
-	        document.head.appendChild(fontFragment);
+	        // document.head.appendChild(fontFragment);
 	        // google fonts style off
 	    }
 	};
@@ -416,7 +416,7 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
 
 	// Notiflix: Console Log on
 	var notiflixConsoleLog = function (title, message) {
-	    return console.log('%c ' + title + ' ', 'padding:2px;border-radius:20px;color:#fff;background:#26c0d3', '\n' + message + '\nVisit documentation page to learn more: https://www.notiflix.com/documentation');
+	    // return console.log('%c ' + title + ' ', 'padding:2px;border-radius:20px;color:#fff;background:#26c0d3', '\n' + message + '\nVisit documentation page to learn more: https://www.notiflix.com/documentation');
 	};
 	// Notiflix: Console Log off
 

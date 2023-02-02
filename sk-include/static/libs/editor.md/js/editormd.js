@@ -53,25 +53,20 @@
     
     editormd.toolbarModes = {
         full : [
-            "undo", "redo", "|", 
+            "undo", "redo", "save","|", 
             "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|", 
             "h1", "h2", "h3", "h4", "h5", "h6", "|", 
             "list-ul", "list-ol", "hr", "|",
-            "link", "reference-link", "image", "code", /*"preformatted-text",*/ "code-block", "table", "datetime", /*"emoji",*/ "html-entities"/*, "pagebreak"*/, "|",
-            "goto-line", "watch", /*"preview",*/ "fullscreen", "clear", "help", //"info"
+            "link", "image", "code", "code-block", "table","|",
+            "watch","fullscreen", "help",
         ],
         simple : [
-            "undo", "redo", "|", 
-            "bold", "del", "italic", "quote", "uppercase", "lowercase", "|", 
+            "undo", "redo", "save","|", 
+            "bold", "del", "italic", "quote", "ucwords", "uppercase", "lowercase", "|", 
             "h1", "h2", "h3", "h4", "h5", "h6", "|", 
             "list-ul", "list-ol", "hr", "|",
-            "watch", "preview", "fullscreen", "|",
-            "help", "info"
-        ],
-        mini : [
-            "undo", "redo", "|",
-            "watch", "preview", "|",
-            "help", "info"
+            "link",  "image", "code", "code-block", "table", "|",
+            "watch","fullscreen", "help",
         ]
     };
     
@@ -131,6 +126,7 @@
         onfullscreenExit     : function() {},
         onscroll             : function() {},
         onpreviewscroll      : function() {},
+        "save"               : function() {},
         
         imageUpload          : false,
         imageFormats         : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
@@ -176,6 +172,7 @@
         toolbarIconsClass    : {
             undo             : "fa-undo",
             redo             : "fa-repeat",
+            save             : "fa fa-floppy-o",
             bold             : "fa-bold",
             del              : "fa-strikethrough",
             italic           : "fa-italic",
@@ -220,6 +217,7 @@
             toolbar     : {
                 undo             : "撤销（Ctrl+Z）",
                 redo             : "重做（Ctrl+Y）",
+                "save"             : "保存",
                 bold             : "粗体",
                 del              : "删除线",
                 italic           : "斜体",
@@ -3161,11 +3159,17 @@
         },
 
         help : function() {
-            this.executePlugin("helpDialog", "help-dialog/help-dialog");
+            var open=window.open('_blank'); 
+            open.location='https://doc.sharkcms.cn/'
         },
 
-        info : function() {
-            this.showInfoDialog();
+        save : function() {
+            var time = new Date();
+            var content = $("#post-edit").val();
+            localStorage.setItem("sharkcms-temp-post", content);
+            localStorage.getItem("sharkcms-temp-post");
+            console.log('文章已保存 ' + time.toLocaleString())
+            layer.msg('文章已保存')
         }
     };
     
@@ -3694,6 +3698,7 @@
                 html += "</ul></li>";
             }
 
+            
             html += "<li><a class=\"toc-level-" + level + "\" href=\"#" + text + "\" level=\"" + level + "\">" + text + "</a><ul>";
             lastLevel = level;
         }

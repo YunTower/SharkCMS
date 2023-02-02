@@ -22,7 +22,7 @@
                     <div class="layui-col-md12">
                         <div class="pear-btn-group">
                             <p class="alert">此功能目前仅支持迁移文章</p>
-                            <button class="pear-btn" id="move">迁移选项</button>
+                            <button class="pear-btn" id="move_post">迁移选项</button>
                         </div>
                     </div>
                 </div>
@@ -34,18 +34,7 @@
                 <div class="layui-card-body layui-row layui-col-space10">
                     <div class="layui-col-md12">
                         <p class="alert">删除系统缓存，减少占用</p>
-                        <button class="pear-btn" id="check">立即清理</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-md6">
-            <div class="layui-card">
-                <div class="layui-card-header">一键跑路（不保留任何数据）</div>
-                <div class="layui-card-body layui-row layui-col-space10">
-                    <div class="layui-col-md12">
-                        <p class="alert">此功能会删除系统根目录和数据库，谨慎使用</p>
-                        <button plain class="pear-btn pear-btn-danger" id="test">立即跑路</button>
+                        <button class="pear-btn" id="clean_file">立即清理</button>
                     </div>
                 </div>
             </div>
@@ -71,7 +60,9 @@
             var form = layui.form;
             var element = layui.element;
             var loading = layui.loading;
-            $("#move").click(function() {
+
+            // 数据迁移
+            $("#move_post").click(function() {
                 layer.open({
                     type: 2,
                     title: '数据迁移',
@@ -85,16 +76,29 @@
                     content: '<?php echo sys_domain(); ?>/index.php/sk-admin/sys_tools_move'
                 });
             });
-            $("#test").click(function() {
-                loading.block({
-                    type: 1,
-                    elem: '.body',
-                    msg: '正在迁移文章'
-                })
-                loading.blockRemove(".body", 1999);
 
+            // 其他工具
+            $("#clean_file").click(function() {
+                // 获取id
+                var id = ($(this).attr('id'));
+                console.log('选中id：' + id);
+                $.ajax({
+                    url: "../../sk-include/api/tools_" + id + ".php",
+                    type: "GET",
+                    success: function(data) {
+                        var obj = JSON.parse(data);
+                        console.log(obj);
+                        if (obj.status == 'ok') {
+                            loading.blockRemove(".body", 0);
+                            layer.msg(obj.msg);
+                        } else {
+                            loading.blockRemove(".body", 0);
+                            layer.alert(obj.msg);
+                        }
+                    },
+                });
             });
-        })
+        });
     </script>
 </body>
 

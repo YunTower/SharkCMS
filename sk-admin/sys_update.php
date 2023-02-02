@@ -94,13 +94,12 @@ header('Access-Control-Allow-Origin:*');
                     url: "../index.php/sk-include/api?action=update",
                     type: "GET",
                     success: function(data) {
-                        var obj = JSON.stringify(data)
                         if (data.status == 'ok') {
-                            layer.msg('更新成功')
+                            layer.msg('更新成功');
                             loading.blockRemove(".body", 0);
                         } else {
+                            layer.alert('更新失败');
                             loading.blockRemove(".body", 0);
-                            layer.alert('更新失败')
                         }
 
                     }

@@ -47,10 +47,13 @@
                         $sql_1 = "CREATE TABLE sk_content (
                             cid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             title VARCHAR(40) NOT NULL,
+                            introduction VARCHAR(20),
                             content TEXT NOT NULL,
                             cover VARCHAR(190),
-                            type VARCHAR(16),
-                            status VARCHAR(16),
+                            corder VARCHAR(10),
+                            power VARCHAR(10), 
+                            type VARCHAR(10),
+                            status VARCHAR(10),
                             password VARCHAR(32),
                             uid VARCHAR(10) NOT NULL,
                             created TIMESTAMP

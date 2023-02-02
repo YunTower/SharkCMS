@@ -20,15 +20,15 @@
                     <div class="layui-col-md12">
                         <div class="pear-btn-group">
                             <button plain class="pear-btn pear-btn-danger" id="edit-leave">退出编辑</button>
-                            <button class="pear-btn">保存文章</button>
+                            <button class="pear-btn" id="post-save">保存文章</button>
                             <button plain class="pear-btn pear-btn-primary">发布文章</button>
                         </div>
                     </div>
                     <div class="layui-col-md12">
-                        <input type="text" name="title" hover placeholder="文章标题" lay-verify="required" autocomplete="off" class="layui-input">
+                        <input type="text" name="post-title" hover placeholder="文章标题" lay-verify="required" autocomplete="off" class="layui-input">
                     </div>
                     <div class="layui-col-md12">
-                        <input type="text" name="title" hover placeholder="文章简介（留空则自动截取）" autocomplete="off" class="layui-input">
+                        <input type="text" name="post-introduction" hover placeholder="文章简介（留空则自动截取）" autocomplete="off" class="layui-input">
                     </div>
                 </div>
             </div>
@@ -41,13 +41,13 @@
                 <div class="layui-card-body layui-row layui-col-space10">
 
                     <div class="layui-col-md12">
-                        <input type="text" name="title" hover placeholder="文章封面" autocomplete="off" class="layui-input" disabled>
+                        <input type="text" name="post-cover" hover placeholder="文章封面（暂不支持）" autocomplete="off" class="layui-input" disabled>
                     </div>
                     <div class="layui-col-md12">
-                        <input type="text" name="title" hover placeholder="文章密码" autocomplete="off" class="layui-input" disabled>
+                        <input type="text" name="post-pwd" hover placeholder="文章密码" autocomplete="off" class="layui-input" disabled>
                     </div>
                     <div class="layui-col-md12">
-                        <select name="city" >
+                        <select name="city">
                             <option value="0">公开</option>
                             <option value="1">私密</option>
                         </select>
@@ -65,7 +65,7 @@
                         <!-- markdown编辑器 -->
                         <div id="layout">
                             <div id="test-editormd">
-                                <textarea style="display:none;"></textarea>
+                                <textarea id="post-edit" style="display:none;"></textarea>
                             </div>
                         </div>
                     </div>
@@ -78,32 +78,58 @@
     <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/js/jquery.min.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/js/editormd.js"></script>
     <script>
-        layui.use(['form', 'element', 'code'], function() {
-                    var form = layui.form;
-                    var element = layui.element;
-                    layui.code();
+        layui.use(['form', 'element'], function() {
+            var form = layui.form;
+            var element = layui.element;
 
-                    // 退出编辑
-                    $("#edit-leave").click(function() {
-                            alert('退出后不会保存已填写的内容，请谨慎退出');
-                            alert('确认退出？');
-                            window.location.href='/';
-                        })
+            // 未保存提示
+            window.onbeforeunload = function() {
+                return '当前内容未保存';
+            }
 
-                    });
-                var testEditor; $(function() {
-                    // You can custom @link base url.
-                    editormd.urls.atLinkBase = "https://github.com/";
+            // 文章保存
+            function post_save() {
+                var time = new Date();
+                var content = $("#post-edit").val();
+                localStorage.setItem("sharkcms-temp-post", content);
+                localStorage.getItem("sharkcms-temp-post");
+                console.log('文章已保存 ' + time.toLocaleString())
 
-                    testEditor = editormd("test-editormd", {
-                        width: "98%",
-                        toc: true,
-                        //atLink    : false,    // disable @link
-                        //emailLink : false,    // disable email address auto link
-                        todoList: true,
-                        path: '<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/lib/'
-                    });
-                });
+            }
+            // 点击保存
+            $("#post-save").click(function() {
+                post_save()
+                layer.msg('文章已保存')
+            })
+            // 定时保存
+            setInterval(function temp_post() {
+                post_save()
+            }, 3000);
+
+            // 退出编辑
+            $("#edit-leave").click(function() {
+                alert('退出后不会保存已填写的内容，请谨慎退出');
+                alert('确认退出？');
+                parent.layui.admin.jump(22, "所有文章", "<?php echo sys_domain(); ?>/index.php/sk-admin/post_list")
+            })
+
+        });
+
+        // MarkDown编辑器
+        var testEditor;
+        $(function() {
+            // You can custom @link base url.
+            editormd.urls.atLinkBase = "https://github.com/";
+
+            testEditor = editormd("test-editormd", {
+                width: "98%",
+                toc: true,
+                //atLink    : false,    // disable @link
+                //emailLink : false,    // disable email address auto link
+                todoList: true,
+                path: '<?php echo sys_domain(); ?>/sk-include/static/libs/editor.md/lib/'
+            });
+        });
     </script>
 </body>
 

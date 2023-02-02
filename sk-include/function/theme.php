@@ -72,7 +72,9 @@ function post_get_list()
             echo '<div class="sharkcms-post"><div class="sharkcms-post-title">';
             echo '<h3><a href="index.php/page/article?cid=' . $row['cid'] . '">' . $row["title"] . '</a></h3>';
             echo '</div><div class="sharkcms-post-content">';
-            echo '<p>' . $row['content'] . '</p>';
+            echo '<p>' ;
+            echo  $row['content'];
+            echo '</p>';
             echo '</div><div class="sharkcms-post-footer">';
             echo '<ul class="sharkcms-post-meta"><li class="first">作者：<a href="/index.php/page/user?uid=' . $row['uid'] . '">';
             $sql = new sql;

@@ -1,5 +1,5 @@
 <div align="center">
-<a href="https://cms.xyfish.cn">
+<a href="https://sharkcms.cn">
 <img src="http://43.155.98.95:3000/fishnb/sharkcms/raw/branch/master/sk-include/static/img/logo.svg" />
 </a>
 <br>
@@ -8,9 +8,9 @@
 <img src="https://img.shields.io/badge/license-MIT-green"/>
 <img src="https://img.shields.io/badge/Mysql-%3E%3D5.6-blue"/>
 
-[ 官网 ](https://sharkcms.icu/") |
-[ 演示 ](https://demo.sharkcms.icu/)|
-[ 文档 ](https://doc.sharkcms.icu/) |
+[ 官网 ](https://sharkcms.cn") |
+[ 演示 ](https://demo.sharkcms.cn/)|
+[ 文档 ](https://doc.sharkcms.cn/) |
 [ 反馈 ](https://www.yuque.com/forms/share/22763685-8937-4beb-9683-ad0442f37b2f) |
 [更新日志](https://www.yuque.com/fishnb/sn8ugg/zkdnnh)
 
@@ -40,6 +40,7 @@ Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
   - [Layer 弹出层组件 （MIT License）](https://gitee.com/layui/layer)
   - [Pear Admin Layui （MIT License）](https://gitee.com/pear-admin/Pear-Admin-Layui)
 - [Editor.md 富文本编辑器（MIT License）](https://github.com/pandao/editor.md)
+- [jQuery.js JavaScript框架（MIT License](https://jquery.com/)
 
 ## 💰 <a id="zanzhu">捐赠</a>
 
