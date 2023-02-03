@@ -47,7 +47,7 @@
                         $sql_1 = "CREATE TABLE sk_content (
                             cid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             title VARCHAR(40) NOT NULL,
-                            introduction VARCHAR(20),
+                            introduction VARCHAR(50),
                             content TEXT NOT NULL,
                             cover VARCHAR(190),
                             corder VARCHAR(10),
@@ -129,7 +129,7 @@
                                     $sql = new sql;
                                     $sql->sql_config();
                                     $sql->sql_write('sk_user', 'name,password,mail,ugroup', "'$adminname','$adminpwd', '$adminmail', 'admin'");
-                                    $sql->sql_write('sk_content', 'title,content,uid', "'Hello SharkCMS','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1'");
+                                    $sql->sql_write('sk_content', 'title,content,introduction,uid', "'Hello SharkCMS','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','Hello World','1'");
                                     echo '初始数据写入成功！<br>';
                                     echo '系统安装成功！';
                                     // 修改安装状态

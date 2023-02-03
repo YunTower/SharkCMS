@@ -75,8 +75,6 @@ function sys_route()
 		} else if ($module == 'sk-install' || 'sk-admin') {
 			ob_clean();
 			sys_log();
-			echo "<script src='" . sys_domain() . "/sk-include/static/libs/jquery.min.js'></script>";
-			echo "<link rel='stylesheet' href='" . sys_domain() . "/sk-include/static/css/sharkcms.min.css'/>";
 			require_once $require;
 			exit;
 		}
@@ -311,7 +309,7 @@ class sql
 				if ($row[$read] == null) {
 					echo '<a style="marign:20px">查询失败，数据为空</a>';
 				} else {
-					echo htmlspecialchars_decode($row[$read]);
+					echo urldecode($row[$read]);
 				}
 			}
 		} catch (PDOException $e) {

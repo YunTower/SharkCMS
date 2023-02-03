@@ -86,7 +86,7 @@
         delay                : 300,            // Delay parse markdown to html, Uint : ms
         autoLoadModules      : true,           // Automatic load dependent module files
         watch                : true,
-        placeholder          : "欢迎使用MarkDown文章编辑器，现在开始创作吧！",
+        // placeholder          : "欢迎使用MarkDown文章编辑器，现在开始创作吧！",
         gotoLine             : true,
         codeFold             : false,
         autoHeight           : false,
@@ -3165,11 +3165,25 @@
 
         save : function() {
             var time = new Date();
+            var title = $("#post-title").val();
             var content = $("#post-edit").val();
-            localStorage.setItem("sharkcms-temp-post", content);
-            localStorage.getItem("sharkcms-temp-post");
-            console.log('文章已保存 ' + time.toLocaleString())
-            layer.msg('文章已保存')
+            if (title == '' || content=='') {
+                console.log('标题和内容为空，保存失败')
+                layer.msg('标题和内容为空，保存失败')
+            } else {
+                localStorage.setItem("sharkcms-temp-title", title);
+                localStorage.setItem("sharkcms-temp-post", content);
+                localStorage.setItem("sharkcms-temp-time", time.toLocaleString());
+                console.log('文章已保存 ' + time.toLocaleString())
+                layer.msg('文章已保存')
+            }
+        },
+
+        post : function(){
+            var cm        = this.cm;
+            var datefmt = localStorage.getItem("sharkcms-temp-post");
+            cm.replaceSelection(datefmt);
+            
         }
     };
     

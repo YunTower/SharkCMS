@@ -133,8 +133,29 @@
 						</tr>
 						<tr>
 							<td>系统版本</td>
-							<td><?php echo App_V . '（' . App_T . '）' ?></td>
+							<td><?php echo App_V ?></td>
 						</tr>
+						<tr>
+							<td>版本类型</td>
+							<td>
+								<?php
+								if (App_T=='release'){
+									echo'发行版';
+								} else if(App_T=='demo'){
+									echo'演示版';
+								} else if(App_T=='beta'){
+									echo '测试版';
+								} else if(App_T=='dev'){
+									echo '开发版';
+								} else if(App_T=='rc'){
+									echo '预发布版';
+								} else{
+									echo'未知版本';
+								}
+								?>
+							</td>
+						</tr>
+
 						<tr>
 							<td>PHP版本</td>
 							<td><?php echo PHP_VERSION ?></td>

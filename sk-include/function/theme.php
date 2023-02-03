@@ -33,27 +33,6 @@ function get_link()
     return sys_domain() . '/s/';
 }
 
-// function post_get_cid()
-// {
-//     $sql = new sql;
-//     $sql->sql_config();
-//     $sql->sql_read('sk_content', 'cid', '');
-// }
-
-// function post_get_title()
-// {
-//     $sql = new sql;
-//     $sql->sql_config();
-//     $sql->sql_read('sk_content', 'title', '');
-// }
-
-function post_get_content()
-{
-    $sql = new sql;
-    $sql->sql_config();
-    // $sql->sql_read('sk_content', 'content', '');
-}
-
 function post_get_list()
 {
     $sql = new sql;
@@ -63,7 +42,7 @@ function post_get_list()
     } catch (PDOException $e) {
         sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
     }
-    $sql = "select * from sk_content";
+    $sql = "select * from sk_content order by cid desc"; //降序排列
     $res = $conn->query($sql);
     foreach ($res as $row) {
         if ($row['cid'] == null) {
@@ -72,14 +51,14 @@ function post_get_list()
             echo '<div class="sharkcms-post"><div class="sharkcms-post-title">';
             echo '<h3><a href="index.php/page/article?cid=' . $row['cid'] . '">' . $row["title"] . '</a></h3>';
             echo '</div><div class="sharkcms-post-content">';
-            echo '<p>' ;
-            echo  $row['content'];
+            echo '<p>';
+            post_get_introduction($row['cid']);
             echo '</p>';
             echo '</div><div class="sharkcms-post-footer">';
             echo '<ul class="sharkcms-post-meta"><li class="first">作者：<a href="/index.php/page/user?uid=' . $row['uid'] . '">';
             $sql = new sql;
             $sql->sql_config();
-            $sql->sql_read('sk_user', 'name', 'uid', $row['cid']);
+            $sql->sql_read('sk_user', 'name', 'uid', $row['uid']);
             echo '</a></li><li>发布于' . $row['created'] . '</li></ul></div></div>';
         }
     }
@@ -90,6 +69,13 @@ function post_get_post($cid)
     $sql = new sql;
     $sql->sql_config();
     $sql->sql_read('sk_content', 'content', 'cid', "$cid");
+}
+
+function post_get_introduction($cid)
+{
+    $sql = new sql;
+    $sql->sql_config();
+    $sql->sql_read('sk_content', 'introduction', 'cid', "$cid");
 }
 
 function post_get_title($cid)

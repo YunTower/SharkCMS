@@ -85,7 +85,7 @@
 				if ($start == $now) {
 					echo "Copyright © $start <a href='https://sharkcms.icu'>sharkcms.icu</a>";
 				} else {
-					echo "Copyright © $start-$now <a href='https://sharkcms.icu'>sharkcms.icu</a>";
+					echo "Copyright © $start-$now <a href='https://sharkcms.cn'>sharkcms.cn</a>";
 				}
 				?>
 			</span>

@@ -52,6 +52,7 @@
         </div>
 
     </div>
+    <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
 

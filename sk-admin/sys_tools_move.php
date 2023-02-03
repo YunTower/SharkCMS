@@ -60,6 +60,7 @@
         </div>
         
     </div>
+    <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
     <script>
@@ -93,7 +94,7 @@
                     elem: '.body',
                     msg: '正在迁移文章'
                 })
-                loading.blockRemove(".body", 1999);
+                loading.blockRemove(".body", 99999);
                 // 获取id
                 var id = ($(this).attr('id'));
                 console.log('选中id：' + id);

@@ -24,13 +24,15 @@ try {
                 echo $json;
             }
             $m_title = $row['title'];
-            $m_content = $row['content'];
-            $sql = "insert into sk_content (title,content,uid) values ('$m_title','$m_content','1')";
+            $m_content = strip_tags($row['content']);
+            $introduction = substr($row['content'], 0, 15);
+            $sql = "insert into sk_content (title,content,introduction,uid) values ('$m_title','$m_content'.'$introduction','1')";
             $conn->exec($sql);
         } catch (PDOException $e) {
             $arr = array('msg' => '迁移失败！', 'status' => '', 'error' => $e->getMessage());
             $json = json_encode($arr, JSON_UNESCAPED_UNICODE);
             echo $json;
+            exit;
         }
     }
     $arr = array('msg' => '文章迁移成功！', 'status' => 'ok');
