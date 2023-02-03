@@ -71,7 +71,7 @@ header('Access-Control-Allow-Origin:*');
             // 版本更新检查
             function sys_check() {
                 $.ajax({
-                    url: "https://api.sharkcms.cn/update/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
+                    url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
                     type: "GET",
                     dataType: "jsonp",
                     jsonp: "callback",
