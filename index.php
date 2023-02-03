@@ -13,7 +13,7 @@
 header('Content-Type: text/html; charset=utf-8');
 // 系统基础信息
 define('App_N', 'SharkCMS');
-define('App_V', '1.0.1');
+define('App_V', '1.0.0');
 define('App_T', 'dev');
 // 系统根目录
 define('ROOT', str_replace('\\', '/', __DIR__) . '/');
