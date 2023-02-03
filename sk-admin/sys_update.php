@@ -41,74 +41,76 @@ header('Access-Control-Allow-Origin:*');
 
 
 
-    </div>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.min.js"></script>
+        </div>
+        <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.min.js"></script>
 
-    <script>
-        layui.use(['form', 'element', 'loading'], function() {
-            var form = layui.form;
-            var element = layui.element;
-            var loading = layui.loading;
-            
-            // 请求版本信息
-            sys_check()
-            $("#check").click(function() {
+        <script>
+            layui.use(['form', 'element', 'loading'], function() {
+                var form = layui.form;
+                var element = layui.element;
+                var loading = layui.loading;
+
+                // 请求版本信息
                 sys_check()
-            });
-            $("#update").click(function() {
-                loading.block({
-                    type: 1,
-                    elem: '.pear-container',
-                    msg: '正在更新系统'
-                })
-                loading.blockRemove(".pear-container", 99999);
-                sys_update()
-            });
+                $("#check").click(function() {
+                    sys_check()
+                });
+                $("#update").click(function() {
+                    loading.block({
+                        type: 1,
+                        elem: '.pear-container',
+                        msg: '正在更新系统'
+                    })
+                    loading.blockRemove(".pear-container", 99999);
+                    sys_update()
+                });
 
-            // 版本更新检查
-            function sys_check() {
-                $.ajax({
-                    url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
-                    type: "GET",
-                    dataType: "jsonp",
-                    jsonp: "callback",
-                    success: function(data) {
-                        layer.alert(data.msg)
-                        // 版本号
-                        document.getElementById('v').innerHTML = data.new
-                        // 更新方式
-                        document.getElementById('m').innerHTML = data.m
-                        // 更新内容
-                        document.getElementById('c').innerHTML = data.c
-                        // 版本类型
-                        document.getElementById('t').innerHTML = data.t
-                    }
-                })
-            }
-
-            // 版本更新
-            function sys_update() {
-                $.ajax({
-                    url: "../index.php/sk-include/api?action=update",
-                    type: "GET",
-                    success: function(data) {
-                        if (data.status == 'ok') {
-                            layer.msg('更新成功');
-                            loading.blockRemove(".body", 0);
-                        } else {
-                            layer.alert('更新失败');
-                            loading.blockRemove(".body", 0);
+                // 版本更新检查
+                function sys_check() {
+                    $.ajax({
+                        url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
+                        type: "GET",
+                        dataType: "jsonp",
+                        jsonp: "callback",
+                        success: function(data) {
+                            layer.alert(data.msg)
+                            // 版本号
+                            document.getElementById('v').innerHTML = data.new
+                            // 更新方式
+                            document.getElementById('m').innerHTML = data.m
+                            // 更新内容
+                            document.getElementById('c').innerHTML = data.c
+                            // 版本类型
+                            document.getElementById('t').innerHTML = data.t
                         }
+                    })
+                }
 
-                    }
-                })
-            }
+                // 版本更新
+                function sys_update() {
+                    $.ajax({
+                        url: "../index.php/sk-include/api?action=update",
+                        type: "GET",
+                        success: function(data) {
+                            var obj=JSON.parse(data)
+                            if (obj.status == 'ok') {
+                                loading.blockRemove(".pear-container", 0);
+                                layer.msg('更新成功');
+                            } else {
+                                loading.blockRemove(".pear-container", 0);
+                                console.log(obj)
+                                layer.msg(obj.msg);
+                            }
 
-        });
-    </script>
+                        }
+                    })
+                }
+
+            });
+        </script>
 </body>
 
 </html>
