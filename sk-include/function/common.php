@@ -163,7 +163,7 @@ function sys_log()
 	$log_file = ROOT . "sk-content/temp/log/$log_name.json";
 	// 写入
 	$fp = fopen($log_file, "a");
-	$txt = $error_info . "\n";
+	$txt = $error_info . "n";
 	fputs($fp, $txt);
 	fclose($fp);
 }
@@ -211,6 +211,46 @@ function sys_deldir($path)
 	}
 }
 
+# --------------------------------## 加解密相关 ##--------------------------------#
+
+// 加密
+function  md5_encrypt($str, $key)
+{
+	srand((float)microtime() * 1000000);
+	$encrypt_key = md5(rand(0, 32000));
+	$ctr = 0;
+	$tmp = '';
+	for ($i = 0; $i < strlen($str); $i++) {
+		$ctr = $ctr == strlen($encrypt_key) ? 0 : $ctr;
+		$tmp .= $encrypt_key[$ctr] . ($str[$i] ^ $encrypt_key[$ctr++]);
+	}
+	return  base64_encode(md5_key($tmp, $key));
+}
+
+// 解密
+function  md5_decrypt($str, $key)
+{
+	$str = md5_key(base64_decode($str), $key);
+	$tmp = '';
+	for ($i = 0; $i < strlen($str); $i++) {
+		$md5 = $str[$i];
+		$tmp .= $str[++$i] ^ $md5;
+	}
+	return  $tmp;
+}
+
+// 辅助
+function  md5_key($str, $encrypt_key)
+{
+	$encrypt_key = md5($encrypt_key);
+	$ctr = 0;
+	$tmp = '';
+	for ($i = 0; $i < strlen($str); $i++) {
+		$ctr = $ctr == strlen($encrypt_key) ? 0 : $ctr;
+		$tmp .= $str[$i] ^ $encrypt_key[$ctr++];
+	}
+	return  $tmp;
+}
 # --------------------------------## 数据库相关 ##--------------------------------#
 class sql
 {

@@ -1,3 +1,28 @@
+<?php
+if (!defined('App_N')) {
+    Header('Location: ../../index.php/sk-admin/login');
+} else {
+    // 权限验证
+    if (!isset($_COOKIE["login_status"])) {
+        Header('Location: ../../index.php/sk-admin/login');
+    } else {
+        // 解析token
+        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
+        $arr = json_decode($json, true);
+        // 如果用户组不是admin
+        if ($arr['group'] != 'admin') {
+            Header('Location: ../../index.php/sk-admin/login');
+        } else {
+            // 如果超时
+            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
+                // 删除token&cookie
+                unset($_SESSION['login_token']);
+                setcookie("login_token", "", time() - 3600);
+                Header('Location: ../../index.php/sk-admin/login');
+            }
+        }
+    }
+} ?>
 <!DOCTYPE html>
 <html>
 
@@ -21,7 +46,7 @@
     <div class="layui-row layui-col-space10">
         <div class="layui-col-md4">
             <div class="layui-card" style="height:100%">
-                <div class="layui-card-header">数据库配置（从以下数据库导出）</div>
+                <div class="layui-card-header">数据库配置（从以下数据库导出文章到SharkCMS）</div>
                 <div class="layui-card-body layui-row layui-col-space10">
                     <div class="layui-col-md12">
                         <button plain class="pear-btn pear-btn-primary" id="move-sql-connect">连接测试</button>

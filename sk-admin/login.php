@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<title>登录</title>
+	<title>登陆账号 - SharkCMS</title>
 	<!-- 样 式 文 件 -->
 	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
 	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/login.css" />
@@ -21,7 +21,7 @@
 			</div>
 		</div>
 		<div class="layui-form-item">
-			<input type="text" placeholder="账号" value="test" id="user" lay-verify="required" hover class="layui-input" />
+			<input type="email" placeholder="账号（邮箱）" value="286267038@qq.com" id="mail" lay-verify="required|email" hover class="layui-input" />
 		</div>
 		<div class="layui-form-item">
 			<input type="password" placeholder="密码" value="testtest" id="pwd" lay-verify="required" hover class="layui-input" />
@@ -42,56 +42,98 @@
 	<!-- 资 源 引 入 -->
 	<script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
 	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+	<script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
+	<script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.base64.js"></script>
 	<script>
 		layui.use(['form', 'button', 'popup'], function() {
 			var form = layui.form;
 			var button = layui.button;
 			var popup = layui.popup;
-
-			// 登 录 提 交
 			form.on('submit(login)', function() {
-				var user = $('#user').val();
-				var pwd = $('#pwd').val();
-					if (pwd.length < 6) {
-						layer.alert("【管理员密码】少于6位！");
-						return false
-					} else {
-						layer.msg('登陆请求中')
-						var data = JSON.stringify({
-							user: user,
-							pwd: pwd
-						});
-						$.ajax({
-							type: "POST",
-							url: "<?php sys_domain(); ?>/index.php/sk-include/api?action=login",
-							dataType: "json",
-							data: data,
-							contentType: "application/jsoan",
-							success: function(data) {
-								var obj = JSON.parse(JSON.stringify(data));
+				var get_mail = $('#mail').val();
+				var get_pwd = $('#pwd').val();
+				var mail = Base64.encode(get_mail)
+				var pwd = Base64.encode(get_pwd);
+				layer.msg('登陆请求中')
+				var data = JSON.stringify({
+					mail: mail,
+					pwd: pwd
+				});
 
-								// 输出消息
-								console.log(obj.msg);
-								layer.alert(obj.msg);
-								var status = obj.status;
-								if (status == "ok") {
-									button.load({
-										elem: '.login',
-										time: 1500,
-										done: function() {
-											popup.success("登录成功", function() {
-												location.href = "index.html"
-											});
-										}
-									})
-								}
-							},
-						});
+				$.ajax({
+					type: "POST",
+					url: "login?t=" + Math.floor(Date.now() / 1000),
+					dataType: "json",
+					data: data,
+					contentType: "application/jsoan",
+					success: function(data) {
+						var obj = JSON.parse(JSON.stringify(data));
+						console.log(obj);
+						if (obj.status == '') {
+							layer.alert(obj.msg)
+						} else if (obj.status == 'ok') {
+							layer.msg(obj.msg);
+							location.href = 'index'
+						} else {
+							layer.alert('登陆失败，系统错误')
+						}
 					}
-				
+				});
 			});
 		})
 	</script>
 </body>
 
 </html>
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+	exit;
+} else {
+	ob_clean();
+	$get_t = $_GET['t'];
+	$sys_t = time();
+	if (date('YmdHis', $get_t) - date('YmdHis', $sys_t) > '100') {
+		$arr = array('code' => 'time out', 'msg' => '请求超时');
+		$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
+		echo $json;
+	} else {
+		// 解析json
+		$get_json = file_get_contents("php://input");
+		$arr = json_decode($get_json, true);
+		$key = 'sharkcms';
+		$pwd = urlencode(md5_encrypt(base64_decode($arr['pwd']), $key));
+		$mail = urlencode($arr['mail']);
+
+		$sql = new sql;
+		$sql->sql_config();
+		try {
+			$conn = new PDO("mysql:dbname=$sql->sql_name;host=$sql->sql_location", $sql->sql_user, $sql->sql_pwd);
+			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$sql = "select * from sk_user where mail='$mail'";
+			$res = $conn->query($sql);
+			foreach ($res as $row) {
+				$sql_pwd = md5_decrypt(urldecode($row['password']), $key);
+				$get_pwd = md5_decrypt(urldecode($pwd), $key);
+				if ($sql_pwd == $get_pwd) {
+					$arr = array('uid' => $row['uid'], 'group' => $row['ugroup'], 'name' => $row['name'], 'mail' => $row['mail'], 'login_time' => date('YmdHis'), 'login_out' => time() + 60 * 60 * 24 * 30);
+					$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'sharkcms-user-token');
+					setcookie("login_status", "ok", time() + 60 * 60 * 24 * 30);
+					setcookie("user_token", $json, time() + 60 * 60 * 24 * 30);
+					$_SESSION['user_token'] = $json;
+					$arr = array('code' => '200', 'msg' => '登陆成功', 'status' => 'ok');
+					$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
+					echo $json;
+				} else {
+					$arr = array('code' => '200', 'msg' => '登陆失败，账号或密码错误', 'status' => '');
+					$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
+					echo $json;
+				}
+			}
+		} catch (PDOException $e) {
+			$arr = array('code' => 0, 'msg' => '数据库查询失败，错误代码：' . $e->getMessage());
+			$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
+			echo $json;
+		}
+	}
+}
+?>
