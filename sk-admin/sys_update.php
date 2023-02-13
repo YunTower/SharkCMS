@@ -1,28 +1,3 @@
-<?php
-if (!defined('App_N')) {
-    Header('Location: ../../index.php/sk-admin/login');
-} else {
-    // 权限验证
-    if (!isset($_COOKIE["login_status"])) {
-        Header('Location: ../../index.php/sk-admin/login');
-    } else {
-        // 解析token
-        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-        $arr = json_decode($json, true);
-        // 如果用户组不是admin
-        if ($arr['group'] != 'admin') {
-            Header('Location: ../../index.php/sk-admin/login');
-        } else {
-            // 如果超时
-            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-                // 删除token&cookie
-                unset($_SESSION['login_token']);
-                setcookie("login_token", "", time() - 3600);
-                Header('Location: ../../index.php/sk-admin/login');
-            }
-        }
-    }
-} ?>
 <!DOCTYPE html>
 <html>
 
@@ -49,13 +24,10 @@ if (!defined('App_N')) {
                 </div>
             </div>
             <div class="layui-card">
-                <div class="layui-card-header">更新详情 <a id="update" style="color: #2d8cf0;">一键更新</a></div>
+                <div class="layui-card-header">更新详情</div>
                 <div class="layui-card-body layui-row layui-col-space10">
                     <div class="layui-col-md12">
-                        <p>版本号：<a id="v">加载中</a></p>
-                        <p>版本类型：<a id="t">加载中</a></p>
-                        <p>更新方式：<a id="m">加载中</a></p>
-                        <p>更新内容：<a id="c">加载中</a></p>
+                        <p id="update-info"></p>
                     </div>
                 </div>
             </div>
@@ -63,74 +35,83 @@ if (!defined('App_N')) {
 
 
 
-    </div>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.min.js"></script>
+        </div>
+        <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
+        <script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.min.js"></script>
 
-    <script>
-        layui.use(['form', 'element', 'loading'], function() {
-            var form = layui.form;
-            var element = layui.element;
-            var loading = layui.loading;
-            
-            // 请求版本信息
-            sys_check()
-            $("#check").click(function() {
+        <script>
+            layui.use(['form', 'element', 'loading'], function() {
+                var form = layui.form,
+                    element = layui.element,
+                    loading = layui.loading,
+                    key = '<?php get_key() ?>';
+
+
+                // 请求版本信息
                 sys_check()
-            });
-            $("#update").click(function() {
-                loading.block({
-                    type: 1,
-                    elem: '.pear-container',
-                    msg: '正在更新系统'
-                })
-                loading.blockRemove(".pear-container", 99999);
-                sys_update()
-            });
+                $("#check").click(function() {
+                    sys_check()
+                });
+                $("#update").click(function() {
+                    loading.block({
+                        type: 1,
+                        elem: '.pear-container',
+                        msg: '正在更新系统'
+                    })
+                    loading.blockRemove(".pear-container", 99999);
+                    sys_update()
+                });
 
-            // 版本更新检查
-            function sys_check() {
-                $.ajax({
-                    url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
-                    type: "GET",
-                    dataType: "jsonp",
-                    jsonp: "callback",
-                    success: function(data) {
-                        layer.alert(data.msg)
-                        // 版本号
-                        document.getElementById('v').innerHTML = data.new
-                        // 更新方式
-                        document.getElementById('m').innerHTML = data.m
-                        // 更新内容
-                        document.getElementById('c').innerHTML = data.c
-                        // 版本类型
-                        document.getElementById('t').innerHTML = data.t
-                    }
-                })
-            }
+                // 版本更新检查
+                function sys_check() {
+                    $.ajax({
+                        url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
+                        type: "GET",
+                        dataType: "jsonp",
+                        jsonp: "callback",
+                        success: function(data) {
+                            if (data.install == 'no') {
+                                layer.msg(data.msg);
+                                document.getElementById('update-info').innerHTML = '当前已是最新版本';
+                            } else {
+                                layer.alert(data.msg)
+                                document.getElementById('update-info').innerHTML = "<p>版本号：<a id='v'></a></p><p>更新方式：<a id='m'></a></p><p>版本类型：<a id='t'></a></p><p>更新方式：<a id='c'></a></p>"
+                                // 版本号
+                                document.getElementById('v').innerHTML = data.new
+                                // 更新方式
+                                document.getElementById('m').innerHTML = data.m
+                                // 更新内容
+                                document.getElementById('c').innerHTML = data.c
+                                // 版本类型
+                                document.getElementById('t').innerHTML = data.t
+                            }
 
-            // 版本更新
-            function sys_update() {
-                $.ajax({
-                    url: "../index.php/sk-include/api?action=update",
-                    type: "GET",
-                    success: function(data) {
-                        if (data.status == 'ok') {
-                            layer.msg('更新成功');
-                            loading.blockRemove(".body", 0);
-                        } else {
-                            layer.alert('更新失败');
-                            loading.blockRemove(".body", 0);
                         }
+                    })
+                }
 
-                    }
-                })
-            }
+                // 版本更新
+                function sys_update() {
+                    $.ajax({
+                        url: "../index.php/sk-include/api?action=update",
+                        type: "GET",
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf8',
+                            'key': key
+                        },
+                        success: function(data) {
+                            var obj = JSON.parse(data)
+                            console.log(obj)
+                            layer.msg(obj.msg);
+                            loading.blockRemove(".pear-container", 0);
+                        }
+                    })
+                }
 
-        });
-    </script>
+            });
+        </script>
 </body>
 
 </html>

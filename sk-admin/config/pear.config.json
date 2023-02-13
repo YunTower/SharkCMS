@@ -4,7 +4,7 @@
 		"image": "../../sk-admin/admin/images/logo.png"
 	},
 	"menu": {
-		"data": "../../sk-admin/admin/data/menu.json",
+		"data": "../../sk-admin/admin/menu.json",
 		"method": "GET",
 		"accordion": true,
 		"collapse": false,

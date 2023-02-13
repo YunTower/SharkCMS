@@ -24,9 +24,9 @@ try {
                 echo $json;
             }
             $m_title = $row['title'];
-            $m_content = strip_tags($row['content']);
+            $m_content = urlencode($row['content']);
             $introduction = substr($row['content'], 0, 15);
-            $sql = "insert into sk_content (title,content,introduction,uid) values ('$m_title','$m_content'.'$introduction','1')";
+            $sql = "insert into `sk_content` (title,content,introduction,uid) values ('$m_title','$m_content','$introduction','1')";
             $conn->exec($sql);
         } catch (PDOException $e) {
             $arr = array('msg' => '迁移失败！', 'status' => '', 'error' => $e->getMessage());

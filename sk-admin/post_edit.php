@@ -1,28 +1,3 @@
-<?php
-if (!defined('App_N')) {
-    Header('Location: ../../index.php/sk-admin/login');
-} else {
-    // 权限验证
-    if (!isset($_COOKIE["login_status"])) {
-        Header('Location: ../../index.php/sk-admin/login');
-    } else {
-        // 解析token
-        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-        $arr = json_decode($json, true);
-        // 如果用户组不是admin
-        if ($arr['group'] != 'admin') {
-            Header('Location: ../../index.php/sk-admin/login');
-        } else {
-            // 如果超时
-            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-                // 删除token&cookie
-                unset($_SESSION['login_token']);
-                setcookie("login_token", "", time() - 3600);
-                Header('Location: ../../index.php/sk-admin/login');
-            }
-        }
-    }
-} ?>
 <!DOCTYPE html>
 <html>
 
@@ -44,7 +19,7 @@ if (!defined('App_N')) {
                 <div class="layui-card-body layui-row layui-col-space10">
                     <div class="layui-col-md12">
                         <div class="pear-btn-group">
-                            <button plain class="pear-btn pear-btn-danger" id="edit-leave">退出编辑</button>
+                            <button plain class="pear-btn pear-btn-danger" id="edit-clean">清空内容</button>
                             <button class="pear-btn" id="post-save">保存文章</button>
                             <button plain class="pear-btn pear-btn-primary" id="post-upload">发布文章</button>
                         </div>
@@ -107,6 +82,8 @@ if (!defined('App_N')) {
             var form = layui.form;
             var element = layui.element;
             var loading = layui.loading;
+            var key = '<?php get_key() ?>';
+
 
             // MarkDown编辑器
             var testEditor;
@@ -136,8 +113,8 @@ if (!defined('App_N')) {
                     btn: ['恢复', '删除', '关闭'],
                     // 恢复
                     yes: function(index, layero) {
-
                         $("#post-title").attr('value', localStorage.getItem("sharkcms-temp-title"));
+                        $("#post-introduction").attr('value', localStorage.getItem("sharkcms-temp-introduction"));
                         $.proxy(testEditor.toolbarHandlers.post, testEditor)();
                         testEditor.focus();
                         layer.close(index);
@@ -151,6 +128,7 @@ if (!defined('App_N')) {
                             btn: ['确定', '关闭'],
                             yes: function(index, layero) {
                                 localStorage.removeItem("sharkcms-temp-title");
+                                localStorage.removeItem("sharkcms-temp-introduction");
                                 localStorage.removeItem("sharkcms-temp-post");
                                 localStorage.removeItem("sharkcms-temp-time");
                                 layer.close(index);
@@ -171,11 +149,13 @@ if (!defined('App_N')) {
             function post_save() {
                 var time = new Date();
                 var title = $("#post-title").val();
+                var introduction = $("#post-introduction").val();
                 var content = $("#post-edit").val();
                 if (title == '' || content == '') {
                     console.log('标题和内容为空，保存失败')
                 } else {
                     localStorage.setItem("sharkcms-temp-title", title);
+                    localStorage.setItem("sharkcms-temp-introduction", introduction);
                     localStorage.setItem("sharkcms-temp-post", content);
                     localStorage.setItem("sharkcms-temp-time", time.toLocaleString());
                     console.log('文章已保存 ' + time.toLocaleString())
@@ -205,20 +185,23 @@ if (!defined('App_N')) {
                 var post_content = $('.markdown-body').html();
                 var post_cover = $("#post-cover").val();
                 var post_pwd = $("#post-pwd").val();
-                var post_corder = $("#post-corder").val();
+                var post_order = $("#post-corder").val();
                 var data = ({
                     "post_title": post_title,
                     "post_introduction": post_introduction,
                     "post_content": post_content,
                     "post_cover": post_cover,
                     "post_pwd": post_pwd,
-                    "post_corder": post_corder
+                    "post_order": post_order
                 })
 
                 // 请求接口
                 $.ajax({
                     url: "../../index.php/sk-include/api?action=post_upload",
                     type: "POST",
+                    headers: {
+                        'key': key
+                    },
                     data: data,
                     success: function(data) {
                         var obj = JSON.parse(data)
@@ -231,6 +214,7 @@ if (!defined('App_N')) {
                             layer.msg(obj.msg);
                             // 删除文章缓存
                             localStorage.removeItem("sharkcms-temp-title");
+                            localStorage.removeItem("sharkcms-temp-introduction");
                             localStorage.removeItem("sharkcms-temp-post");
                             localStorage.removeItem("sharkcms-temp-time");
                         }
@@ -238,10 +222,18 @@ if (!defined('App_N')) {
                 })
             })
             // 退出编辑
-            $('#edit-leave').click(function() {
-                alert('退出后不会保存已填写的内容，请谨慎退出');
-                alert('确认退出？');
-                parent.layui.admin.jump(22, "所有文章", "<?php echo sys_domain(); ?>/index.php/sk-admin/post_list")
+            $('#edit-clean').click(function() {
+                clearInterval(save);
+                localStorage.removeItem("sharkcms-temp-title");
+                localStorage.removeItem("sharkcms-temp-introduction");
+                localStorage.removeItem("sharkcms-temp-post");
+                localStorage.removeItem("sharkcms-temp-time");
+                $('#post-title').val('');
+                $('#post-introduction').val('');
+                // 暂不支持清空
+                $('#post-edit').val('');
+                layer.msg('清除成功')
+
             })
         });
     </script>

@@ -13,7 +13,7 @@
 header('Content-Type: text/html; charset=utf-8');
 // 系统基础信息
 define('App_N', 'SharkCMS');
-define('App_V', '1.0.2');
+define('App_V', '1.0.3');
 define('App_T', 'dev');
 // 系统根目录
 define('ROOT', str_replace('\\', '/', __DIR__) . '/');
@@ -35,6 +35,7 @@ if (PHP_VERSION < '7.0') {
 
 // 读写权限检查
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
+!is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
 // 公共函数
 include INC . 'function/common.php';
@@ -44,7 +45,6 @@ include INC . 'function/theme.php';
 
 // 开启session缓存
 session_save_path(CON.'temp/session');
-
 session_start();
 
 // 系统日志

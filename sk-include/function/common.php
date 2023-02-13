@@ -43,7 +43,7 @@ function sys_route()
 		if (isset($module_action[0]) && !empty($module_action[0])) {
 			$module = $module_action[0];
 		} else {
-			$module = 'home';
+			$module = 'index';
 		}
 		// 获取方法
 		if (isset($module_action[1]) && !empty($module_action[1])) {
@@ -63,27 +63,27 @@ function sys_route()
 				include INS . 'index.php';
 				exit;
 			} else {
-				// 继续加载
 				ob_clean();
 				sys_log();
-				echo "<script src='" . sys_domain() . "/sk-include/static/libs/jquery.min.js'></script>";
-				echo "<script src='" . sys_domain() . "/sk-include/static/js/sharkcms.min.js'></script>";
-				echo "<link rel='stylesheet' href='" . sys_domain() . "/sk-include/static/css/sharkcms.min.css'/>";
 				include CON . 'theme/' . set_theme() . '/index.php';
 				exit;
 			}
-		} else if ($module == 'sk-install' || 'sk-admin') {
+		} else if ($module == 'sk-admin') {
 			ob_clean();
 			sys_log();
+			admin_power();
+			require_once $require;
+			exit;
+		} else if ($action == 'api') {
+			ob_clean();
+			sys_log();
+			api_verification();
 			require_once $require;
 			exit;
 		}
 	} else if ($module == 'page') {
 		ob_clean();
 		sys_log();
-		echo "<script src='" . sys_domain() . "/sk-include/static/libs/jquery.min.js'></script>";
-		echo "<script src='" . sys_domain() . "/sk-include/static/js/sharkcms.min.js'></script>";
-		echo "<link rel='stylesheet' href='" . sys_domain() . "/sk-include/static/css/sharkcms.min.css'/>";
 		$file = CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
 		if (file_exists($file)) {
 			include CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
@@ -94,7 +94,6 @@ function sys_route()
 			require_once ROOT . 'sk-include/template/404.php';
 			exit;
 		}
-		exit;
 	} else if ($module == 'sk-content') {
 		ob_clean();
 		sys_log();
@@ -114,12 +113,12 @@ if (!function_exists('error')) {
 	{
 		ob_clean();
 		$error_code = '[' . $msg . ']  ' . $errstr;
-		include INC . 'template/500.php';
+		include INC . 'template/error.php';
 		$log_error = $errstr;
 		sys_log_error($log_error);
 		exit;
 	}
-	// set_error_handler('error');
+	set_error_handler('error');
 }
 
 // 系统安装状态
@@ -131,8 +130,7 @@ function sys_status_install($method, $status)
 		return  $arr['status'];
 	} else if ($method == 'install' || $status == 'ok') {
 		file_put_contents(CON . 'temp/install_keep.json', '');
-		$arr = array('status' => 'ok', 'time' => date('Y-m-d H:i:s'));
-		$content = json_encode($arr, JSON_UNESCAPED_UNICODE);
+		$content = json_encode(array('status' => 'ok', 'time' => date('Y-m-d H:i:s')), JSON_UNESCAPED_UNICODE);
 		$file = CON . 'temp/install_Keep.json';
 		$fp = fopen($file, "a");
 		$txt = $content;
@@ -157,8 +155,7 @@ function sys_log()
 		$log_code = '404';
 	}
 	// 声明数组
-	$arr = array('time' => $log_time, 'code' => $log_code, 'page' => $log_page, 'user' => $log_user);
-	$error_info = json_encode($arr, JSON_UNESCAPED_UNICODE);
+	$error_info = json_encode(array('time' => $log_time, 'code' => $log_code, 'page' => $log_page, 'user' => $log_user), JSON_UNESCAPED_UNICODE);
 	// 文件位置
 	$log_file = ROOT . "sk-content/temp/log/$log_name.json";
 	// 写入
@@ -208,6 +205,78 @@ function sys_deldir($path)
 				}
 			}
 		}
+	}
+}
+
+// 随机生成密匙
+function sys_createkey($length)
+{
+	$str = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+	$len = strlen($str) - 1;
+	$randstr = '';
+	for ($i = 0; $i < $length; $i++) {
+		$num = mt_rand(0, $len);
+		$randstr .= $str[$num];
+	}
+	return $randstr;
+}
+
+// 获取请求头
+function getHeader($c)
+{
+	if (!function_exists('getallheaders')) {
+		function getallheaders()
+		{
+			foreach ($_SERVER as $name => $value) {
+				if (substr($name, 0, 5) == 'HTTP_') {
+					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+				}
+			}
+			return $headers;
+		}
+	}
+	print_r(getallheaders()[$c]);
+}
+
+// 版本类型
+function sys_en_t()
+{
+	if (App_T == 'release') {
+		echo '发行版';
+	} else if (App_T == 'demo') {
+		echo '演示版';
+	} else if (App_T == 'beta') {
+		echo '测试版';
+	} else if (App_T == 'dev') {
+		echo '开发版';
+	} else if (App_T == 'rc') {
+		echo '预发布版';
+	} else {
+		echo '未知版本';
+	}
+}
+
+// 解释引擎
+function sys_en_engine()
+{
+	if (!isset($_SERVER['SERVER_SOFTWARE'])) {
+		echo '未检测到解释引擎类型';
+	}
+	$webServer = strtolower($_SERVER['SERVER_SOFTWARE']);
+	if (strpos($webServer, 'apache') !== false) {
+		echo 'Apache';
+	} elseif (strpos($webServer, 'microsoft-iis') !== false) {
+		echo 'IIS';
+	} elseif (strpos($webServer, 'nginx') !== false) {
+		echo 'Nginx';
+	} elseif (strpos($webServer, 'lighttpd') !== false) {
+		echo 'Lighttpd';
+	} elseif (strpos($webServer, 'kangle') !== false) {
+		echo 'Kangle';
+	} elseif (strpos($webServer, 'caddy') !== false) {
+		echo 'Saddy';
+	} else {
+		echo $webServer;
 	}
 }
 
@@ -311,65 +380,116 @@ class sql
 	// 数据库写入
 	function sql_write($table, $key, $info)
 	{
-		try {
-			$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			if (!$conn) {
-				die(sys_error('数据库错误', '数据库连接失败，错误代码：' . mysqli_connect_error()));
-			}
-			$sql = "insert into $table ($key) values ($info)";
-			$conn->exec($sql);
-		} catch (PDOException $e) {
-			sys_error('数据库错误', '错误代码：' . $e->getMessage());
-		}
+		$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
+		$sql = "insert into $table ($key) values ($info)";
+		$conn->exec($sql);
 	}
 
 	// 数据库修改
 	function sql_change($table, $w_key, $w_content, $key, $content)
 	{
-		try {
-			$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "update $table set $w_key='$w_content' where $key=$content";
-			$conn->exec($sql);
-		} catch (PDOException $e) {
-			sys_error('数据库错误', '错误代码：' . $e->getMessage());
-		}
+		$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
+		$sql = "update $table set $w_key='$w_content' where $key=$content";
+		$conn->exec($sql);
 	}
 
 	// 数据库查询
 	function sql_read($table, $read, $key, $content)
 	{
-		try {
-			$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "select $read from $table where $key=$content";
-			$res = $conn->query($sql);
-			foreach ($res as $row) {
-				if ($row[$read] == null) {
-					echo '<a style="marign:20px">查询失败，数据为空</a>';
-				} else {
-					echo urldecode($row[$read]);
-				}
+		$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
+		$sql = "select $read from $table where $key=$content";
+		foreach ($conn->query($sql) as $row) {
+			if ($row[$read] == null) {
+				echo '<a style="marign:20px">查询失败，数据为空</a>';
+			} else {
+				echo urldecode($row[$read]);
 			}
-		} catch (PDOException $e) {
-			sys_error('数据库错误', '错误代码：' . $e->getMessage());
 		}
 	}
 
 	// 数据库删除
 	function sql_del($table, $key, $content)
 	{
-		try {
-			$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "delete from $table where $key=$content";
-			$conn->exec($sql);
-		} catch (PDOException $e) {
-			sys_error('数据库错误', '错误代码：' . $e->getMessage());
+
+		$conn = new PDO("mysql:dbname=$this->sql_name;host=$this->sql_location", $this->sql_user, $this->sql_pwd);
+		$sql = "delete from $table where $key=$content";
+		$conn->exec($sql);
+	}
+}
+
+# --------------------------------## 接口相关 ##--------------------------------#
+
+// 接口验证
+function api_verification()
+{
+	$key = getallheaders()['key'];
+	$sql = new sql;
+	$sql->sql_config();
+	$conn = new PDO("mysql:dbname=$sql->sql_name;host=$sql->sql_location", $sql->sql_user, $sql->sql_pwd);
+	$sql = "select value from sk_setting where name='sys_key'";
+	foreach ($conn->query($sql) as $row) {
+		$value = $row['value'];
+	}
+	if ($value != $key) {
+		ob_clean();
+		echo json_encode(array('code' => 0, 'msg' => '权限验证失败，密匙错误'), JSON_UNESCAPED_UNICODE);
+		exit;
+	}
+}
+
+function get_key()
+{
+	$sql = new sql;
+	$sql->sql_config();
+	$sql->sql_read('sk_setting', 'value', 'name', "'sys_key'");
+}
+
+# --------------------------------## 后台相关 ##--------------------------------#
+
+// 后台鉴权
+function admin_power()
+{
+	if (!defined('App_N')) {
+		Header('Location: ../../index.php/sk-admin/login');
+		exit;
+	} else {
+		// 权限验证
+		if (!isset($_COOKIE["login_status"])) {
+			ob_clean();
+			include ROOT . '/sk-admin/login.php';
+			exit;
+		} else {
+			// 解析token
+			$json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
+			$arr = json_decode($json, true);
+			// 如果用户组不是admin
+			if ($arr['group'] != 'admin') {
+				ob_clean();
+				include ROOT . '/sk-admin/login.php';
+				exit;
+			} else {
+				// 如果超时
+				if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 2) {
+					ob_clean();
+					unset($_SESSION['login_token']);
+					setcookie("login_token", "", time() - 60 * 60 * 100);
+					include ROOT . '/sk-admin/login.php';
+					exit;
+				}
+			}
 		}
 	}
 }
+
+// 用户信息
+function admin_user_name()
+{
+	// 解析token
+	$json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
+	$arr = json_decode($json, true);
+	return $arr['*'];
+}
+
 # --------------------------------## 主题相关 ##--------------------------------#
 
 // 当前主题

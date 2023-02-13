@@ -59,6 +59,7 @@ function post_get_list()
             $sql = new sql;
             $sql->sql_config();
             $sql->sql_read('sk_user', 'name', 'uid', $row['uid']);
+            
             echo '</a></li><li>发布于' . $row['created'] . '</li></ul></div></div>';
         }
     }

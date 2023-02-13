@@ -1,25 +1,3 @@
-<?php
-// 权限验证
-if (!isset($_COOKIE["login_status"])) {
-	Header('Location: ../../index.php/sk-admin/login');
-} else {
-	// 解析token
-	$json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-	$arr = json_decode($json, true);
-	// 如果用户组不是admin
-	if ($arr['group'] != 'admin') {
-		Header('Location: ../../index.php/sk-admin/login');
-	} else {
-		// 如果超时
-		if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-			// 删除token&cookie
-			unset($_SESSION['login_token']);
-			setcookie("login_token", "", time()-3600);
-			Header('Location: ../../index.php/sk-admin/login');
-		}
-	}
-}
-?>
 <!DOCTYPE html>
 <html>
 
@@ -27,6 +5,7 @@ if (!isset($_COOKIE["login_status"])) {
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>后台 - SharkCMS内容管理系统</title>
+	<link rel="alternate icon" href="<?php echo sys_domain(); ?>/sk-include/static/img/logo.png" type="image/png">
 	<!-- 依 赖 样 式 -->
 	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
 	<!-- 加 载 样 式 -->
@@ -59,14 +38,15 @@ if (!isset($_COOKIE["login_status"])) {
 			<ul class="layui-nav layui-layout-right">
 				<li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a></li>
 				<li class="layui-nav-item layui-hide-xs"><a href="#" class="fullScreen layui-icon layui-icon-screen-full"></a></li>
-				<li class="layui-nav-item layui-hide-xs"><a href="https://sharkcms.icu/" class="layui-icon layui-icon-website"></a></li>
+				<li class="layui-nav-item layui-hide-xs"><a target="_blank" href="https://sharkcms.cn/" class="layui-icon layui-icon-website"></a></li>
 				<!--系统通知组件 开发中-->
 				<!-- <li class="layui-nav-item layui-hide-xs message"></li> -->
 				<li class="layui-nav-item user">
 					<!-- 头 像 -->
 					<a class="layui-icon layui-icon-username" href="javascript:;"></a>
 					<!-- 功 能 菜 单 -->
-					<dl class="layui-nav-child">
+					<dl class="layui-nav-child" style="text-align:center">
+						<dd><a user-menu-title="<?php echo admin_user_name(); ?>"><?php echo admin_user_name(); ?></a></dd>
 						<dd><a user-menu-url="view/system/person.html" user-menu-id="5555" user-menu-title="基本资料">基本资料</a></dd>
 						<dd><a href="javascript:void(0);" class="logout">退出登录</a></dd>
 					</dl>
@@ -105,7 +85,7 @@ if (!isset($_COOKIE["login_status"])) {
 				$start = "2023";
 				$now = date('Y');
 				if ($start == $now) {
-					echo "Copyright © $start <a href='https://sharkcms.icu'>sharkcms.icu</a>";
+					echo "Copyright © $start <a href='https://sharkcms.cn'>sharkcms.cn</a>";
 				} else {
 					echo "Copyright © $start-$now <a href='https://sharkcms.cn'>sharkcms.cn</a>";
 				}
@@ -157,7 +137,6 @@ if (!isset($_COOKIE["login_status"])) {
 					alert('确定离开？')
 				}
 			})
-
 		})
 	</script>
 </body>

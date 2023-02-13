@@ -3179,6 +3179,8 @@
             }
         },
 
+        
+
         post : function(){
             var cm        = this.cm;
             var datefmt = localStorage.getItem("sharkcms-temp-post");

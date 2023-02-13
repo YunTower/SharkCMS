@@ -1,28 +1,4 @@
-<?php
-if (!defined('App_N')) {
-    Header('Location: ../../index.php/sk-admin/login');
-} else {
-    // 权限验证
-    if (!isset($_COOKIE["login_status"])) {
-        Header('Location: ../../index.php/sk-admin/login');
-    } else {
-        // 解析token
-        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-        $arr = json_decode($json, true);
-        // 如果用户组不是admin
-        if ($arr['group'] != 'admin') {
-            Header('Location: ../../index.php/sk-admin/login');
-        } else {
-            // 如果超时
-            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-                // 删除token&cookie
-                unset($_SESSION['login_token']);
-                setcookie("login_token", "", time() - 3600);
-                Header('Location: ../../index.php/sk-admin/login');
-            }
-        }
-    }
-} ?>
+<?php admin_power() ?>
 <!DOCTYPE html>
 <html>
 
@@ -33,8 +9,7 @@ if (!defined('App_N')) {
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
-
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/console2.css" />
+	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/console.css" />
 </head>
 
 <body class="pear-container">
@@ -110,25 +85,25 @@ if (!defined('App_N')) {
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">文章总数</div>
-										<div class="count pear-text">1</div>
+										<div class="count pear-text"><p id="post"></p></div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
-										<div class="title">评论总数</div>
-										<div class="count pear-text">0</div>
+										<div class="title">用户总数</div>
+										<div class="count pear-text"><p id="user"></p></div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">菜单总数</div>
-										<div class="count pear-text">3</div>
+										<div class="count pear-text"><p id="menu"></p></div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">页面总数</div>
-										<div class="count pear-text">3</div>
+										<div class="count pear-text"><p id="page"></p></div>
 									</div>
 								</div>
 							</div>
@@ -163,21 +138,7 @@ if (!defined('App_N')) {
 						<tr>
 							<td>版本类型</td>
 							<td>
-								<?php
-								if (App_T=='release'){
-									echo'发行版';
-								} else if(App_T=='demo'){
-									echo'演示版';
-								} else if(App_T=='beta'){
-									echo '测试版';
-								} else if(App_T=='dev'){
-									echo '开发版';
-								} else if(App_T=='rc'){
-									echo '预发布版';
-								} else{
-									echo'未知版本';
-								}
-								?>
+								<?php sys_en_t() ?>
 							</td>
 						</tr>
 
@@ -187,25 +148,7 @@ if (!defined('App_N')) {
 						</tr>
 						<tr>
 							<td>解释引擎</td>
-							<td><?php if (!isset($_SERVER['SERVER_SOFTWARE'])) {
-									echo '未检测到解释引擎类型';
-								}
-								$webServer = strtolower($_SERVER['SERVER_SOFTWARE']);
-								if (strpos($webServer, 'apache') !== false) {
-									echo 'Apache';
-								} elseif (strpos($webServer, 'microsoft-iis') !== false) {
-									echo 'IIS';
-								} elseif (strpos($webServer, 'nginx') !== false) {
-									echo 'Nginx';
-								} elseif (strpos($webServer, 'lighttpd') !== false) {
-									echo 'Lighttpd';
-								} elseif (strpos($webServer, 'kangle') !== false) {
-									echo 'Kangle';
-								} elseif (strpos($webServer, 'caddy') !== false) {
-									echo 'Saddy';
-								}else {
-									echo $webServer;
-								} ?></td>
+							<td><?php sys_en_engine() ?></td>
 						</tr>
 					</table>
 				</div>
@@ -231,24 +174,41 @@ if (!defined('App_N')) {
 			var $ = layui.jquery,
 				layer = layui.layer,
 				table = layui.table,
-				carousel = layui.carousel;
+				carousel = layui.carousel,
+				key = '<?php get_key() ?>';
 
-				// 版本更新检查
-				sys_check()
-				function sys_check() {
-                $.ajax({
-                    url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
-                    type: "GET",
-                    dataType: "jsonp",
-                    jsonp: "callback",
-                    success: function(data) {
-						if (data.install!='no'){
+			$.ajax({
+				url: "../../index.php/sk-include/api?action=site_info",
+				headers:{'Content-Type':'application/json;charset=utf8','key':key},
+				type: "GET",
+				success: function(data) {
+					var obj=JSON.parse(data);
+					var count=JSON.parse(obj.count);
+					console.log(count);
+					$("#post").html(count.post);
+					$("#menu").html(count.menu);
+					$("#user").html(count.user);
+					$("#page").html(count.page);
+				}
+			})
+
+			// 版本更新检查
+			sys_check()
+			function sys_check() {
+				$.ajax({
+					url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
+					type: "GET",
+					dataType: "jsonp",
+					jsonp: "callback",
+					success: function(data) {
+						if (data.install != 'no') {
 							layer.msg(data.msg)
 
 						}
-                    }
-                })
-            }
+					}
+				})
+			}
+
 			let cols = [
 				[{
 						type: 'checkbox'
@@ -276,7 +236,7 @@ if (!defined('App_N')) {
 
 			table.render({
 				elem: '#role-table',
-				url: '../../sk-admin/admin/data/role.json',
+				url: '',
 				page: true,
 				cols: cols,
 				skin: 'line'

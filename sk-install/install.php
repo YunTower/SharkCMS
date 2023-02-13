@@ -16,7 +16,7 @@
                 <h2 class="title">安装中</h2>
                 <div class="content" style="padding: 30px;">
                     <?php
-                    
+
                     $key = 'sharkcms';
 
                     $dbhost = $_POST['dbhost'];
@@ -24,9 +24,9 @@
                     $dbuser = $_POST['dbuser'];
                     $dbpwd = $_POST['dbpwd'];
                     $mail = $_POST['adminmail'];
-                    $adminmail = urlencode(base64_encode($mail));
-                    $adminname = urlencode(base64_encode($_POST['adminname']));
-                    $adminpwd = urlencode(md5_encrypt($_POST['adminpwd'],$key));
+                    $adminmail = urlencode($mail);
+                    $adminname = urlencode($_POST['adminname']);
+                    $adminpwd = urlencode(md5_encrypt($_POST['adminpwd'], $key));
 
                     // 创建数据表
                     // content
@@ -48,12 +48,11 @@
 
                         // content
                         $sql_1 = "CREATE TABLE sk_content (
-                            `ci` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+                            `cid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `title` VARCHAR(40) NOT NULL,
                             `introduction` VARCHAR(50),
                             `content` TEXT NOT NULL,
                             `cover` VARCHAR(190),
-                            `corder` VARCHAR(10),
                             `power` VARCHAR(10), 
                             `type` VARCHAR(10),
                             `status` VARCHAR(10),
@@ -88,18 +87,18 @@
                         // user
                         $sql_4 = "CREATE TABLE sk_user (
                             `uid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-                            `name` VARCHAR(32) NOT NULL,
-                            `password` VARCHAR(32) NOT NULL,
-                            `mail` VARCHAR(64) NOT NULL,
-                            `avatar` VARCHAR(64),
-                            `ugroup` VARCHAR(16) NOT NULL,
-                            `uaction` VARCHAR(32),
+                            `name` VARCHAR(99) NOT NULL,
+                            `password` VARCHAR(99) NOT NULL,
+                            `mail` VARCHAR(99) NOT NULL,
+                            `avatar` VARCHAR(99),
+                            `ugroup` VARCHAR(64) NOT NULL,
+                            `status` VARCHAR(32),
                             `created` TIMESTAMP
                             )";
 
                         // theme
                         $sql_5 = "CREATE TABLE sk_theme (
-                            `id` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+                            `tid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `name` VARCHAR(32) NOT NULL,
                             `value` VARCHAR(88),
                             `created` TIMESTAMP
@@ -108,7 +107,7 @@
                         // setting
                         $sql_6 = "CREATE TABLE sk_setting (
                             `name` VARCHAR(32) NOT NULL,
-                            `value` VARCHAR(88),
+                            `value` VARCHAR(999),
                             `created` TIMESTAMP
                             )";
 
@@ -129,10 +128,13 @@
                                     // 安装成功
                                     echo '数据表 sk_user、sk_theme、sk_setting 安装成功！<br>';
                                     echo '数据表创建完毕，正在写入初始数据...<br>';
+                                    $sys_key=sys_createkey(16);
                                     $sql = new sql;
                                     $sql->sql_config();
-                                    $sql->sql_write('sk_user', 'name,password,mail,ugroup', "'$adminname','$adminpwd', '$adminmail', 'admin'");
+                                    $sql->sql_write('sk_user', 'name,password,mail,ugroup,status', "'$adminname','$adminpwd', '$adminmail', 'admin','0'");
                                     $sql->sql_write('sk_content', 'title,content,introduction,uid', "'Hello SharkCMS','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','Hello World','1'");
+                                    $sql->sql_write('sk_setting', 'name,value', "'sys_key','$sys_key'");
+
                                     echo '初始数据写入成功！<br>';
                                     echo '系统安装成功！';
                                     // 修改安装状态

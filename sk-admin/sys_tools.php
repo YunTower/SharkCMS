@@ -1,28 +1,3 @@
-<?php
-if (!defined('App_N')) {
-    Header('Location: ../../index.php/sk-admin/login');
-} else {
-    // 权限验证
-    if (!isset($_COOKIE["login_status"])) {
-        Header('Location: ../../index.php/sk-admin/login');
-    } else {
-        // 解析token
-        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-        $arr = json_decode($json, true);
-        // 如果用户组不是admin
-        if ($arr['group'] != 'admin') {
-            Header('Location: ../../index.php/sk-admin/login');
-        } else {
-            // 如果超时
-            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-                // 删除token&cookie
-                unset($_SESSION['login_token']);
-                setcookie("login_token", "", time() - 3600);
-                Header('Location: ../../index.php/sk-admin/login');
-            }
-        }
-    }
-} ?>
 <!DOCTYPE html>
 <html>
 
@@ -83,10 +58,11 @@ if (!defined('App_N')) {
 
     <script>
         layui.use(['form', 'element', 'loading'], function() {
-            var form = layui.form;
-            var element = layui.element;
-            var loading = layui.loading;
-
+            var form = layui.form,
+                element = layui.element,
+                loading = layui.loading,
+				key = '<?php get_key() ?>';
+                
             // 数据迁移
             $("#move_post").click(function() {
                 layer.open({
@@ -110,6 +86,10 @@ if (!defined('App_N')) {
                 console.log('选中id：' + id);
                 $.ajax({
                     url: "../../sk-include/api/tools_" + id + ".php",
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf8',
+                        'key': key
+                    },
                     type: "GET",
                     success: function(data) {
                         var obj = JSON.parse(data);

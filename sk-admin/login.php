@@ -62,7 +62,7 @@
 
 				$.ajax({
 					type: "POST",
-					url: "login?t=" + Math.floor(Date.now() / 1000),
+					url: "../../index.php/sk-admin/login?t=" + Math.floor(Date.now() / 1000),
 					dataType: "json",
 					data: data,
 					contentType: "application/jsoan",
@@ -73,9 +73,9 @@
 							layer.alert(obj.msg)
 						} else if (obj.status == 'ok') {
 							layer.msg(obj.msg);
-							location.href = 'index'
+							location.href = '../../index.php/sk-admin/index'
 						} else {
-							layer.alert('登陆失败，系统错误')
+							layer.alert(obj.msg)
 						}
 					}
 				});
@@ -85,6 +85,7 @@
 </body>
 
 </html>
+
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 	exit;
@@ -93,46 +94,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 	$get_t = $_GET['t'];
 	$sys_t = time();
 	if (date('YmdHis', $get_t) - date('YmdHis', $sys_t) > '100') {
-		$arr = array('code' => 'time out', 'msg' => '请求超时');
-		$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
-		echo $json;
+		echo json_encode(array('code' => 'time out', 'msg' => '请求超时'), JSON_UNESCAPED_UNICODE);
 	} else {
-		// 解析json
 		$get_json = file_get_contents("php://input");
 		$arr = json_decode($get_json, true);
 		$key = 'sharkcms';
 		$pwd = urlencode(md5_encrypt(base64_decode($arr['pwd']), $key));
-		$mail = urlencode($arr['mail']);
-
+		$mail = urlencode(base64_decode($arr['mail']));
 		$sql = new sql;
 		$sql->sql_config();
 		try {
 			$conn = new PDO("mysql:dbname=$sql->sql_name;host=$sql->sql_location", $sql->sql_user, $sql->sql_pwd);
 			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$sql = "select * from sk_user where mail='$mail'";
+			$sql = "select * from `sk_user` where mail='$mail'";
 			$res = $conn->query($sql);
 			foreach ($res as $row) {
 				$sql_pwd = md5_decrypt(urldecode($row['password']), $key);
 				$get_pwd = md5_decrypt(urldecode($pwd), $key);
-				if ($sql_pwd == $get_pwd) {
-					$arr = array('uid' => $row['uid'], 'group' => $row['ugroup'], 'name' => $row['name'], 'mail' => $row['mail'], 'login_time' => date('YmdHis'), 'login_out' => time() + 60 * 60 * 24 * 30);
-					$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'sharkcms-user-token');
-					setcookie("login_status", "ok", time() + 60 * 60 * 24 * 30);
-					setcookie("user_token", $json, time() + 60 * 60 * 24 * 30);
-					$_SESSION['user_token'] = $json;
-					$arr = array('code' => '200', 'msg' => '登陆成功', 'status' => 'ok');
-					$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
-					echo $json;
+				if ($row['ugroup'] == 'admin') {
+					if ($sql_pwd == $get_pwd) {
+						$arr = array('uid' => $row['uid'], 'group' => $row['ugroup'], 'name' => $row['name'], 'mail' => $row['mail'], 'login_time' => date('YmdHis'), 'login_out' => time() + 60 * 60 * 24 * 30);
+						$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'sharkcms-user-token');
+						setcookie("login_status", "ok", time() + 60 * 60 * 2);
+						setcookie("user_token", $json, time() + 60 * 60 * 2);
+						$_SESSION['user_token'] = $json;
+						ob_clean();
+						echo json_encode(array('code' => '200', 'msg' => '登陆成功', 'status' => 'ok'), JSON_UNESCAPED_UNICODE);
+					} else if ($sql_pwd == null) {
+						ob_clean();
+						echo json_encode(array('msg' => '账号不存在'), JSON_UNESCAPED_UNICODE);
+					} else {
+						ob_clean();
+						echo json_encode(array('code' => '200', 'msg' => '登陆失败，账号或密码错误', 'status' => ''), JSON_UNESCAPED_UNICODE);
+					}
 				} else {
-					$arr = array('code' => '200', 'msg' => '登陆失败，账号或密码错误', 'status' => '');
-					$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
-					echo $json;
+					ob_clean();
+					echo json_encode(array('msg' => '此账号没有权限登陆后台'), JSON_UNESCAPED_UNICODE);
 				}
 			}
 		} catch (PDOException $e) {
-			$arr = array('code' => 0, 'msg' => '数据库查询失败，错误代码：' . $e->getMessage());
-			$json = json_encode($arr, JSON_UNESCAPED_UNICODE);
-			echo $json;
+			echo json_encode(array('code' => 0, 'msg' => '数据库查询失败，错误代码：' . $e->getMessage()), JSON_UNESCAPED_UNICODE);
 		}
 	}
 }

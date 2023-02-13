@@ -14,7 +14,6 @@
 			<table id="role-table" lay-filter="role-table"></table>
 		</div>
 	</div>
-
 	<script type="text/html" id="role-toolbar">
 		<button class="pear-btn pear-btn-primary pear-btn-md" lay-event="add">
 			<i class="layui-icon layui-icon-add-1"></i>
@@ -27,8 +26,8 @@
 	</script>
 
 	<script type="text/html" id="role-bar">
-		<!-- <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button> -->
-	<button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+		<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		<button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
 	</script>
 
 	<script type="text/html" id="role-enable">
@@ -39,62 +38,58 @@
 	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
 	<script>
 		layui.use(['table', 'form', 'jquery'], function() {
-			let table = layui.table;
-			let form = layui.form;
-			let $ = layui.jquery;
-			key = '<?php get_key() ?>';
-			
-
-			let cols = [
-				[{
-						type: 'checkbox'
-					},
-					{
-						title: 'ID',
-						field: 'cid',
-						align: 'left',
-						width: 10
-					},
-					{
-						title: '标题',
-						field: 'title',
-						align: 'left',
-						width: 200
-					},
-					{
-						title: '简介',
-						field: 'introduction',
-						align: 'left',
-						width: 300
-					},
-					{
-						title: '作者',
-						field: 'uid',
-						align: 'center'
-					},
-					{
-						title: '权限',
-						field: 'order',
-						align: 'center'
-					},
-					{
-						title: '时间',
-						field: 'created',
-						align: 'left',
-						width: 170
-					},
-					{
-						title: '操作',
-						toolbar: '#role-bar',
-						align: 'center',
-						width: 195
-					}
+			let table = layui.table,
+				form = layui.form,
+				$ = layui.jquery,
+				common = layui.common,
+				key = '<?php get_key() ?>';
+				
+				cols = [
+					[{
+							type: 'checkbox'
+						},
+						{
+							title: 'ID',
+							field: 'uid',
+							align: 'left',
+							width: 100
+						},
+						{
+							title: '用户名',
+							field: 'name',
+							align: 'left',
+							width: 100
+						},
+						{
+							title: '邮箱',
+							field: 'mail',
+							align: 'center'
+						},
+						{
+							title: '用户组',
+							field: 'ugroup',
+							align: 'center'
+						},
+						{
+							title: '注册时间',
+							field: 'created',
+							align: 'center'
+						},
+						{
+							title: '操作',
+							toolbar: '#role-bar',
+							align: 'center',
+							width: 195
+						}
+					]
 				]
-			]
 			table.render({
 				elem: '#role-table',
-				url: '<?php sys_domain() ?>/index.php/sk-include/api?action=sql_list&table=sk_content',
-				headers:{'Content-Type':'application/json;charset=utf8','key':key},
+				url: '<?php sys_domain() ?>/index.php/sk-include/api?action=sql_list&table=sk_user',
+				headers: {
+					'Content-Type': 'application/json;charset=utf8',
+					'key': key
+				},
 				page: true,
 				cols: cols,
 				skin: 'line',
@@ -119,7 +114,7 @@
 
 			table.on('toolbar(role-table)', function(obj) {
 				if (obj.event === 'add') {
-					parent.layui.admin.jump(21, "攥写文章", "<?php echo sys_domain(); ?>/index.php/sk-admin/post_edit");
+					window.add();
 				} else if (obj.event === 'refresh') {
 					window.refresh();
 				} else if (obj.event === 'batchRemove') {
@@ -138,6 +133,15 @@
 				layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
 			});
 
+			window.add = function() {
+				layer.open({
+					type: 2,
+					title: '新增',
+					shade: 0.1,
+					area: ['500px', '400px'],
+					content: '<?php sys_domain() ?>/index.php/sk-admin/user_add'
+				});
+			}
 
 			window.edit = function(obj) {
 				layer.open({
@@ -150,17 +154,20 @@
 			}
 
 			window.remove = function(obj) {
-				layer.confirm('确定要删除此文章？', {
+				layer.confirm('确定要删除此用户？', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: "<?php sys_domain() ?>/index.php/sk-include/api?action=sql_del&table=sk_content&del=" + obj.data['cid'],
-						headers:{'Content-Type':'application/json;charset=utf8','key':key},
+						url: "<?php sys_domain() ?>/index.php/sk-include/api?action=sql_del&table=sk_user&del=" + obj.data['uid'],
+						headers: {
+							'Content-Type': 'application/json;charset=utf8',
+							'key': key
+						},
 						dataType: 'json',
-						type: 'delete',
+						type: 'POST',
 						success: function(result) {
 							layer.close(loading);
 							if (result.success) {
@@ -191,20 +198,23 @@
 				}
 				let ids = "";
 				for (let i = 0; i < data.length; i++) {
-					ids += data[i].cid + ",";
+					ids += data[i].uid + ",";
 				}
 				ids = ids.substr(0, ids.length - 1);
-				layer.confirm('确定要删除这些文章？', {
+				layer.confirm('确定要删除这些用户？', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: "<?php sys_domain() ?>/index.php/sk-include/api?action=sql_del&table=sk_content&del=" + ids,
-						headers:{'Content-Type':'application/json;charset=utf8','key':key},
+						url: "<?php sys_domain() ?>/index.php/sk-include/api?action=sql_del&table=sk_user&del=" + ids,
+						headers: {
+							'Content-Type': 'application/json;charset=utf8',
+							'key': key
+						},
 						dataType: 'json',
-						type: 'delete',
+						type: 'POST',
 						success: function(result) {
 							layer.close(loading);
 							if (result.success) {

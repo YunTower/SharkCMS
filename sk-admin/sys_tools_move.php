@@ -1,28 +1,3 @@
-<?php
-if (!defined('App_N')) {
-    Header('Location: ../../index.php/sk-admin/login');
-} else {
-    // 权限验证
-    if (!isset($_COOKIE["login_status"])) {
-        Header('Location: ../../index.php/sk-admin/login');
-    } else {
-        // 解析token
-        $json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
-        $arr = json_decode($json, true);
-        // 如果用户组不是admin
-        if ($arr['group'] != 'admin') {
-            Header('Location: ../../index.php/sk-admin/login');
-        } else {
-            // 如果超时
-            if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 24 * 30) {
-                // 删除token&cookie
-                unset($_SESSION['login_token']);
-                setcookie("login_token", "", time() - 3600);
-                Header('Location: ../../index.php/sk-admin/login');
-            }
-        }
-    }
-} ?>
 <!DOCTYPE html>
 <html>
 
@@ -83,16 +58,18 @@ if (!defined('App_N')) {
                 </div>
             </div>
         </div>
-        
+
     </div>
     <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
     <script>
         layui.use(['form', 'element', 'loading'], function() {
-            var form = layui.form;
-            var element = layui.element;
-            var loading = layui.loading;
+            var form = layui.form,
+                element = layui.element,
+                loading = layui.loading,
+				key = '<?php get_key() ?>';
+                
             // 数据库信息
             var sql_location = $("#sql_location").val();
             var sql_name = $("#sql_name").val();
@@ -103,6 +80,10 @@ if (!defined('App_N')) {
                 $.ajax({
                     url: "../../sk-include/api/tools_move_connect.php?location=" + sql_location + "&name=" + sql_name + "&user=" + sql_user + "&pwd=" + sql_pwd,
                     type: "GET",
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf8',
+                        'key': key
+                    },
                     success: function(data) {
                         var obj = data;
                         console.log(data);
@@ -127,6 +108,10 @@ if (!defined('App_N')) {
                 $.ajax({
                     url: "../../sk-include/api/tools_" + id + ".php?location=" + sql_location + "&name=" + sql_name + "&user=" + sql_user + "&pwd=" + sql_pwd,
                     type: "GET",
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf8',
+                        'key': key
+                    },
                     success: function(data) {
                         var obj = JSON.parse(data);
                         console.log(obj);
