@@ -31,10 +31,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
         </div>
         <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
         <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
@@ -87,7 +83,6 @@
                                 // 版本类型
                                 document.getElementById('t').innerHTML = data.t
                             }
-
                         }
                     })
                 }

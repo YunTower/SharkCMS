@@ -80,6 +80,11 @@ function sys_route()
 			api_verification();
 			require_once $require;
 			exit;
+		} else if ($module == 'sk-install') {
+			ob_clean();
+			sys_log();
+			include  INS . $action . '.php';
+			exit;
 		}
 	} else if ($module == 'page') {
 		ob_clean();
@@ -118,7 +123,7 @@ if (!function_exists('error')) {
 		sys_log_error($log_error);
 		exit;
 	}
-	set_error_handler('error');
+	// set_error_handler('error');
 }
 
 // 系统安装状态
