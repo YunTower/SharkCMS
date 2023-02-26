@@ -3,7 +3,6 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>数据卡片</title>
 		<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
 	</head>
 	<body class="pear-container">

@@ -3,7 +3,6 @@
 
 <head>
 	<meta charset="utf-8">
-	<title>角色管理</title>
 	<link href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" rel="stylesheet" />
 </head>
 
@@ -85,7 +84,7 @@
 				]
 			table.render({
 				elem: '#role-table',
-				url: '<?php sys_domain() ?>/index.php/sk-include/api?action=sql_list&table=sk_user',
+				url: '<?php sys_domain() ?>/index.php/sk-include/api?action=sql_list&table=sk_user&order=asc',
 				headers: {
 					'Content-Type': 'application/json;charset=utf8',
 					'key': key

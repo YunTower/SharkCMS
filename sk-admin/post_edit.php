@@ -39,7 +39,6 @@
             <div class="layui-card layui-form" lay-filter="component-form-element">
                 <div class="layui-card-header">扩展设置（非必填）</div>
                 <div class="layui-card-body layui-row layui-col-space10">
-
                     <div class="layui-col-md12">
                         <input type="text" id="post-cover" hover placeholder="文章封面（暂不支持）" autocomplete="off" class="layui-input" disabled>
                     </div>

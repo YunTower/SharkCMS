@@ -109,12 +109,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 			$sql = "select * from `sk_user` where mail='$mail'";
 			$res = $conn->query($sql);
 			foreach ($res as $row) {
+				// 解码数据
 				$sql_pwd = md5_decrypt(urldecode($row['password']), $key);
 				$get_pwd = md5_decrypt(urldecode($pwd), $key);
+				// 权限组匹配
 				if ($row['ugroup'] == 'admin') {
+					// 密码匹配
 					if ($sql_pwd == $get_pwd) {
+
+						// 生成json数据
 						$arr = array('uid' => $row['uid'], 'group' => $row['ugroup'], 'name' => $row['name'], 'mail' => $row['mail'], 'login_time' => date('YmdHis'), 'login_out' => time() + 60 * 60 * 24 * 30);
 						$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'sharkcms-user-token');
+
+						// 修改数据库登陆时间
+						$time = date('YmdHi');
+						$uid = $row['uid'];
+						$sql = new sql;
+						$sql->sql_config();
+						$sql->sql_change('sk_user', 'logintime', "$time", 'uid', "$uid");
+
+						// 写入token&cookie
 						setcookie("login_status", "ok", time() + 60 * 60 * 2);
 						setcookie("user_token", $json, time() + 60 * 60 * 2);
 						$_SESSION['user_token'] = $json;

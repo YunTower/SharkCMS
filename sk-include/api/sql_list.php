@@ -1,6 +1,8 @@
 <?php
 $table = $_GET['table'];
 $limit = $_GET['limit'];
+$order=$_GET['order'];
+
 if ($table == 'sk_user') {
     $id = 'uid';
 } else if ($table == 'sk_content') {
@@ -39,7 +41,7 @@ if ($count == null) {
     // 每次起始查找位置
     $lim = ($page - 1) * $limit;
     // 每次查询从第$lim条开始，查询$pageSize条
-    $result_ = mysqli_query(getConn(), "select * from $table order by $id limit {$lim}, {$limit}");
+    $result_ = mysqli_query(getConn(), "select * from $table order by $id $order limit {$lim}, {$limit}");
     $query_result = array();
     $i = 0;
     // 将结果存放到$query_result

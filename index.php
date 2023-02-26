@@ -43,6 +43,7 @@ include INC . 'function/common.php';
 // 主题函数
 include INC . 'function/theme.php';
 
+
 // 开启session缓存
 session_save_path(CON.'temp/session');
 session_start();

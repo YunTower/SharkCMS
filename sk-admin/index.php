@@ -112,9 +112,28 @@
 	<!-- 框 架 初 始 化 -->
 	<script>
 		layui.use(['admin', 'jquery', 'popup'], function() {
-			var $ = layui.jquery;
-			var admin = layui.admin;
-			var popup = layui.popup;
+			var $ = layui.jquery,
+				admin = layui.admin,
+				popup = layui.popup,
+				layer = layui.layer,
+				table = layui.table,
+				carousel = layui.carousel,
+				key = '<?php get_key() ?>',
+				domain = '';
+
+			$.ajax({
+				url: "../../index.php/sk-include/api?action=site_info",
+				headers: {
+					'Content-Type': 'application/json;charset=utf8',
+					'key': key
+				},
+				type: "GET",
+				success: function(data) {
+					var obj = JSON.parse(data);
+
+					domain = obj.domain
+				}
+			})
 
 			admin.setConfigType("yml");
 			admin.setConfigPath("<?php echo sys_domain(); ?>/sk-admin/config/pear.config.yml");
@@ -130,13 +149,27 @@
 				return true;
 			})
 
-			// 未保存提示逻辑
-			$('.layui-tab-title li').click(function() {
-				var id = $('.layui-this').attr('lay-id')
-				if (id == 21) {
-					alert('确定离开？')
-				}
-			})
+
+			setInterval(function() {
+				$.ajax({
+					url: domain + "/index.php/sk-include/api?action=status",
+					type: "POST",
+					async: false,
+					headers: {
+						'Content-Type': 'application/json;charset=utf8',
+						'key': key
+					},
+					success: function(data) {
+						var obj = JSON.parse(data)
+						if (obj.login == false) {
+							console.log(obj)
+							alert('登陆状态已失效，请重新登陆')
+							window.location.href = domain + '/index.php/sk-admin/login'
+							return false
+						}
+					}
+				})
+			}, 50000)
 		})
 	</script>
 </body>

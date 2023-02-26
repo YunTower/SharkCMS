@@ -1889,7 +1889,7 @@ a cite {
 }
 
 .layui-col-space10>* {
-    padding: 5px
+    padding: 5px;
 }
 
 .layui-col-space12 {
@@ -2143,7 +2143,7 @@ a cite {
 }
 
 .layui-card:last-child {
-    margin-bottom: 0
+    margin-bottom: 0;
 }
 
 .layui-card-header {
@@ -2709,7 +2709,7 @@ a cite {
     width: 80px;
     font-weight: 400;
     line-height: 20px;
-    text-align: right
+    /* text-align: right; */
 }
 
 .layui-form-label-col {
@@ -2731,7 +2731,7 @@ a cite {
 }
 
 .layui-input-block {
-    margin-left: 110px;
+    /* margin-left: 110px; */
     min-height: 36px
 }
 
@@ -4894,8 +4894,10 @@ body .layui-table-tips .layui-layer-content {
 
 .layui-tab-title li {
     display: inline-block;
-    *display: inline;
-    *zoom: 1;
+    *
+    display: inline;
+    *
+    zoom: 1;
     vertical-align: middle;
     font-size: 14px;
     transition: all .2s;
@@ -4919,9 +4921,9 @@ body .layui-table-tips .layui-layer-content {
 }
 
 .layui-tab-title .layui-this {
-    /* background-color: #ecf5ff; */
+    background-color: #ecf5ff;
     color: #2d8cf0;
-    border-bottom: 2px solid #2d8cf0!important;
+    /* border-bottom: 2px solid #2d8cf0!important; */
     background-color: #fff;
 }
 
@@ -5023,8 +5025,11 @@ body .layui-table-tips .layui-layer-content {
 .layui-tab-brief>.layui-tab-title .layui-this:after {
     border: none;
     border-radius: 0;
-    border-bottom: 2px solid #5fb878
+    /* border-bottom: 2px solid #5fb878 */
 }
+
+
+
 
 .layui-tab-brief[overflow]>.layui-tab-title .layui-this:after {
     top: -1px

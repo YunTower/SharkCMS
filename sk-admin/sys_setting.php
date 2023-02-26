@@ -18,47 +18,55 @@
 
 <body class="pear-container body">
     <div class="layui-row layui-col-space10">
-        <div class="layui-col-md4">
-            <div class="layui-card" style="height:100%">
-                <div class="layui-card-header">数据库配置（从以下数据库导出文章到SharkCMS）</div>
-                <div class="layui-card-body layui-row layui-col-space10">
-                    <div class="layui-col-md12">
-                        <button plain class="pear-btn pear-btn-primary" id="move-sql-connect">连接测试</button>
-                        <form class="layui-form">
-                            <div class="layui-form-item">
-                                <input type="text" placeholder="数据库地址" value="127.0.0.1" id="sql_location" lay-verify="required" hover class="layui-input" />
-                            </div>
-                            <div class="layui-form-item">
-                                <input type="text" placeholder="数据库名称" value="demo" id="sql_name" lay-verify="required" hover class="layui-input" />
-                            </div>
-                            <div class="layui-form-item">
-                                <input type="text" placeholder="数据库账号" value="demo" id="sql_user" lay-verify="required" hover class="layui-input" />
-                            </div>
-                            <div class="layui-form-item">
-                                <input type="text" placeholder="数据库密码" value="demodemo" id="sql_pwd" lay-verify="required" hover class="layui-input" />
-                            </div>
-                            <div class="layui-form-item">
-                                <textarea style="resize: none;" disabled id="move-sql-msg" placeholder="连接信息" class="layui-textarea"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="layui-col-md4">
+        <div class="layui-col-md12">
             <div class="layui-card">
-                <div class="layui-card-header">从RapidCMS迁移</div>
-                <div class="layui-card-body layui-row layui-col-space10">
-                    <div class="layui-col-md12">
-                        <div class="pear-btn-group">
-                            <button plain class="pear-btn pear-btn-primary" id="move_rapidcms">开始迁移</button>
+                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="border-bottom: none;">
+                    <ul class="layui-tab-title" style="border-bottom: none;">
+                        <li class="layui-this" style="border-bottom: none;">基础设置</li>
+                        <li>菜单设置</li>
+                        <li>页面设置</li>
+                        <li>文章设置</li>
+                        <li>评论设置</li>
+                        <li>自定义</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <!-- 基础设置 -->
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-card">
+                                <div class="layui-card-header">基础设置</div>
+                                <div class="layui-card-body layui-row layui-col-space10">
+                                    <form class="layui-form layui-form-pane" action="">
+                                        <div class="layui-form-item" pane>
+                                            <label class="layui-form-label">网站主标题</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="post-cover" hover placeholder="网站主标题" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item" pane>
+                                            <label class="layui-form-label">网站次标题</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="post-cover" hover placeholder="网站次标题" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-form-item" pane>
+                                            <label class="layui-form-label">网站LOGO</label>
+                                            <div class="layui-input-block">
+                                                <input type="text" id="post-cover" hover placeholder="网站LOGO" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <!-- 菜单设置 -->
+                    <div class="layui-tab-item">内容2</div>
                 </div>
             </div>
         </div>
-
     </div>
+
+
     <script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
@@ -67,8 +75,8 @@
             var form = layui.form,
                 element = layui.element,
                 loading = layui.loading,
-				key = '<?php get_key() ?>';
-                
+                key = '<?php get_key() ?>';
+
             // 数据库信息
             var sql_location = $("#sql_location").val();
             var sql_name = $("#sql_name").val();

@@ -46,6 +46,29 @@
 	},
 	{
 		"id": 30,
+		"title": "页面管理",
+		"icon": "icon pear-icon pear-icon-image-text",
+		"type": "0",
+		"href": "",
+		"children":[
+			{
+				"id": 31,
+				"title": "所有页面",
+				"type": 1,
+				"href": "../../index.php/sk-admin/page_list",
+				"openType": "_iframe"
+			},
+			{
+				"id": 32,
+				"title": "新建页面",
+				"type": 1,
+				"href": "../../index.php/sk-admin/page_edit",
+				"openType": "_iframe"
+			}
+		]
+	},
+	{
+		"id": 40,
 		"title": "评论管理",
 		"icon": "icon pear-icon pear-icon-comment",
 		"type": "1",
@@ -53,7 +76,7 @@
 		"openType": "_iframe"
 	},
 	{
-		"id": 40,
+		"id": 50,
 		"title": "用户管理",
 		"icon": "icon pear-icon pear-icon-user",
 		"type": "1",
@@ -61,28 +84,21 @@
 		"openType": "_iframe"
 	},
 	{
-		"id": 50,
+		"id": 60,
 		"title": "外观管理",
 		"icon":"icon pear-icon pear-icon-layout",
 		"type": "0",
 		"href": "",
 		"children": [
 			{
-				"id": 41,
-				"title": "页面设置",
-				"type": 1,
-				"href": "../../index.php/sk-admin/appearance_page",
-				"openType": "_iframe"
-			},
-			{
-				"id": 42,
+				"id": 61,
 				"title": "菜单设置",
 				"type": 1,
 				"href": "../../index.php/sk-admin/appearance_menu",
 				"openType": "_iframe"
 			},
 			{
-				"id": 43,
+				"id": 62,
 				"title": "主题设置",
 				"type": 1,
 				"href": "../../index.php/sk-admin/appearance_theme",
@@ -91,21 +107,21 @@
 		]
 	},
 	{
-		"id": 50,
+		"id": 70,
 		"title": "扩展管理",
 		"icon": "icon pear-icon pear-icon-modular",
 		"type": "0",
 		"href": "",
 		"children": [
 			{
-				"id": 51,
+				"id": 71,
 				"title": "主题管理",
 				"type": 1,
 				"href": "../../index.php/sk-admin/theme_list",
 				"openType": "_iframe"
 			},
 			{
-				"id": 52,
+				"id": 72,
 				"title": "插件管理",
 				"type": 1,
 				"href": "../../index.php/sk-admin/app_extend",
@@ -114,42 +130,42 @@
 		]
 	},
 	{
-		"id": 70,
+		"id": 80,
 		"title": "系统管理",
 		"icon": "icon pear-icon pear-icon-setting",
 		"type": "0",
 		"href": "",
 		"children": [
 			{
-				"id": 61,
+				"id": 81,
 				"title": "系统设置",
 				"type": 1,
-				"href": "../../index.php/sk-admin/sys_set",
+				"href": "../../index.php/sk-admin/sys_setting",
 				"openType": "_iframe"
 			},
 			{
-				"id": 62,
+				"id": 82,
 				"title": "检查更新",
 				"type": 1,
 				"href": "../../index.php/sk-admin/sys_update",
 				"openType": "_iframe"
 			},
 			{
-				"id": 63,
+				"id": 83,
 				"title": "系统工具",
 				"type": 1,
 				"href": "../../index.php/sk-admin/sys_tools",
 				"openType": "_iframe"
 			},
 			{
-				"id": 64,
+				"id": 84,
 				"title": "系统日志",
 				"type": 1,
 				"href": "../../index.php/sk-admin/sys_data",
 				"openType": "_iframe"
 			},
 			{
-				"id": 65,
+				"id": 85,
 				"title": "关于系统",
 				"type": 1,
 				"href": "../../index.php/sk-admin/sys_about",

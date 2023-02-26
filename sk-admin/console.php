@@ -85,25 +85,33 @@
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">文章总数</div>
-										<div class="count pear-text"><p id="post"></p></div>
+										<div class="count pear-text">
+											<p id="post"></p>
+										</div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">用户总数</div>
-										<div class="count pear-text"><p id="user"></p></div>
+										<div class="count pear-text">
+											<p id="user"></p>
+										</div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">菜单总数</div>
-										<div class="count pear-text"><p id="menu"></p></div>
+										<div class="count pear-text">
+											<p id="menu"></p>
+										</div>
 									</div>
 								</div>
 								<div class="layui-col-md6 layui-col-sm6 layui-col-xs6">
 									<div class="pear-card2">
 										<div class="title">页面总数</div>
-										<div class="count pear-text"><p id="page"></p></div>
+										<div class="count pear-text">
+											<p id="page"></p>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -116,7 +124,7 @@
 							最近动态
 						</div>
 						<div class="layui-card-body">
-							<table id="role-table" lay-filter="role-table"></table>
+							<table id="role-table"></table>
 						</div>
 					</div>
 				</div>
@@ -175,35 +183,42 @@
 				layer = layui.layer,
 				table = layui.table,
 				carousel = layui.carousel,
-				key = '<?php get_key() ?>';
+				key = '<?php get_key() ?>',
+				domain = '';
 
 			$.ajax({
 				url: "../../index.php/sk-include/api?action=site_info",
-				headers:{'Content-Type':'application/json;charset=utf8','key':key},
+				headers: {
+					'Content-Type': 'application/json;charset=utf8',
+					'key': key
+				},
 				type: "GET",
 				success: function(data) {
-					var obj=JSON.parse(data);
-					var count=JSON.parse(obj.count);
+					var obj = JSON.parse(data);
+					var count = JSON.parse(obj.count);
 					console.log(count);
 					$("#post").html(count.post);
 					$("#menu").html(count.menu);
 					$("#user").html(count.user);
 					$("#page").html(count.page);
+
+					domain = obj.domain
 				}
 			})
 
 			// 版本更新检查
 			sys_check()
+
 			function sys_check() {
 				$.ajax({
 					url: "https://api.sharkcms.cn/update/<?php echo App_T ?>/check.php?v=<?php echo App_V ?>&d=<?php echo sys_domain() ?>&t=<?php echo time() ?>",
 					type: "GET",
+					async: false,
 					dataType: "jsonp",
 					jsonp: "callback",
 					success: function(data) {
 						if (data.install != 'no') {
 							layer.msg(data.msg)
-
 						}
 					}
 				})
@@ -214,33 +229,48 @@
 						type: 'checkbox'
 					},
 					{
-						title: '用户名',
-						field: 'uname',
+						title: 'ID',
+						field: 'cid',
 						align: 'center',
-						width: 100
+						width: 10
 					},
 					{
-						title: '操作内容',
-						field: 'content',
+						title: '标题',
+						field: 'title',
 						align: 'center',
-						templet: '#role-enable'
+						width: 150
 					},
 					{
-						title: '操作时间',
-						field: 'time',
+						title: '简介',
+						field: 'introduction',
 						align: 'center',
-
+					},
+					{
+						title: '作者',
+						field: 'uid',
+						align: 'center'
+					},
+					{
+						title: '时间',
+						field: 'created',
+						align: 'center',
+						width: 160
 					}
 				]
 			]
 
 			table.render({
 				elem: '#role-table',
-				url: '',
-				page: true,
+				url: domain + '/index.php/sk-include/api?action=sql_list&table=sk_content&page=1&limit=4&order=desc',
+				async: false,
+				headers: {
+					'Content-Type': 'application/json;charset=utf8',
+					'key': key
+				},
 				cols: cols,
 				skin: 'line'
 			});
+
 		});
 	</script>
 </body>

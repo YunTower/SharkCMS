@@ -35,10 +35,10 @@ function get_link()
 
 function post_get_list()
 {
-    $sql = new sql;
-    $sql->sql_config();
+    $db = new DB;
+    $db->db_config();
     try {
-        $conn = new PDO("mysql:dbname=$sql->sql_name;host=$sql->sql_location", $sql->sql_user, $sql->sql_pwd);
+        $conn = new PDO("mysql:dbname=$db->db_name;host=$db->db_location", $db->db_user, $db->db_pwd);
     } catch (PDOException $e) {
         sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
     }
@@ -56,10 +56,9 @@ function post_get_list()
             echo '</p>';
             echo '</div><div class="sharkcms-post-footer">';
             echo '<ul class="sharkcms-post-meta"><li class="first">作者：<a href="/index.php/page/user?uid=' . $row['uid'] . '">';
-            $sql = new sql;
-            $sql->sql_config();
-            $sql->sql_read('sk_user', 'name', 'uid', $row['uid']);
             
+            $db->db_read('sk_user', 'name', 'uid', $row['uid']);
+
             echo '</a></li><li>发布于' . $row['created'] . '</li></ul></div></div>';
         }
     }
@@ -67,45 +66,45 @@ function post_get_list()
 
 function post_get_post($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
-    $sql->sql_read('sk_content', 'content', 'cid', "$cid");
+    $db = new DB;
+    $db->db_config();
+    $db->db_read('sk_content', 'content', 'cid', "$cid");
 }
 
 function post_get_introduction($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
-    $sql->sql_read('sk_content', 'introduction', 'cid', "$cid");
+    $db = new DB;
+    $db->db_config();
+    $db->db_read('sk_content', 'introduction', 'cid', "$cid");
 }
 
 function post_get_title($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
-    $sql->sql_read('sk_content', 'title', 'cid', "$cid");
+    $db = new DB;
+    $db->db_config();
+    $db->db_read('sk_content', 'title', 'cid', "$cid");
 }
 
 function post_get_time($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
-    $sql->sql_read('sk_content', 'created', 'cid', "$cid");
+    $db = new DB;
+    $db->db_config();
+    $db->db_read('sk_content', 'created', 'cid', "$cid");
 }
 
 function post_get_uid($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
-    $sql->sql_read('sk_content', 'uid', 'cid', "$cid");
+    $db = new DB;
+    $db->db_config();
+    $db->db_read('sk_content', 'uid', 'cid', "$cid");
 }
 
 function post_get_author($cid)
 {
-    $sql = new sql;
-    $sql->sql_config();
+    $db = new DB;
+    $db->db_config();
     try {
-        $conn = new PDO("mysql:dbname=$sql->sql_name;host=$sql->sql_location", $sql->sql_user, $sql->sql_pwd);
+        $conn = new PDO("mysql:dbname=$db->db_name;host=$db->db_location", $db->db_user, $db->db_pwd);
     } catch (PDOException $e) {
         sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
     }
