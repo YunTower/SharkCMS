@@ -20,7 +20,6 @@ function sys_domain()
 	return $http_type . $_SERVER['HTTP_HOST'];
 }
 
-// 系统路由
 function sys_route()
 {
 	// 获取请求的URI
@@ -56,68 +55,48 @@ function sys_route()
 	// 返回请求的资源
 	$require = ROOT . $module .  '/' . $action . '.php';
 	if (file_exists($require)) {
-		// 初始化数据库
-		$db = new DB;
-		$db->db_config();
-		// $db->db_write('sk_content', 'title,content,uid', "'test','test','1'");
-		switch ($module) {
-			case null:
-				// 安装检查
-				if (sys_status_install('read', '') == 'no') {
-					ob_clean();
-					include INS . 'index.php';
-					exit;
-				} else {
-					ob_clean();
-					sys_log();
-					$db->db_read('sk_user', 'name', '', '');
-
-					include CON . 'theme/' . set_theme() . '/index.php';
-					exit;
-				}
-
-			case 'page':
-				ob_clean();
+		include INC . '/function/theme.php';
+		if ($module == null) {
+			// 安装检查
+			if (sys_status_install('read', '') == 'no') {
+				include INS . 'index.php';
+			} else {
 				sys_log();
-				$file = CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
-				if (file_exists($file)) {
-					include $file;
-					exit;
-				} else {
-					ob_clean();
-					sys_log();
-					require_once ROOT . 'sk-include/template/404.php';
-					exit;
-				}
-			case 'sk-admin':
-				ob_clean();
-				sys_log();
-				admin_power();
-				require_once $require;
-				exit;
-			case 'sk-install':
-				ob_clean();
-				sys_log();
-				include  INS . $action . '.php';
-				exit;
-			case 'test':
+				include CON . 'theme/' . set_theme() . '/index.php';
 
-				require_once ROOT . $module . '/' . $action . '.php';
+				
+			}
+		} else if ($module == 'sk-admin') {
+			sys_log();
+			admin_power();
+			require_once $require;
+		} else if ($action == 'api') {
+			sys_log();
+			api_verification();
+			require_once $require;
+		} else if ($module == 'sk-install') {
+			sys_log();
+			include  INS . $action . '.php';
 		}
-		switch ($action) {
-			case 'api':
-				ob_clean();
-				sys_log();
-				api_verification();
-				require_once $require;
-				exit;
+	} else if ($module == 'page') {
+		ob_clean();
+		sys_log();
+		$file = CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
+		if (file_exists($file)) {
+			include CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
+		} else {
+			ob_clean();
+			sys_log();
+			require_once ROOT . 'sk-include/template/404.php';
 		}
+	} else if ($module == 'sk-content') {
+		ob_clean();
+		sys_log();
+		require_once ROOT . 'sk-include/template/403.php';
 	} else {
 		ob_clean();
 		sys_log();
 		require_once ROOT . 'sk-include/template/404.php';
-		echo $require;
-		exit;
 	}
 }
 
@@ -346,105 +325,127 @@ function  md5_key($str, $encrypt_key)
 	return  $tmp;
 }
 # --------------------------------## 数据库相关 ##--------------------------------#
-class DB
+
+define('DB_ALL', 0);
+define('DB_ROW', 1);
+define('DB_COLUMN', 2);
+define('DB_AFFECTED', 3);
+define('DB_LASTED', 4);
+
+/**加载配置文件 */
+function getConfigItem($name)
 {
-	var $db_location;
-	var $db_name;
-	var $db_user;
-	var $db_pwd;
-	var $TableName; // 表名
-	var $DBkey; //数据表键名
-	var $DBinfo; //插入的数据
-	var $Readinfo; //要读取的数据
-	var $ReadCond; // 查询条件
-	var $ReadOrder; // 排序方式
-	var $ReadPage; //页数
-	var $ReadPageSize; //条数
-
-	// 数据库配置
-	function db_config()
-	{
-		$data = file_get_contents(INC . 'config.json');    // 获取数据
-		$arr = json_decode($data, true);    // 将获取到的 JSON 数据解析成数组
-		$this->db_location = $arr['sql_location'];
-		$this->db_name = $arr['sql_name'];
-		$this->db_user = $arr['sql_user'];
-		$this->db_pwd = $arr['sql_pwd'];
+	static $config = null;
+	if (!$config) {
+		$config = require INC . 'config.php';
 	}
+	return isset($config[$name]) ? $config[$name] : null;
+}
 
-	// 数据库地址
-	function db_location()
-	{
-		echo $this->db_location;
-	}
-
-	// 数据库名称
-	function db_name()
-	{
-		echo $this->db_name;
-	}
-
-	// 数据库账号
-	function db_user()
-	{
-		echo $this->db_user;
-	}
-
-	// 数据库密码
-	function db_pwd()
-	{
-		echo $this->db_pwd;
-	}
-
-	// 数据库连接
-	function db_connect()
-	{
-		try {
-			$conn = new mysqli("$this->db_location", $this->db_user, $this->db_pwd, $this->db_name);
-			if (!$conn) {
-				die(sys_error('数据库错误', '数据库连接失败，错误代码：' . mysqli_connect_error()));
-			}
-		} catch (PDOException $e) {
-			sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
+/**连接数据库 */
+function db_connect()
+{
+	static $link = null;
+	if (!$link) {
+		$link = call_user_func_array('mysqli_connect', getConfigItem('DB_CONNECT'));
+		if (!$link) {
+			exit('数据库连接错误');
 		}
 	}
-
-	// 数据库写入
-	function db_write($TableName, $DBkey, $DBinfo)
-	{
-		$conn = new mysqli("$this->db_location", $this->db_user, $this->db_pwd, $this->db_name);
-		$sql = "INSERT INTO $TableName ($DBkey) VALUES ($DBinfo)";
-		$conn->query($sql);
-		echo $conn->error;
+	mysqli_query($link, "set names " . "'" . getConfigItem('DB_CHARSET') . "'"); //设置字符集
+	return $link;
+}
+/**
+ * 数据查询
+ * @param string $sql
+ * @param string $type
+ * @param array $data
+ * @return object
+ */
+function db_query($sql, $type = '', $data = [])
+{
+	$link = db_connect();
+	$stmt = mysqli_prepare($link, $sql);
+	if (!$stmt) {
+		$error = mysqli_error($link) . '<br>SQL语句:' . $sql;
+		exit('数据库操作错误!' . $error);
 	}
-
-	// 数据库查询
-	function db_read($TableName, $Readinfo, $DBkey, $DBinfo, $ReadOrder = [], $ReadPage = 0, $ReadPageSize = 0)
-	{
-		$conn = new mysqli("$this->db_location", $this->db_user, $this->db_pwd, $this->db_name);
-
-		$sql = "SELECT $Readinfo from `$TableName`";
-		foreach ($conn->query($sql) as $row) {
-
-			urldecode($row[$Readinfo]);
-		}
+	if ($data == []) {
+		mysqli_stmt_execute($stmt);
+	} else {
+		$data = (array)$data;
+		db_bind_param($stmt, $type, $data);
+		mysqli_stmt_execute($stmt);
 	}
-
-	// 数据库修改
-	function db_change($table, $w_key, $w_content, $key, $content)
-	{
-		$conn = new mysqli("$this->db_location", $this->db_user, $this->db_pwd, $this->db_name);
-		$sql = "UPDATE $table set $w_key='$w_content' where $key=$content";
-		$conn->query($sql);
+	return $stmt;
+}
+/**
+ * 查询数据绑定
+ * @param object $stmt
+ * @param string $tyle
+ * @param array $data
+ */
+function db_bind_param($stmt, $tyle, &$data)
+{
+	$params = [$stmt, $tyle];
+	foreach ($data as &$params[]) {
 	}
+	call_user_func_array('mysqli_stmt_bind_param', $params);
+}
 
-	// 数据库删除
-	function db_del($table, $key, $content)
-	{
-		$conn = new mysqli("$this->db_location", $this->db_user, $this->db_pwd, $this->sql_name);
-		$sql = "delete from $table where $key=$content";
-		$conn->query($sql);
+/**
+ * 查询结果处理
+ * @param int $mode
+ * @param string $sql
+ * @param string $type
+ * @param array $data
+ * @return array
+ */
+function db_fetch($mode, $sql, $type = '', $data = [])
+{
+	$stmt = db_query($sql, $type, $data);
+	$result = mysqli_stmt_get_result($stmt);
+	switch ($mode) {
+		case DB_ROW:
+			return mysqli_fetch_assoc($result);;
+			break;
+		case DB_COLUMN:
+			return current((array)mysqli_fetch_row($result));
+			break;
+
+		default:
+			return mysqli_fetch_all($result, MYSQLI_ASSOC);
+			break;
 	}
+}
+/**
+ * 数据查询。没有结果集的查询。
+ * @param int $mode
+ * @param string $sql
+ * @param string $type
+ * @param array $data
+ * @return int
+ */
+function db_exec($mode, $sql, $type = '', $data = [])
+{
+	$stmt = db_query($sql, $type, $data);
+	switch ($mode) {
+		case DB_LASTED:
+			return mysqli_stmt_insert_id($stmt);
+			break;
+		default:
+			return mysqli_stmt_affected_rows($stmt);
+			break;
+	}
+}
+
+function db()
+{
+    $sql_list_content = 'select cid,title,introduction,content,uid,created from sk_content';
+    $sk_content = db_fetch(DB_ALL, $sql_list_content);
+    $db_data = array(
+        'sk_content' => $sk_content,
+    );
 }
 
 # --------------------------------## 接口相关 ##--------------------------------#
@@ -467,12 +468,12 @@ function api_verification()
 	}
 }
 
-function get_key()
-{
-	$db = new DB;
-	$db->db_config();
-	$db->db_read('sk_setting', 'value', 'name', "'sys_key'");
-}
+// function get_key()
+// {
+// 	$db = new DB;
+// 	$db->db_config();
+// 	$db->db_read('where', 'sk_setting', 'value', 'name', "'sys_key'");
+// }
 
 # --------------------------------## 后台相关 ##--------------------------------#
 

@@ -38,14 +38,15 @@ if (PHP_VERSION < '7.0') {
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
 // 公共函数
+include INC . 'function/db.php';
+
 include INC . 'function/common.php';
-
-// 主题函数
-include INC . 'function/theme.php';
+// 数据库
 
 
-// 开启session缓存
+// 设置session存储路径
 session_save_path(CON.'temp/session');
+// 开启session缓存
 session_start();
 
 // 系统日志
