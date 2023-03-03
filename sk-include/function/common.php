@@ -59,12 +59,12 @@ function sys_route()
 		if ($module == null) {
 			// 安装检查
 			if (sys_status_install('read', '') == 'no') {
+				ob_clean();
 				include INS . 'index.php';
+				exit;
 			} else {
 				sys_log();
 				include CON . 'theme/' . set_theme() . '/index.php';
-
-				
 			}
 		} else if ($module == 'sk-admin') {
 			sys_log();
@@ -333,7 +333,7 @@ define('DB_AFFECTED', 3);
 define('DB_LASTED', 4);
 
 /**加载配置文件 */
-function getConfigItem($name)
+function db_GetConfig($name)
 {
 	static $config = null;
 	if (!$config) {
@@ -347,12 +347,12 @@ function db_connect()
 {
 	static $link = null;
 	if (!$link) {
-		$link = call_user_func_array('mysqli_connect', getConfigItem('DB_CONNECT'));
+		$link = call_user_func_array('mysqli_connect', db_GetConfig('DB_CONNECT'));
 		if (!$link) {
 			exit('数据库连接错误');
 		}
 	}
-	mysqli_query($link, "set names " . "'" . getConfigItem('DB_CHARSET') . "'"); //设置字符集
+	mysqli_query($link, "set names " . "'" . db_GetConfig('DB_CHARSET') . "'"); //设置字符集
 	return $link;
 }
 /**
@@ -441,11 +441,11 @@ function db_exec($mode, $sql, $type = '', $data = [])
 
 function db()
 {
-    $sql_list_content = 'select cid,title,introduction,content,uid,created from sk_content';
-    $sk_content = db_fetch(DB_ALL, $sql_list_content);
-    $db_data = array(
-        'sk_content' => $sk_content,
-    );
+	$sql_list_content = 'select cid,title,introduction,content,uid,created from sk_content';
+	$sk_content = db_fetch(DB_ALL, $sql_list_content);
+	$db_data = array(
+		'sk_content' => $sk_content,
+	);
 }
 
 # --------------------------------## 接口相关 ##--------------------------------#

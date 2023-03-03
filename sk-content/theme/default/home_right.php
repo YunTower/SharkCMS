@@ -2,17 +2,14 @@
     <div class="content">
 
         <? 
-        // $sql_list_content = 'select cid,title,introduction,content,uid,created from sk_content';
-        // $sk_content = db_fetch(DB_ALL, $sql_list_content);
+        // $sql_content = 'select * from sk_content';
+        // $db_list_content = db_fetch(DB_ALL, $sql_content);
         // $db_data = array(
-        //     'sk_content' => $sk_content,
+        //     'sk_content'=>$db_list_content,
         // );
-        // print_r($db_data['sk_content']);
-        // foreach($db_data['sk_content'] as $row):
-        //     echo $row['title'];
-        // endforeach;
-        
-        foreach (ndb() as $row) : ?>
+
+        print_r($db_data['sk_content']);
+        foreach ($db_data['sk_content'] as $row) : ?>
             <div class="sharkcms-post">
                 <div class="sharkcms-post-title">
                     <h3><a href="index.php/page/article?cid=<? $row['cid'] ?>"><? $row["title"] ?></a></h3>

@@ -1,9 +1,5 @@
 <?php
 return [
-    //项目配置
-    'APP' => [
-        'name' => 'SharkCMS',
-    ],
     //数据库连接配置
     'DB_CONNECT' => [
         'host' => '127.0.0.1',

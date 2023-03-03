@@ -1,4 +1,11 @@
 <?php
+// $sql_content = 'select * from sk_content';
+// $db_list_content = db_fetch(DB_ALL, $sql_content);
+
+// $db_data = array(
+//     'sk_content'=>$db_list_content,
+// );
+
 
 function get_header(){
     include "sk-content/theme/default/header.php";

@@ -37,12 +37,8 @@ if (PHP_VERSION < '7.0') {
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
-// 公共函数
-include INC . 'function/db.php';
 
 include INC . 'function/common.php';
-// 数据库
-
 
 // 设置session存储路径
 session_save_path(CON.'temp/session');
