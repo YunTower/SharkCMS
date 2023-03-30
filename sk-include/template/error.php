@@ -59,8 +59,8 @@
 
 <body>
 <div class="main">
-        <div class="title">系统错误</div>
-        <p class="content"><?php echo $error_code ?></p>
+        <div class="title"><?php echo $title ?></div>
+        <p class="content"><?php echo $error ?></p>
     </div>
 </body>
 

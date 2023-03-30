@@ -102,16 +102,16 @@ function sys_route()
 
 // 错误函数
 if (!function_exists('error')) {
-	function sys_error($msg, $errstr)
+	function sys_error($title, $error)
 	{
 		ob_clean();
-		$error_code = '[' . $msg . ']  ' . $errstr;
+		$title = $title;
+		$error = $error;
 		include INC . 'template/error.php';
-		$log_error = $errstr;
+		$log_error = $error;
 		sys_log_error($log_error);
 		exit;
 	}
-	// set_error_handler('error');
 }
 
 // 系统安装状态
@@ -153,7 +153,7 @@ function sys_log()
 	$log_file = ROOT . "sk-content/temp/log/$log_name.json";
 	// 写入
 	$fp = fopen($log_file, "a");
-	$txt = $error_info . "n";
+	$txt = $error_info . "\n";
 	fputs($fp, $txt);
 	fclose($fp);
 }
@@ -324,156 +324,6 @@ function  md5_key($str, $encrypt_key)
 	}
 	return  $tmp;
 }
-# --------------------------------## 数据库相关 ##--------------------------------#
-
-define('DB_ALL', 0);
-define('DB_ROW', 1);
-define('DB_COLUMN', 2);
-define('DB_AFFECTED', 3);
-define('DB_LASTED', 4);
-
-/**加载配置文件 */
-function db_GetConfig($name)
-{
-	static $config = null;
-	if (!$config) {
-		$config = require INC . 'config.php';
-	}
-	return isset($config[$name]) ? $config[$name] : null;
-}
-
-/**连接数据库 */
-function db_connect()
-{
-	static $link = null;
-	if (!$link) {
-		$link = call_user_func_array('mysqli_connect', db_GetConfig('DB_CONNECT'));
-		if (!$link) {
-			exit('数据库连接错误');
-		}
-	}
-	mysqli_query($link, "set names " . "'" . db_GetConfig('DB_CHARSET') . "'"); //设置字符集
-	return $link;
-}
-/**
- * 数据查询
- * @param string $sql
- * @param string $type
- * @param array $data
- * @return object
- */
-function db_query($sql, $type = '', $data = [])
-{
-	$link = db_connect();
-	$stmt = mysqli_prepare($link, $sql);
-	if (!$stmt) {
-		$error = mysqli_error($link) . '<br>SQL语句:' . $sql;
-		exit('数据库操作错误!' . $error);
-	}
-	if ($data == []) {
-		mysqli_stmt_execute($stmt);
-	} else {
-		$data = (array)$data;
-		db_bind_param($stmt, $type, $data);
-		mysqli_stmt_execute($stmt);
-	}
-	return $stmt;
-}
-/**
- * 查询数据绑定
- * @param object $stmt
- * @param string $tyle
- * @param array $data
- */
-function db_bind_param($stmt, $tyle, &$data)
-{
-	$params = [$stmt, $tyle];
-	foreach ($data as &$params[]) {
-	}
-	call_user_func_array('mysqli_stmt_bind_param', $params);
-}
-
-/**
- * 查询结果处理
- * @param int $mode
- * @param string $sql
- * @param string $type
- * @param array $data
- * @return array
- */
-function db_fetch($mode, $sql, $type = '', $data = [])
-{
-	$stmt = db_query($sql, $type, $data);
-	$result = mysqli_stmt_get_result($stmt);
-	switch ($mode) {
-		case DB_ROW:
-			return mysqli_fetch_assoc($result);;
-			break;
-		case DB_COLUMN:
-			return current((array)mysqli_fetch_row($result));
-			break;
-
-		default:
-			return mysqli_fetch_all($result, MYSQLI_ASSOC);
-			break;
-	}
-}
-/**
- * 数据查询。没有结果集的查询。
- * @param int $mode
- * @param string $sql
- * @param string $type
- * @param array $data
- * @return int
- */
-function db_exec($mode, $sql, $type = '', $data = [])
-{
-	$stmt = db_query($sql, $type, $data);
-	switch ($mode) {
-		case DB_LASTED:
-			return mysqli_stmt_insert_id($stmt);
-			break;
-		default:
-			return mysqli_stmt_affected_rows($stmt);
-			break;
-	}
-}
-
-function db()
-{
-	$sql_list_content = 'select cid,title,introduction,content,uid,created from sk_content';
-	$sk_content = db_fetch(DB_ALL, $sql_list_content);
-	$db_data = array(
-		'sk_content' => $sk_content,
-	);
-}
-
-# --------------------------------## 接口相关 ##--------------------------------#
-
-// 接口验证
-function api_verification()
-{
-	$key = getallheaders()['key'];
-	$sql = new DB;
-	$sql->db_config();
-	$conn = new PDO("mysql:dbname=$sql->db_name;host=$sql->db_location", $sql->db_user, $sql->db_pwd);
-	$sql = "select value from sk_setting where name='sys_key'";
-	foreach ($conn->query($sql) as $row) {
-		$value = $row['value'];
-	}
-	if ($value != $key) {
-		ob_clean();
-		echo json_encode(array('code' => 0, 'msg' => '权限验证失败，密匙错误'), JSON_UNESCAPED_UNICODE);
-		exit;
-	}
-}
-
-// function get_key()
-// {
-// 	$db = new DB;
-// 	$db->db_config();
-// 	$db->db_read('where', 'sk_setting', 'value', 'name', "'sys_key'");
-// }
 
 # --------------------------------## 后台相关 ##--------------------------------#
 
@@ -520,6 +370,116 @@ function admin_user_name()
 	$arr = json_decode($json, true);
 	return $arr['name'];
 }
+
+
+
+function db_GetConfig($name)
+{
+	static $config = null;
+	if (!$config) {
+		$config = require INC . 'config.php';
+	}
+	return isset($config[$name]) ? $config[$name] : null;
+}
+/**
+ * @name: DBconfig
+ * @desc: 数据库配置加载函数
+ * @author: fish
+ * @date: 20230330
+ **/
+function DBconfig($name)
+{
+	include INC . 'function/db.php';
+	return isset($config[$name]) ? $config[$name] : null;
+}
+
+/**
+ * @name: DBconnect
+ * @desc: 数据库连接函数
+ * @author: fish
+ * @date: 20230330
+ **/
+function DBconnect()
+{
+	static $conn = null;
+	if (!$conn) {
+		$conn = call_user_func_array('mysqli_connect', DBconfig('DB_CONNECT'));
+		if (!$conn) {
+			sys_error('数据库错误', '数据库连接错误');
+		}
+	}
+	mysqli_query($conn, "set names " . "'" . DBconfig('DB_CHARSET') . "'");
+	return $conn;
+}
+
+/**
+ * @name: DBread
+ * @desc: 数据库查询函数
+ * @author: fish
+ * @date: 20230330
+ * @method: EchoALL -> 输出全部 EchoID -> 条件查询
+ **/
+function DBread($method, $json)
+{
+	$conn = DBconnect();
+
+	// 格式化json
+	$data = json_decode(strval($json, true));
+	$TableNAME = $data['name'];
+	$TableID = $data['id'];
+	$TableWHERE = $data['where'];
+	$TableWHERE_info = $data['where_info'];
+
+	switch ($method) {
+			// 输出全部
+		case 'EchoALL':
+			$sql = "SELECT $TableID FROM $TableNAME";
+			$res = $conn->query($sql);
+			return $res;
+
+			// 条件查询
+		case 'EchoWHERE':
+			$sql = "SELECT $TableID FROM $TableNAME WHERE $TableWHERE = $TableWHERE_info";
+			$res = $conn->query($sql);
+			return $res;
+
+			// 异常处理
+		default:
+			$error = mysqli_error($conn);
+			sys_error('数据库错误', $error);
+	}
+}
+
+/**
+ * @name: DBwrite
+ * @desc: 数据库写入函数
+ * @author: fish
+ * @date: 20230330
+ **/
+function DBwrite($data)
+{
+	$conn = DBconnect();
+	echo $data;
+	print_r($data, true);
+
+	$data = implode($data);
+	$TableNAME = $data['name'];
+	print_r($TableNAME, true);
+	$TableID = $data['id'];
+	$TableINFO = $data['info'];
+
+	// 数据写入
+	$sql = "INSERT INTO $TableNAME ($TableID) VALUES ($TableINFO)";
+	if ($conn->query($sql) === TRUE) {
+		return true;
+	} else {
+
+		// 异常处理
+		$error = mysqli_error($conn);
+		sys_error('数据库错误', $error);
+	}
+}
+
 
 # --------------------------------## 主题相关 ##--------------------------------#
 

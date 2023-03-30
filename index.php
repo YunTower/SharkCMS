@@ -37,11 +37,14 @@ if (PHP_VERSION < '7.0') {
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
+// 公共函数
+include_once INC . 'function/common.php';
 
-include INC . 'function/common.php';
-
+print_r(db_GetConfig('DB_CHARSET'));
+print_r(DBconfig('DB_CHARSET'));
 // 设置session存储路径
-session_save_path(CON.'temp/session');
+session_save_path(CON . 'temp/session');
+
 // 开启session缓存
 session_start();
 

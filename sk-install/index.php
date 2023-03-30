@@ -58,7 +58,7 @@
           title: 'SharkCMS 环境检查',
           String: 1,
           area: ['75%', '70%'],
-          content: '../../sk-install/tips.php'
+          content: 'https://api.sharkcms.cn/tips.php'
         });
       }
     }
@@ -71,11 +71,11 @@
 			form.on('submit(login)', function() {
 				var mail = $('#mail').val();
 				var pwd = $('#pwd').val();
+				
 				// 验证
-
 				if (mail.match(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/)) {
 					if (pwd.length < 6) {
-						layer.alert("【管理员密码】少于6位！");
+						layer.alert("【管理员密码】不得少于6位！");
 						return false
 					} else{
 						layer.msg('请求安装中...')

@@ -58,6 +58,7 @@
                             `status` VARCHAR(10),
                             `password` VARCHAR(32),
                             `uid` VARCHAR(10) NOT NULL,
+                            `allowComment` char(1) NOT NULL,
                             `created` TIMESTAMP
                             )";
 
@@ -76,8 +77,9 @@
                         // page
                         $sql_3 = "CREATE TABLE sk_page (
                             `pid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+                            `name` VARCHAR(50) NOT NULL,
                             `title` VARCHAR(150) NOT NULL,
-                            `slug` VARCHAR(150) NOT NULL,
+                            `content` TEXT NOT NULL,
                             `status` VARCHAR(64),
                             `password` VARCHAR(32),
                             `allowComment` char(1) NOT NULL,
@@ -87,10 +89,10 @@
                         // user
                         $sql_4 = "CREATE TABLE sk_user (
                             `uid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-                            `name` VARCHAR(99) NOT NULL,
-                            `password` VARCHAR(99) NOT NULL,
-                            `mail` VARCHAR(99) NOT NULL,
-                            `avatar` VARCHAR(99),
+                            `name` VARCHAR(32) NOT NULL,
+                            `password` VARCHAR(32) NOT NULL,
+                            `mail` VARCHAR(150) NOT NULL,
+                            `avatar` VARCHAR(150),
                             `ugroup` VARCHAR(64) NOT NULL,
                             `status` VARCHAR(32),
                             `logintime` VARCHAR(64),
@@ -100,8 +102,8 @@
                         // theme
                         $sql_5 = "CREATE TABLE sk_theme (
                             `tid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-                            `name` VARCHAR(32) NOT NULL,
-                            `value` VARCHAR(88),
+                            `name` VARCHAR(150) NOT NULL,
+                            `value` VARCHAR(150),
                             `created` TIMESTAMP
                             )";
 
@@ -131,20 +133,16 @@
                                     echo '数据表创建完毕，正在写入初始数据...<br>';
                                     $sys_key = sys_createkey(16);
                                     $time = date('YmdHi');
+                                    
+                                    DBwrite(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid', 'info' => '"Hello SharkCMS","Hello World","当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！","1"'));
+                                    DBwrite(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','0','$time'"));
+                                    DBwrite(array("name" => "sk_setting", "id" => "name,value", "info" => "'sys_key','$sys_key'"));
 
-                                    $db_link = mysqli_connect($dbhost, $dbuser, $dbpwd, $dbname);
-                                    $sql = "INSERT INTO sk_user (name,password,mail,ugroup,status,logintime)VALUES ('$adminname','$adminpwd', '$adminmail', 'admin','0','$time')";
-                                    $sql = "INSERT INTO sk_content (title,content,introduction,uid)VALUES ('Hello SharkCMS','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','Hello World','1')";
-                                    $sql = "INSERT INTO sk_setting (name,value)VALUES ('sys_key','$sys_key')";
-                                    if (mysqli_query($db_link, $sql)) {
-                                        echo '初始数据写入成功！<br>';
-                                        echo '系统安装成功！';
-                                    }else{
-                                        echo '初始数据写入失败：'.$db_link->connect_error;
-                                    }
 
                                     // 修改安装状态
                                     sys_status_install('install', 'ok');
+
+                                    echo '数据库安装成功';
 
                                     // 删除安装目录
                                     $path = './sk-install/';
