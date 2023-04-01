@@ -7,13 +7,14 @@
 // );
 
 
-function get_header(){
+function get_header()
+{
     include "sk-content/theme/default/header.php";
 }
 
 function import_file($file)
 {
-    include "sk-content/theme/" . set_theme() . '/' . $file;
+    include CON . "/theme/default/" . $file;
 }
 
 function get_title()
@@ -50,7 +51,7 @@ function get_link()
 //     } catch (PDOException $e) {
 //         sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
 //     }
-//     $sql = "select * from sk_content order by cid desc"; //降序排列
+    // $sql = "select * from sk_content order by cid desc"; //降序排列
 //     $res = $conn->query($sql);
 //     foreach ($res as $row) {
 //         if ($row['cid'] == null) {
@@ -116,7 +117,7 @@ function get_link()
 //     } catch (PDOException $e) {
 //         sys_error('数据库错误', '数据库连接失败，错误代码：' . $e->getMessage());
 //     }
-//     $sql = "select uid from sk_content where cid=$cid";
+    // $sql = "select uid from sk_content where cid=$cid";
 //     $res = $conn->query($sql);
 //     foreach ($res as $row) {
 //         $uid = $row['uid'];

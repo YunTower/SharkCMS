@@ -36,15 +36,8 @@
                         die("数据库连接失败，错误代码： " . mysqli_connect_error());
                     } else {
                         // 清空数据库配置
-                        file_put_contents(INC . 'config.json', '');
-                        // 写入配置
-                        $arr = array('sql_location' => $dbhost, 'sql_name' => $dbname, 'sql_user' => $dbuser, 'sql_pwd' => $dbpwd);
-                        $content = json_encode($arr, JSON_UNESCAPED_UNICODE);
-                        $file = INC . "config.json";
-                        $fp = fopen($file, "a");
-                        $txt = $content;
-                        fputs($fp, $txt);
-                        fclose($fp);
+                        file_put_contents(INC . 'config.php', '');
+                        
 
                         // content
                         $sql_1 = "CREATE TABLE sk_content (
@@ -58,6 +51,7 @@
                             `status` VARCHAR(10),
                             `password` VARCHAR(32),
                             `uid` VARCHAR(10) NOT NULL,
+                            `uname` VARCHAR(32) NOT NULL,
                             `allowComment` char(1) NOT NULL,
                             `created` TIMESTAMP
                             )";
@@ -131,12 +125,36 @@
                                     // 安装成功
                                     echo '数据表 sk_user、sk_theme、sk_setting 安装成功！<br>';
                                     echo '数据表创建完毕，正在写入初始数据...<br>';
+                                    // 写入数据库配置
+                                    $dbconfig = "
+                                    <?php\n
+                                    return [\n
+                                    'DB_CONNECT' => [\n
+                                    'host' => '" . $dbhost .
+                                        "',\n'username' => '" . $dbuser .
+                                        "',\n'password' => '" . $dbpwd .
+                                        "',\n'dbname' => '" . $dbname .
+                                        "',\n
+                                    'port' => '3306',\n
+                                    ],\n
+                                    'DB_CHARSET' => 'utf8'\n
+                                ];\n
+                                ?>";
+                                    $file = INC . 'config.php';
+                                    $fp = fopen($file, "a");
+                                    $txt = $dbconfig . "\n";
+                                    fputs($fp, $txt);
+                                    fclose($fp);
+
+                                    // 写入初始数据
                                     $sys_key = sys_createkey(16);
                                     $time = date('YmdHi');
-                                    
-                                    DBwrite(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid', 'info' => '"Hello SharkCMS","Hello World","当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！","1"'));
-                                    DBwrite(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','0','$time'"));
-                                    DBwrite(array("name" => "sk_setting", "id" => "name,value", "info" => "'sys_key','$sys_key'"));
+                                    $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,uname,allowComment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname','0'"));
+                                    $w_user = json_encode(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','0','$time'"));
+                                    $W_key = json_encode(array("name" => "sk_setting", "id" => "name,value", "info" => "'sys_key','$sys_key'"));
+                                    DBwrite($w_post);
+                                    DBwrite($w_user);
+                                    DBwrite($W_key);
 
 
                                     // 修改安装状态

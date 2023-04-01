@@ -15,6 +15,10 @@ header('Content-Type: text/html; charset=utf-8');
 define('App_N', 'SharkCMS');
 define('App_V', '1.1.0');
 define('App_T', 'dev');
+// 云端服务接口
+define('API_HOST', 'https://api.sharkcms.cn/');
+// 运行模式 0->线上模式（日志） 1->开发模式（报错+日志）
+define('DEBUG', '1');
 // 系统根目录
 define('ROOT', str_replace('\\', '/', __DIR__) . '/');
 // 系统文件目录
@@ -33,6 +37,11 @@ if (PHP_VERSION < '7.0') {
     echo ("版本检查：你的PHP版本过高，目前暂不支持8.x，使用过高的版本可能会出现语法不兼容的情况。<br>");
 }
 
+// if (DEBUG == 0) {
+//     error_reporting(0);
+// } else {
+// }
+
 // 读写权限检查
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
@@ -40,16 +49,14 @@ if (PHP_VERSION < '7.0') {
 // 公共函数
 include_once INC . 'function/common.php';
 
-print_r(db_GetConfig('DB_CHARSET'));
-print_r(DBconfig('DB_CHARSET'));
+// print_r(db_GetConfig('DB_CHARSET'));
+// exit;
+// print_r(DBconfig('DB_CHARSET'));
 // 设置session存储路径
 session_save_path(CON . 'temp/session');
 
 // 开启session缓存
 session_start();
-
-// 系统日志
-sys_log();
 
 // 系统路由
 sys_route();

@@ -58,44 +58,37 @@ function sys_route()
 		include INC . '/function/theme.php';
 		if ($module == null) {
 			// 安装检查
-			if (sys_status_install('read', '') == 'no') {
+			if (sys_status_install('read', '') == 'no' || sys_status_install('read', '') == null) {
 				ob_clean();
 				include INS . 'index.php';
 				exit;
 			} else {
-				sys_log();
 				include CON . 'theme/' . set_theme() . '/index.php';
 			}
 		} else if ($module == 'sk-admin') {
-			sys_log();
+
 			admin_power();
 			require_once $require;
 		} else if ($action == 'api') {
-			sys_log();
+
 			api_verification();
 			require_once $require;
 		} else if ($module == 'sk-install') {
-			sys_log();
+
 			include  INS . $action . '.php';
 		}
 	} else if ($module == 'page') {
-		ob_clean();
-		sys_log();
 		$file = CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
 		if (file_exists($file)) {
 			include CON . 'theme/' . set_theme() . '/page/' . $action . '.php';
 		} else {
-			ob_clean();
-			sys_log();
 			require_once ROOT . 'sk-include/template/404.php';
 		}
 	} else if ($module == 'sk-content') {
 		ob_clean();
-		sys_log();
 		require_once ROOT . 'sk-include/template/403.php';
 	} else {
 		ob_clean();
-		sys_log();
 		require_once ROOT . 'sk-include/template/404.php';
 	}
 }
@@ -108,8 +101,6 @@ if (!function_exists('error')) {
 		$title = $title;
 		$error = $error;
 		include INC . 'template/error.php';
-		$log_error = $error;
-		sys_log_error($log_error);
 		exit;
 	}
 }
@@ -134,54 +125,6 @@ function sys_status_install($method, $status)
 	}
 }
 
-// 系统访问日志
-function sys_log()
-{
-	// 获取日志信息
-	$log_page = sys_domain() . $_SERVER['REQUEST_URI'];
-	$log_time = date("Y-m-d H:i:s");
-	$log_name = 'log_' . date("Ymd");
-	$log_user = $_SERVER['REMOTE_ADDR'];
-	if (file_exists($_SERVER['REQUEST_URI'])) {
-		$log_code = '200';
-	} else {
-		$log_code = '404';
-	}
-	// 声明数组
-	$error_info = json_encode(array('time' => $log_time, 'code' => $log_code, 'page' => $log_page, 'user' => $log_user), JSON_UNESCAPED_UNICODE);
-	// 文件位置
-	$log_file = ROOT . "sk-content/temp/log/$log_name.json";
-	// 写入
-	$fp = fopen($log_file, "a");
-	$txt = $error_info . "\n";
-	fputs($fp, $txt);
-	fclose($fp);
-}
-
-// 系统错误日志
-function sys_log_error($log_error)
-{
-	// 获取日志信息
-	$log_page = sys_domain() . $_SERVER['REQUEST_URI'];
-	$log_time = date("Y-m-d H:i:s");
-	$log_name = 'error_' . date("Ymd");
-	$log_user = $_SERVER['REMOTE_ADDR'];
-	if (file_exists($_SERVER['REQUEST_URI'])) {
-		$log_code = '200';
-	} else {
-		$log_code = '404';
-	}
-	// 声明数组
-	$arr = array('time' => $log_time, 'code' => $log_code, 'page' => $log_page, 'error' => $log_error, 'user' => $log_user);
-	$error_info = json_encode($arr, JSON_UNESCAPED_UNICODE);
-	// 文件位置
-	$log_file = ROOT . "sk-content/temp/log/$log_name.json";
-	// 写入
-	$fp = fopen($log_file, "a");
-	$txt = $error_info . "\n";
-	fputs($fp, $txt);
-	fclose($fp);
-}
 
 // 目录删除
 function sys_deldir($path)
@@ -371,16 +314,8 @@ function admin_user_name()
 	return $arr['name'];
 }
 
+# --------------------------------## 数据库操作 ##--------------------------------#
 
-
-function db_GetConfig($name)
-{
-	static $config = null;
-	if (!$config) {
-		$config = require INC . 'config.php';
-	}
-	return isset($config[$name]) ? $config[$name] : null;
-}
 /**
  * @name: DBconfig
  * @desc: 数据库配置加载函数
@@ -389,7 +324,11 @@ function db_GetConfig($name)
  **/
 function DBconfig($name)
 {
-	include INC . 'function/db.php';
+	static $config = null;
+	if (!$config) {
+		$config = require INC . 'config.php';
+	}
+	include_once INC . 'config.php';
 	return isset($config[$name]) ? $config[$name] : null;
 }
 
@@ -408,7 +347,8 @@ function DBconnect()
 			sys_error('数据库错误', '数据库连接错误');
 		}
 	}
-	mysqli_query($conn, "set names " . "'" . DBconfig('DB_CHARSET') . "'");
+	// $conn = mysqli_fetch_array($conn);
+	mysqli_query($conn, "set names " . DBconfig('DB_CHARSET'));
 	return $conn;
 }
 
@@ -417,36 +357,34 @@ function DBconnect()
  * @desc: 数据库查询函数
  * @author: fish
  * @date: 20230330
- * @method: EchoALL -> 输出全部 EchoID -> 条件查询
+ * @method: EchoALL -> 输出全部 EchoID -> 条件查询 EchoPage -> 分页查询
  **/
-function DBread($method, $json)
+function DBread($method, $data)
 {
 	$conn = DBconnect();
-
-	// 格式化json
-	$data = json_decode(strval($json, true));
-	$TableNAME = $data['name'];
-	$TableID = $data['id'];
-	$TableWHERE = $data['where'];
-	$TableWHERE_info = $data['where_info'];
+	$data = json_decode($data, true);
 
 	switch ($method) {
 			// 输出全部
 		case 'EchoALL':
-			$sql = "SELECT $TableID FROM $TableNAME";
+			$sql = "SELECT " . $data['id'] . " FROM " . $data['name'];
 			$res = $conn->query($sql);
 			return $res;
 
 			// 条件查询
 		case 'EchoWHERE':
-			$sql = "SELECT $TableID FROM $TableNAME WHERE $TableWHERE = $TableWHERE_info";
+
+			$sql = "SELECT " . $data['id'] . " FROM " . $data['name'] . " WHERE " . $data['whereid'] . " = '" . $data['whereinfo'] . "'";
 			$res = $conn->query($sql);
 			return $res;
 
+			// 分页查询
+		case 'EchoPage':
+
 			// 异常处理
-		default:
-			$error = mysqli_error($conn);
-			sys_error('数据库错误', $error);
+			// default:
+			// $error = mysqli_error($conn);
+			// sys_error('数据库错误', $error);
 	}
 }
 
@@ -459,27 +397,18 @@ function DBread($method, $json)
 function DBwrite($data)
 {
 	$conn = DBconnect();
-	echo $data;
-	print_r($data, true);
-
-	$data = implode($data);
-	$TableNAME = $data['name'];
-	print_r($TableNAME, true);
-	$TableID = $data['id'];
-	$TableINFO = $data['info'];
+	$data = json_decode($data, true);
 
 	// 数据写入
-	$sql = "INSERT INTO $TableNAME ($TableID) VALUES ($TableINFO)";
+	$sql = "INSERT INTO " . $data['name'] . " (" . $data['id'] . ") VALUES (" . $data['info'] . ")";
 	if ($conn->query($sql) === TRUE) {
 		return true;
 	} else {
-
 		// 异常处理
 		$error = mysqli_error($conn);
 		sys_error('数据库错误', $error);
 	}
 }
-
 
 # --------------------------------## 主题相关 ##--------------------------------#
 
@@ -487,9 +416,6 @@ function DBwrite($data)
 function set_theme()
 {
 	return 'default';
-	// $sql=new sql;
-	// $sql->sql_config();
-	// $sql->sql_read('sk_set_theme','theme','id','set_theme');
 }
 
 // 主题名称
