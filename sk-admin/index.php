@@ -118,9 +118,10 @@
 				layer = layui.layer,
 				table = layui.table,
 				carousel = layui.carousel,
-				key = '<?php get_key() ?>',
+				key = '<?php echo DBconfig('KEY');?>',
 				domain = '';
 
+				console.log(key)
 			$.ajax({
 				url: "../../index.php/sk-include/api?action=site_info",
 				headers: {
@@ -130,7 +131,6 @@
 				type: "GET",
 				success: function(data) {
 					var obj = JSON.parse(data);
-
 					domain = obj.domain
 				}
 			})
@@ -150,26 +150,7 @@
 			})
 
 
-			setInterval(function() {
-				$.ajax({
-					url: domain + "/index.php/sk-include/api?action=status",
-					type: "POST",
-					async: false,
-					headers: {
-						'Content-Type': 'application/json;charset=utf8',
-						'key': key
-					},
-					success: function(data) {
-						var obj = JSON.parse(data)
-						if (obj.login == false) {
-							console.log(obj)
-							alert('登陆状态已失效，请重新登陆')
-							window.location.href = domain + '/index.php/sk-admin/login'
-							return false
-						}
-					}
-				})
-			}, 50000)
+			
 		})
 	</script>
 </body>

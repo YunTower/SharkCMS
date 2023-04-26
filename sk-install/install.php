@@ -17,30 +17,35 @@
                 <div class="content" style="padding: 30px;">
                     <?php
 
-                    $key = 'sharkcms';
-
-                    $dbhost = $_POST['dbhost'];
-                    $dbname = $_POST['dbname'];
-                    $dbuser = $_POST['dbuser'];
-                    $dbpwd = $_POST['dbpwd'];
-                    $mail = $_POST['adminmail'];
-                    $adminmail = urlencode($mail);
-                    $adminname = urlencode($_POST['adminname']);
-                    $adminpwd = urlencode(md5_encrypt($_POST['adminpwd'], $key));
-
-                    // 创建数据表
-                    // content
-                    $conn = mysqli_connect($dbhost, $dbuser, $dbpwd, $dbuser);
-                    // 检测连接
-                    if (!$conn) {
-                        die("数据库连接失败，错误代码： " . mysqli_connect_error());
+                    $config = include_once INC . 'config.php';
+                    if (@$config['INSTALL'] != null) {
+                        sys_error('安装已锁定', '系统已安装成功，无需再次安装<br>如需再次安装，请手动清空“/sk-include/config.php”文件');
+                        exit;
                     } else {
-                        // 清空数据库配置
-                        file_put_contents(INC . 'config.php', '');
-                        
 
+                        $key = 'sharkcms';
+                        $dbhost = $_POST['dbhost'];
+                        $dbname = $_POST['dbname'];
+                        $dbuser = $_POST['dbuser'];
+                        $dbpwd = $_POST['dbpwd'];
+                        $mail = $_POST['adminmail'];
+                        $adminmail = urlencode($mail);
+                        $adminname = urlencode($_POST['adminname']);
+                        $adminpwd = base64_encode($_POST['adminpwd']);
+
+                        // 创建数据表
                         // content
-                        $sql_1 = "CREATE TABLE sk_content (
+                        $conn = mysqli_connect($dbhost, $dbuser, $dbpwd, $dbuser);
+                        // 检测连接
+                        if (!$conn) {
+                            die("数据库连接失败，错误代码： " . mysqli_connect_error());
+                        } else {
+                            // 清空数据库配置
+                            file_put_contents(INC . 'config.php', '');
+
+
+                            // content
+                            $sql_1 = "CREATE TABLE sk_content (
                             `cid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `title` VARCHAR(40) NOT NULL,
                             `introduction` VARCHAR(50),
@@ -56,8 +61,8 @@
                             `created` TIMESTAMP
                             )";
 
-                        // comment
-                        $sql_2 = "CREATE TABLE sk_comment (
+                            // comment
+                            $sql_2 = "CREATE TABLE sk_comment (
                             `coid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `cid` INT(6) NOT NULL,
                             `content` TEXT NOT NULL,
@@ -68,8 +73,8 @@
                             `created` TIMESTAMP
                             )";
 
-                        // page
-                        $sql_3 = "CREATE TABLE sk_page (
+                            // page
+                            $sql_3 = "CREATE TABLE sk_page (
                             `pid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `name` VARCHAR(50) NOT NULL,
                             `title` VARCHAR(150) NOT NULL,
@@ -80,8 +85,8 @@
                             `created` TIMESTAMP
                             )";
 
-                        // user
-                        $sql_4 = "CREATE TABLE sk_user (
+                            // user
+                            $sql_4 = "CREATE TABLE sk_user (
                             `uid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `name` VARCHAR(32) NOT NULL,
                             `password` VARCHAR(32) NOT NULL,
@@ -93,112 +98,93 @@
                             `created` TIMESTAMP
                             )";
 
-                        // theme
-                        $sql_5 = "CREATE TABLE sk_theme (
+                            // theme
+                            $sql_5 = "CREATE TABLE sk_theme (
                             `tid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `name` VARCHAR(150) NOT NULL,
                             `value` VARCHAR(150),
                             `created` TIMESTAMP
                             )";
 
-                        // setting
-                        $sql_6 = "CREATE TABLE sk_setting (
+                            // setting
+                            $sql_6 = "CREATE TABLE sk_setting (
                             `name` VARCHAR(32) NOT NULL,
                             `value` VARCHAR(999),
                             `created` TIMESTAMP
                             )";
 
-                        // 分次安装（解决一起安装，之后的表不显示报错的问题）
-                        if (mysqli_query($conn, $sql_1)) {
-                            if (mysqli_query($conn, $sql_2)) {
-                                if (mysqli_query($conn, $sql_3)) {
-                                    echo '数据表 sk_content、sk_comment、sk_page 安装成功！<br>';
+                            // 分次安装（解决一起安装，之后的表不显示报错的问题）
+                            if (mysqli_query($conn, $sql_1)) {
+                                if (mysqli_query($conn, $sql_2)) {
+                                    if (mysqli_query($conn, $sql_3)) {
+                                        echo '数据表 sk_content、sk_comment、sk_page 安装成功！<br>';
+                                    }
                                 }
+                            } else {
+                                echo '系统安装失败：' . mysqli_error($conn) . '<br>';
                             }
-                        } else {
-                            echo '系统安装失败：' . mysqli_error($conn) . '<br>';
-                        }
-                        if (mysqli_query($conn, $sql_4)) {
-                            if (mysqli_query($conn, $sql_5)) {
-                                if (mysqli_query($conn, $sql_6)) {
+                            if (mysqli_query($conn, $sql_4)) {
+                                if (mysqli_query($conn, $sql_5)) {
+                                    if (mysqli_query($conn, $sql_6)) {
 
-                                    // 安装成功
-                                    echo '数据表 sk_user、sk_theme、sk_setting 安装成功！<br>';
-                                    echo '数据表创建完毕，正在写入初始数据...<br>';
-                                    // 写入数据库配置
-                                    $dbconfig = "
-                                    <?php\n
-                                    return [\n
-                                    'DB_CONNECT' => [\n
-                                    'host' => '" . $dbhost .
-                                        "',\n'username' => '" . $dbuser .
-                                        "',\n'password' => '" . $dbpwd .
-                                        "',\n'dbname' => '" . $dbname .
-                                        "',\n
-                                    'port' => '3306',\n
+                                        // 安装成功
+                                        echo '数据表 sk_user、sk_theme、sk_setting 安装成功！<br>';
+                                        echo '数据表创建完毕，正在写入初始数据...<br>';
+
+                                        // 写入数据库配置
+                                        $dbconfig =
+                                            "<?php\n 
+                                        return [\n
+                                        'INSTALL'=>'ok',\n
+                                        'KEY'=>'".sys_createkey(16)."',\n
+                                        'DB_CONNECT' => [\n
+                                        'host' => '" . $dbhost .
+                                            "',\n'username' => '" . $dbuser .
+                                            "',\n'password' => '" . $dbpwd .
+                                            "',\n'dbname' => '" . $dbname .
+                                            "',\n
+                                        'port' => '3306',\n
                                     ],\n
                                     'DB_CHARSET' => 'utf8'\n
                                 ];\n
-                                ?>";
-                                    $file = INC . 'config.php';
-                                    $fp = fopen($file, "a");
-                                    $txt = $dbconfig . "\n";
-                                    fputs($fp, $txt);
-                                    fclose($fp);
+                                 ?>";
+                                        $file = INC . 'config.php';
+                                        $fp = fopen($file, "a");
+                                        $txt = $dbconfig . "\n";
+                                        fputs($fp, $txt);
+                                        fclose($fp);
 
-                                    // 写入初始数据
-                                    $sys_key = sys_createkey(16);
-                                    $time = date('YmdHi');
-                                    $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,uname,allowComment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname','0'"));
-                                    $w_user = json_encode(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','0','$time'"));
-                                    $W_key = json_encode(array("name" => "sk_setting", "id" => "name,value", "info" => "'sys_key','$sys_key'"));
-                                    DBwrite($w_post);
-                                    DBwrite($w_user);
-                                    DBwrite($W_key);
+                                        // 写入初始数据
+                                        $time = date('YmdHi');
+                                        $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,uname,allowComment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname','0'"));
+                                        $w_user = json_encode(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','1','$time'"));
+                                        DBwrite($w_post);
+                                        DBwrite($w_user);
 
-
-                                    // 修改安装状态
-                                    sys_status_install('install', 'ok');
-
-                                    echo '数据库安装成功';
-
-                                    // 删除安装目录
-                                    $path = './sk-install/';
-                                    function deldir($path)
-                                    {
-                                        if (is_dir($path)) {
-                                            $p = scandir($path);
-                                            foreach ($p as $val) {
-                                                if ($val != '.' && $val != '..') {
-                                                    if (is_dir($path . '/' . $val)) {
-                                                        deldir($path . $val);
-                                                        @rmdir($path . $val);
-                                                    } else {
-                                                        unlink($path . '/' . $val);
-                                                    }
-                                                }
-                                            }
-                                        }
+                                        echo '数据库安装成功';
                                     }
-                                    deldir($path);
                                 }
+                            } else {
+                                echo '系统安装失败：' . mysqli_error($conn) . '<br>';
                             }
-                        } else {
-                            echo '系统安装失败：' . mysqli_error($conn) . '<br>';
                         }
                     }
                     ?>
                 </div>
                 <div class="action">
                     <a href="<?php echo sys_domain(); ?>/index.php/sk-admin/"><button class="pear-btn pear-btn-primary">进入后台</button></a>
-
-                    <a href="<?php echo sys_domain(); ?>/index.php/sk-install/"><button class="pear-btn">重新安装</button></a>
+                    <a href="<?php echo sys_domain(); ?>/index.php/sk-install/"><button onclick="again()" class="pear-btn">重新安装</button></a>
                 </div>
             </div>
         </div>
     </div>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
     <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+    <script>
+        function again(){
+            alert('如需重新安装，请先清空 “/sk-include/config.php” 文件，并删除数据库中前缀为 “sk-” 的数据表')
+        }
+    </script>
 </body>
 
 </html>

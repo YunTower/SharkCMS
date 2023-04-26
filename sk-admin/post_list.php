@@ -40,7 +40,7 @@
 			let table = layui.table;
 			let form = layui.form;
 			let $ = layui.jquery;
-			key = '<?php get_key() ?>';
+			key = '<?php echo admin_api_key() ?>';
 
 			let cols = [
 				[{
@@ -66,7 +66,7 @@
 					},
 					{
 						title: '作者',
-						field: 'uid',
+						field: 'uname',
 						align: 'center'
 					},
 					{

@@ -121,7 +121,7 @@
 				<div class="layui-col-md12">
 					<div class="layui-card">
 						<div class="layui-card-header">
-							最近动态
+							官方公告
 						</div>
 						<div class="layui-card-body">
 							<table id="role-table"></table>
@@ -161,7 +161,7 @@
 					</table>
 				</div>
 			</div>
-			<div class="layui-card">
+			<!-- <div class="layui-card">
 				<div class="layui-card-header">系统公告</div>
 				<div class="layui-card-body">
 					<ul class="list">
@@ -171,7 +171,7 @@
 						</li>
 					</ul>
 				</div>
-			</div>
+			</div> -->
 		</div>
 	</div>
 	<!--</div>-->
@@ -183,7 +183,7 @@
 				layer = layui.layer,
 				table = layui.table,
 				carousel = layui.carousel,
-				key = '<?php get_key() ?>',
+				key = '<?php echo admin_api_key() ?>',
 				domain = '';
 
 			$.ajax({

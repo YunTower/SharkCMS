@@ -58,7 +58,7 @@ function sys_route()
 		include INC . '/function/theme.php';
 		if ($module == null) {
 			// 安装检查
-			if (sys_status_install('read', '') == 'no' || sys_status_install('read', '') == null) {
+			if (sys_status_install() == null) {
 				ob_clean();
 				include INS . 'index.php';
 				exit;
@@ -67,11 +67,11 @@ function sys_route()
 			}
 		} else if ($module == 'sk-admin') {
 
-			admin_power();
+			// admin_power();
 			require_once $require;
 		} else if ($action == 'api') {
 
-			api_verification();
+			// api_verification();
 			require_once $require;
 		} else if ($module == 'sk-install') {
 
@@ -106,23 +106,9 @@ if (!function_exists('error')) {
 }
 
 // 系统安装状态
-function sys_status_install($method, $status)
+function sys_status_install()
 {
-	if ($method == 'read' || $status == '') {
-		$url = file_get_contents(CON . 'temp/install_keep.json');
-		$arr = json_decode($url, true);
-		return  $arr['status'];
-	} else if ($method == 'install' || $status == 'ok') {
-		file_put_contents(CON . 'temp/install_keep.json', '');
-		$content = json_encode(array('status' => 'ok', 'time' => date('Y-m-d H:i:s')), JSON_UNESCAPED_UNICODE);
-		$file = CON . 'temp/install_Keep.json';
-		$fp = fopen($file, "a");
-		$txt = $content;
-		fputs($fp, $txt);
-		fclose($fp);
-	} else {
-		sys_error('系统错误', '系统安装状态：查询方法错误或无此方法');
-	}
+	return DBconfig('INSTALL');
 }
 
 
@@ -227,6 +213,7 @@ function sys_en_engine()
 	}
 }
 
+
 # --------------------------------## 加解密相关 ##--------------------------------#
 
 // 加密
@@ -278,13 +265,13 @@ function admin_power()
 		exit;
 	} else {
 		// 权限验证
-		if (!isset($_COOKIE["login_status"])) {
+		if (!isset($_SESSION["user_token"])) {
 			ob_clean();
 			include ROOT . '/sk-admin/login.php';
 			exit;
 		} else {
 			// 解析token
-			$json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
+			$json = base64_decode(md5_decrypt(($_SESSION['user_token']), 'sharkcms-user-token'));
 			$arr = json_decode($json, true);
 			// 如果用户组不是admin
 			if ($arr['group'] != 'admin') {
@@ -292,14 +279,7 @@ function admin_power()
 				include ROOT . '/sk-admin/login.php';
 				exit;
 			} else {
-				// 如果超时
-				if ($arr['login_out'] - $arr['login_time'] > 60 * 60 * 2) {
-					ob_clean();
-					unset($_SESSION['login_token']);
-					setcookie("login_token", "", time() - 60 * 60 * 100);
-					include ROOT . '/sk-admin/login.php';
-					exit;
-				}
+				
 			}
 		}
 	}
@@ -309,9 +289,14 @@ function admin_power()
 function admin_user_name()
 {
 	// 解析token
-	$json = base64_decode(md5_decrypt(($_COOKIE['user_token']), 'sharkcms-user-token'));
+	$json = base64_decode(md5_decrypt(($_SESSION['user_token']), 'sharkcms-user-token'));
 	$arr = json_decode($json, true);
 	return $arr['name'];
+}
+
+// 接口key
+function admin_api_key()
+{
 }
 
 # --------------------------------## 数据库操作 ##--------------------------------#
@@ -357,7 +342,10 @@ function DBconnect()
  * @desc: 数据库查询函数
  * @author: fish
  * @date: 20230330
- * @method: EchoALL -> 输出全部 EchoID -> 条件查询 EchoPage -> 分页查询
+ * @method: EchoALL -> 输出全部 
+ *          EchoID -> 条件查询 
+ *          EchoPage -> 分页查询 
+ *          EchoSize -> 数量查询
  **/
 function DBread($method, $data)
 {
@@ -373,24 +361,40 @@ function DBread($method, $data)
 
 			// 条件查询
 		case 'EchoWHERE':
-
-			$sql = "SELECT " . $data['id'] . " FROM " . $data['name'] . " WHERE " . $data['whereid'] . " = '" . $data['whereinfo'] . "'";
+			$sql = "SELECT " . $data['id'] . " FROM " . $data['name'] . " WHERE " . $data['whereid'] . "='" . $data['whereinfo'] . "'";
 			$res = $conn->query($sql);
 			return $res;
 
 			// 分页查询
 		case 'EchoPage':
 
+			// 数量查询
+		case 'EchoSize':
+			$sql = $conn->query("SELECT " . $data['id'] . " FROM " . $data['name']);
+			$res = mysqli_num_rows($sql);
+			return $res;
+
+			// 是否存在
+		case 'EchoExist':
+			$sql = $conn->query("SELECT * from " . $data['name'] . " where " . $data['whereid'] . " = '" . $data['whereinfo'] . "' limit 1");
+			$res = mysqli_num_rows($sql);
+			switch ($res) {
+				case '1':
+					return true;
+				default:
+					return false;
+			}
+
 			// 异常处理
-			// default:
-			// $error = mysqli_error($conn);
-			// sys_error('数据库错误', $error);
+		default:
+			$error = mysqli_error($conn);
+			sys_error('数据库错误', $error);
 	}
 }
 
 /**
  * @name: DBwrite
- * @desc: 数据库写入函数
+ * @desc: 数据写入函数
  * @author: fish
  * @date: 20230330
  **/
@@ -410,6 +414,27 @@ function DBwrite($data)
 	}
 }
 
+/**
+ * @name: DBupdate
+ * @desc: 数据更新函数
+ * @author: fish
+ * @date: 20230405
+ **/
+function DBupdate($data)
+{
+	$conn = DBconnect();
+	$data = json_decode($data, true);
+
+	// s'g
+	$sql = "INSERT INTO " . $data['name'] . " (" . $data['id'] . ") VALUES (" . $data['info'] . ")";
+	if ($conn->query($sql) === TRUE) {
+		return true;
+	} else {
+		// 异常处理
+		$error = mysqli_error($conn);
+		sys_error('数据库错误', $error);
+	}
+}
 # --------------------------------## 主题相关 ##--------------------------------#
 
 // 当前主题

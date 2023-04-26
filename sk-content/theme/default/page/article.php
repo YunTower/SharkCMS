@@ -12,7 +12,7 @@ import_file('home_nav.php'); ?>
         if (!is_numeric($cid)) {
             sys_error('请求错误', '请求中包含非法字符或请求不完整！');
         } else {
-            foreach (DBread('EchoWHERE', json_encode(array('name' => 'sk_content', 'id' => '*', 'whereid' => 'cid', 'whereinfo' => $cid))) as $row) :
+            foreach (DBread('EchoWHERE', json_encode(array('name' => 'sk_content', 'id' => '*', 'whereid' => 'cid', 'whereinfo' => $_GET['cid']))) as $row) :
         ?>
                 <!-- 文章框架 -->
                 <div class="sharkcms-post">

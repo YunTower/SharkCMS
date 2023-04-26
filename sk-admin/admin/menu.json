@@ -151,20 +151,6 @@
 				"openType": "_iframe"
 			},
 			{
-				"id": 83,
-				"title": "系统工具",
-				"type": 1,
-				"href": "../../index.php/sk-admin/sys_tools",
-				"openType": "_iframe"
-			},
-			{
-				"id": 84,
-				"title": "系统日志",
-				"type": 1,
-				"href": "../../index.php/sk-admin/sys_data",
-				"openType": "_iframe"
-			},
-			{
 				"id": 85,
 				"title": "关于系统",
 				"type": 1,
