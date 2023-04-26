@@ -14,7 +14,6 @@
 		<div class="content-r">
 			<h1>404</h1>
 			<p>抱歉，你访问的页面不存在</p>
-			<p>生活总归带点荒谬</p>
 			<a href="/">
 				<button class="pear-btn pear-btn-primary">返回首页</button>
 			</a>
