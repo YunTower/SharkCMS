@@ -1,7 +1,7 @@
 <?php
-import_file('header.php');
-import_file('home_left.php');
-import_file('home_nav.php'); ?>
+Theme::import('header.php');
+Theme::import('home_left.php');
+Theme::import('home_nav.php'); ?>
 
 <div class="right">
     <div class="content">
@@ -9,4 +9,4 @@ import_file('home_nav.php'); ?>
     </div>
 </div>
 
-<?php import_file('footer.php'); ?>
+<?php Theme::import('footer.php'); ?>

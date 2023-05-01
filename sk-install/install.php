@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>安装中 - SharkCMS </title>
-    <link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
-    <link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/result.css" />
+    <link rel="stylesheet" href="<?php echo Route::Domain(); ?>/sk-admin/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="<?php echo Route::Domain(); ?>/sk-admin/admin/css/other/result.css" />
 </head>
 
 <body class="pear-container">
@@ -56,8 +56,8 @@
                             `status` VARCHAR(10),
                             `password` VARCHAR(32),
                             `uid` VARCHAR(10) NOT NULL,
-                            `uname` VARCHAR(32) NOT NULL,
-                            `allowComment` char(1) NOT NULL,
+                            `name` VARCHAR(32) NOT NULL,
+                            `comment` char(1) NOT NULL,
                             `created` TIMESTAMP
                             )";
 
@@ -80,8 +80,8 @@
                             `title` VARCHAR(150) NOT NULL,
                             `content` TEXT NOT NULL,
                             `status` VARCHAR(64),
-                            `password` VARCHAR(32),
-                            `allowComment` char(1) NOT NULL,
+                            `pwd` VARCHAR(32),
+                            `comment` char(1) NOT NULL,
                             `created` TIMESTAMP
                             )";
 
@@ -89,11 +89,11 @@
                             $sql_4 = "CREATE TABLE sk_user (
                             `uid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `name` VARCHAR(32) NOT NULL,
-                            `password` VARCHAR(32) NOT NULL,
+                            `pwd` VARCHAR(32) NOT NULL,
                             `mail` VARCHAR(150) NOT NULL,
                             `avatar` VARCHAR(150),
                             `ugroup` VARCHAR(64) NOT NULL,
-                            `status` VARCHAR(32),
+                            `ban` VARCHAR(32),
                             `logintime` VARCHAR(64),
                             `created` TIMESTAMP
                             )";
@@ -133,21 +133,21 @@
 
                                         // 写入数据库配置
                                         $dbconfig =
-                                            "<?php\n 
-                                        return [\n
-                                        'INSTALL'=>'ok',\n
-                                        'KEY'=>'".sys_createkey(16)."',\n
-                                        'DB_CONNECT' => [\n
-                                        'host' => '" . $dbhost .
-                                            "',\n'username' => '" . $dbuser .
-                                            "',\n'password' => '" . $dbpwd .
-                                            "',\n'dbname' => '" . $dbname .
-                                            "',\n
-                                        'port' => '3306',\n
-                                    ],\n
-                                    'DB_CHARSET' => 'utf8'\n
-                                ];\n
-                                 ?>";
+"<?php\n 
+    return [\n
+        'INSTALL'=>'ok',\n
+        'KEY'=>'" . System::CreateKey(16) . "',\n
+        'DB_CONNECT' => [\n
+        'host' => '" . $dbhost .
+            "',\n'username' => '" . $dbuser .
+            "',\n'password' => '" . $dbpwd .
+            "',\n'dbname' => '" . $dbname .
+            "',\n
+            'port' => '3306',\n
+        ],\n
+        'DB_CHARSET' => 'utf8'\n
+    ];\n
+?>";
                                         $file = INC . 'config.php';
                                         $fp = fopen($file, "a");
                                         $txt = $dbconfig . "\n";
@@ -156,12 +156,15 @@
 
                                         // 写入初始数据
                                         $time = date('YmdHi');
-                                        $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,uname,allowComment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname','0'"));
-                                        $w_user = json_encode(array("name" => "sk_user", "id" => "name,password,mail,ugroup,status,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','1','$time'"));
-                                        DBwrite($w_post);
-                                        DBwrite($w_user);
+                                        $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,name,comment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname',true"));
+                                        $w_user = json_encode(array("name" => "sk_user", "id" => "name,pwd,mail,ugroup,ban,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','false','$time'"));
 
-                                        echo '数据库安装成功';
+                                        if (DBwrite($w_post) == true && DBwrite($w_user) == true) {
+
+                                            echo '数据库安装成功';
+                                        } else {
+                                            sys_error('数据库错误', mysqli_error($conn));
+                                        }
                                     }
                                 }
                             } else {
@@ -172,16 +175,16 @@
                     ?>
                 </div>
                 <div class="action">
-                    <a href="<?php echo sys_domain(); ?>/index.php/sk-admin/"><button class="pear-btn pear-btn-primary">进入后台</button></a>
-                    <a href="<?php echo sys_domain(); ?>/index.php/sk-install/"><button onclick="again()" class="pear-btn">重新安装</button></a>
+                    <a href="<?php echo Route::Domain(); ?>/index.php/sk-admin/"><button class="pear-btn pear-btn-primary">进入后台</button></a>
+                    <a href="<?php echo Route::Domain(); ?>/index.php/sk-install/"><button onclick="again()" class="pear-btn">重新安装</button></a>
                 </div>
             </div>
         </div>
     </div>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-    <script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+    <script src="<?php echo Route::Domain(); ?>/sk-admin/component/layui/layui.js"></script>
+    <script src="<?php echo Route::Domain(); ?>/sk-admin/component/pear/pear.js"></script>
     <script>
-        function again(){
+        function again() {
             alert('如需重新安装，请先清空 “/sk-include/config.php” 文件，并删除数据库中前缀为 “sk-” 的数据表')
         }
     </script>

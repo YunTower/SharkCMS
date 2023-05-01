@@ -1,6 +1,6 @@
 <?php
-import_file('header.php');
-import_file('home_left.php');
-import_file('home_nav.php');
-import_file('home_right.php');
-import_file('footer.php');
+Theme::import('header.php');
+Theme::import('home_left.php');
+Theme::import('home_nav.php');
+Theme::import('home_right.php');
+Theme::import('footer.php');

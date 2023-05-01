@@ -135,8 +135,8 @@
 				}
 			})
 
-			admin.setConfigType("yml");
-			admin.setConfigPath("<?php echo sys_domain(); ?>/sk-admin/config/pear.config.yml");
+			admin.setConfigType("json");
+			admin.setConfigPath("<?php echo sys_domain(); ?>/sk-admin/config/pear.config.json");
 
 			admin.render();
 

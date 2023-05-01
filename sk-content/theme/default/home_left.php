@@ -1,7 +1,7 @@
 
 <div class="left">
     <div class="logo">
-        <img src="<?php echo import_static('static/img/logo.jpg'); ?>" />
+        <img src="<?php Theme::Static('static/img/logo.jpg'); ?>" />
         <div class="title">
             <h3>fish</h3>
         </div>

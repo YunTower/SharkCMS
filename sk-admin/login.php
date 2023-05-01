@@ -6,8 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>登陆账号 - SharkCMS</title>
 	<!-- 样 式 文 件 -->
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/login.css" />
+	<link rel="stylesheet" href="<?php echo $this->Domain(); ?>/sk-admin/component/pear/css/pear.css" />
+	<link rel="stylesheet" href="<?php echo $this->Domain(); ?>/sk-admin/admin/css/other/login.css" />
 </head>
 <!-- 代 码 结 构 -->
 
@@ -28,7 +28,7 @@
 		</div>
 		<!-- <div class="layui-form-item">
 				<input placeholder="验证码 : "  hover  lay-verify="required" class="code layui-input layui-input-inline"  />
-				<img src="<?php echo sys_domain(); ?>/sk-admin/admin/images/captcha.gif" class="codeImage" />
+				<img src="<?php echo $this->Domain(); ?>/sk-admin/admin/images/captcha.gif" class="codeImage" />
 			</div> -->
 		<div class="layui-form-item">
 			<input type="checkbox" name="" title="记住密码" lay-skin="primary" checked>
@@ -40,10 +40,10 @@
 		</div>
 	</form>
 	<!-- 资 源 引 入 -->
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.base64.js"></script>
+	<script src="<?php echo $this->Domain(); ?>/sk-admin/component/layui/layui.js"></script>
+	<script src="<?php echo $this->Domain(); ?>/sk-admin/component/pear/pear.js"></script>
+	<script src="<?php echo $this->Domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
+	<script src="<?php echo $this->Domain(); ?>/sk-include/static/js/sharkcms.base64.js"></script>
 	<script>
 		layui.use(['form', 'button', 'popup'], function() {
 			var form = layui.form;
@@ -61,25 +61,32 @@
 					time: time
 				});
 
-				$.ajax({
-					type: "POST",
-					url: "../../index.php/sk-admin/login",
-					dataType: "json",
-					data: data,
-					contentType: "application/jsoan",
-					success: function(data) {
-						var obj = JSON.parse(JSON.stringify(data));
-						console.log(obj);
-						if (obj.code == 'error') {
-							layer.alert(obj.error)
-						} else if (obj.code == '200') {
-							layer.msg(obj.msg)
-							location.href = '../../index.php/sk-admin/index'
-						} else {
-							layer.alert('系统错误！')
-						}
+				button.load({
+					elem: '.login',
+					time: 50,
+					done: function() {
+						$.ajax({
+							type: "POST",
+							url: "../../index.php/sk-admin/login",
+							dataType: "json",
+							data: data,
+							contentType: "application/jsoan",
+							success: function(data) {
+								var obj = JSON.parse(JSON.stringify(data));
+								console.log(obj);
+								if (obj.code == 'error') {
+									layer.alert(obj.error)
+								} else if (obj.code == '200') {
+									popup.success("登录成功", function() {
+										location.href = '../../index.php/sk-admin/index'
+									})
+								} else {
+									layer.alert('系统错误！')
+								}
+							}
+						});
 					}
-				});
+				})
 			});
 		})
 	</script>
@@ -107,14 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 			foreach (DBread('EchoWHERE', json_encode(array('name' => 'sk_user', 'id' => '*', 'whereid' => 'mail', 'whereinfo' => urlencode(base64_decode($mail))))) as $row) {
 				// 如果账号存在
 				// 如果账号存在 验证账号是否封禁
-				if ($row['status'] == 1) {
+				if ($row['ban'] == true) {
 					// 如果账号未封禁 验证密码
-					if (base64_decode($row['password']) == base64_decode($pwd)) {
+					if (base64_decode($row['pwd']) == base64_decode($pwd)) {
 						// 如果密码正确 验证权限组
 						if ($row['ugroup'] == 'admin') {
 							$arr = array('uid' => $row['uid'], 'group' => $row['ugroup'], 'name' => $row['name'], 'mail' => $row['mail'], 'login_time' => time());
-							$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'sharkcms-user-token');
-							$_SESSION['user_token'] = $json;
+							$json = md5_encrypt(base64_encode(json_encode($arr, JSON_UNESCAPED_UNICODE)), 'token');
+							$_SESSION['token'] = $json;
 							ob_clean();
 							echo (json_encode(array('code' => '200', 'msg' => '登陆成功！', 'error' => ''), JSON_UNESCAPED_UNICODE));
 						} else {

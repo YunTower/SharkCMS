@@ -13,15 +13,15 @@ if (@$config['INSTALL'] != null) {
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/other/login.css" />
+	<link rel="stylesheet" href="<?php echo Route::Domain(); ?>/sk-admin/component/pear/css/pear.css" />
+	<link rel="stylesheet" href="<?php echo Route::Domain(); ?>/sk-admin/admin/css/other/login.css" />
 </head>
 <!-- 代 码 结 构 -->
 
-<body background="<?php echo sys_domain(); ?>/sk-admin/admin/images/background.svg" style="background-size: cover;">
+<body background="<?php echo Route::Domain(); ?>/sk-admin/admin/images/background.svg" style="background-size: cover;">
 	<form class="layui-form-install" action="../../index.php/sk-install/install" method="POST" style="margin-top: 0;">
 		<div class="layui-form-item">
-			<img class="logo" src="<?php echo sys_domain(); ?>/sk-admin/admin/images/logo.png" />
+			<img class="logo"/>
 			<div class="title">SharkCMS</div>
 			<div class="desc">
 				一 起 创 造 属 于 你 的 世 界！
@@ -43,7 +43,7 @@ if (@$config['INSTALL'] != null) {
 			<input type="email" placeholder="管理员邮箱" value="" name="adminmail" lay-verify="required" hover class="layui-input" id="mail" />
 		</div>
 		<div class="layui-form-item">
-			<input type="text" placeholder="管理员名称" value="" name="adminname" lay-verify="required" hover class="layui-input" />
+			<input type="text" placeholder="管理员昵称" value="" name="adminname" lay-verify="required" hover class="layui-input" />
 		</div>
 		<div class="layui-form-item">
 			<input type="password" placeholder="管理员密码" id="pwd" value="" name="adminpwd" lay-verify="required" hover class="layui-input" />
@@ -55,8 +55,8 @@ if (@$config['INSTALL'] != null) {
 		</div>
 	</form>
 	<!-- 资 源 引 入 -->
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
+	<script src="<?php echo Route::Domain(); ?>/sk-admin/component/layui/layui.js"></script>
+	<script src="<?php echo Route::Domain(); ?>/sk-admin/component/pear/pear.js"></script>
 	<script>
 		document.onreadystatechange = function() {
 			if (document.readyState == 'complete') {
