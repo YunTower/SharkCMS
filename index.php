@@ -14,10 +14,12 @@
 header('Content-Type: text/html; charset=utf-8');
 // 系统基础信息
 define('App_N', 'SharkCMS');
-define('App_V', '1.0.0-dev.5');
+define('App_V', '1.0.0-dev.6');
 define('App_T', 'Develop');
-// 云端服务接口
+// 云端接口地址
 define('API_HOST', 'https://api.sharkcms.cn/');
+// 云端接口版本
+define('API_V','v1');
 // 运行模式 0->线上模式（日志） 1->开发模式（报错+日志）
 define('DEBUG', '1');
 // 系统根目录

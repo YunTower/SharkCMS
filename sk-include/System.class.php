@@ -90,47 +90,53 @@ class Route
 				include INS . 'index.php';
 			}
 		} else {
+			$DB = new DB();
 			// 主路由
 			switch ($this->getModule()) {
 					// 页面
 				case 'page':
 					// 拼接url
 					$require = Theme::ThemeURL() . 'page/' . Route::getAction() . '.php';
-					// 是否是固定页面
-					// 是否是自定义页面
-					$json = json_encode(array('id' => '*', 'name' => 'sk_page', 'whereid' => 'name', 'whereinfo' => $this->getModule()));
-					// 数据库中是否存在页面
-					if (DBread('EchoExist', $json) == true) {
+					// 自定义页面 or 固定页面？
+					if ($DB->table('sk_page')->where('name = "' . Route::getAction() . '"')->limit('1')->select()) {
 						// 输出页面
-						echo DBread('EchoWHERE', $json)['content'];
-						break;
+						include Theme::ThemeURL().'page/page_tpl.php';
 					} else {
+						// 固定页面是否存在
 						if (file_exists($require)) {
-							// 加载页面
+							// 存在 -> 加载页面
 							include $require;
-							break;
 						} else {
 							echo Route::getURL();
-							// 404
+							// 不存在 -> 404
 							System::ERROR('404', '页面不存在');
-							break;
 						}
 					}
 					break;
 
-					// 后台
-				case 'admin' || 'sk-admin':
-
-						include ADM . 'login.php';
-					
+					// 测试使用
+				case 'test':
+					include ROOT . 'test.php';
 					break;
-				case 'sk-admin'&& Route::getAction()!=null ||'admin' && Route::getAction()!=null:
-					if (isset($_SESSION['token'])){
-						include ADM . Route::getAction();
-					}else{
-						header('Location:/');
+
+					// 后台
+				case 'sk-admin':
+					// 是否是后台页面
+					if (Route::getAction() != null && Route::getAction() != 'login') {
+						// 是否登陆
+						if (isset($_SESSION['token'])) {
+							// 登陆 -> 加载页面
+							include ADM . Route::getAction();
+						} else {
+							// 未登录 -> 跳转登陆页
+							header('Location:../sk-admin/login');
+						}
+					} else {
+						include ADM . 'login.php';
 					}
 					break;
+
+
 					// 首页
 				default:
 					include Theme::ThemeURL() . 'index.php';

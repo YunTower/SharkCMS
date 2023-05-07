@@ -10,10 +10,18 @@
  * --------------------------------------------------------------------------------
  */
 
- 
+
 # --------------------------------## 主题相关 ##--------------------------------#
 class Theme
 {
+
+
+	// 页面类型
+	public function PageType()
+	{
+	}
+
+	// 主题名称
 	public static function ThemeName()
 	{
 		return 'default/';
@@ -35,5 +43,26 @@ class Theme
 	public static function Static($url)
 	{
 		echo Route::Domain() . '/sk-content/theme/' . Theme::ThemeName() . $url;
+	}
+
+	// 自定义页面标题
+	public static function PageTitle()
+	{
+		static $title = null;
+		$DB = new DB();
+		$config = include Theme::ThemeURL() . 'config.php';
+		$title = $config['PageTitle'][Route::getAction()];
+		if ($title) {
+			echo $title;
+		} else {
+			echo $DB->table('sk_page')->where('name = "' . Route::getAction() . '"')->limit('1')->select('title')[0][0];
+		}
+	}
+
+	// 自定义页面内容
+	public static function PageContent()
+	{
+		$DB = new DB();
+		echo $DB->table('sk_page')->where('name = "' . Route::getAction() . '"')->limit('1')->select('content')[0][0];
 	}
 }

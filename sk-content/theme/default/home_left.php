@@ -7,6 +7,6 @@
         </div>
     </div>
     <div class="footer">
-        <div><a target="_blank" href="https://www.caicai.me/">Design by CaiCai</a></div>
+        <div><a target="_blank" href="https://sharkcms.cn/">Powered by SharkCMS</a></div>
     </div>
 </div>

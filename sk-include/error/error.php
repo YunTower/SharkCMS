@@ -1,3 +1,4 @@
+<?Php ob_clean(); ?>
 <!DOCTYPE html>
 <html lang="en">
 

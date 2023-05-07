@@ -7,6 +7,11 @@ return [
     "version" => "",
     "install" => true,
     "install_file" => "install.php",
-    "admin_setting" => true,
-    "admin_user" => "admin/"
+    "AdminSetting" => true,
+    "AdminUrl" => "admin/",
+    "PageTitle" => [
+        null => '首页',
+        "post" => "文章",
+        "about" => "关于"
+    ]
 ];

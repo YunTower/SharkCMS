@@ -138,7 +138,7 @@
         'INSTALL'=>'ok',\n
         'KEY'=>'" . System::CreateKey(16) . "',\n
         'DB_CONNECT' => [\n
-        'host' => '" . $dbhost .
+        'hostname' => '" . $dbhost .
             "',\n'username' => '" . $dbuser .
             "',\n'password' => '" . $dbpwd .
             "',\n'dbname' => '" . $dbname .

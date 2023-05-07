@@ -12,136 +12,218 @@
 
 
 # --------------------------------## 数据库操作 ##--------------------------------#
-/**
- * @name: DBconfig
- * @desc: 数据库配置，解决直接使用System::getConfig报错的问题
- * @author: fish
- * @date: 20230501
- **/
-function DBconfig($name)
-{
-    static $config = null;
-    if (!$config) {
-        $config = require INC . 'config.php';
-    }
-    return isset($config[$name]) ? $config[$name] : null;
-}
 
-/**
- * @name: DBconnect
- * @desc: 数据库连接函数
- * @author: fish
- * @date: 20230330
- **/
-function DBconnect()
+class DB
 {
-    static $conn = null;
-    if (!$conn) {
-        $conn = call_user_func_array('mysqli_connect', DBconfig('DB_CONNECT'));
-        if (!$conn) {
-            sys_error('数据库错误', '数据库连接错误');
+    private $_db = null; //数据库连接句柄
+    private $_table = null; //表名
+    private $_where = null; //where条件
+    private $_order = null; //order排序
+    private $_limit = null; //limit限定查询
+    private $_exist = null; //存在查询
+    private $_group = null; //group分组
+    private $_configs = null; //数据库配置
+
+
+
+    // 构造数据库连接函数
+    public function __construct()
+    {
+        $this->_configs = System::getConfig('DB_CONNECT');
+        $link = $this->_db;
+        if (!$link) {
+            $db = mysqli_connect($this->_configs['hostname'], $this->_configs['username'], $this->_configs['password'], $this->_configs['dbname']);
+            mysqli_query($db, "set names utf8");
+            if (!$db) {
+                System::ERROR('数据库错误', mysqli_connect_error());
+            }
+            $this->_db = $db;
         }
     }
-    // $conn = mysqli_fetch_array($conn);
-    mysqli_query($conn, "set names " . DBconfig('DB_CHARSET'));
-    return $conn;
-}
 
-/**
- * @name: DBread
- * @desc: 数据库查询函数
- * @author: fish
- * @date: 20230330
- * @method: EchoALL -> 输出全部 
- *          EchoID -> 条件查询 
- *          EchoPage -> 分页查询 
- *          EchoSize -> 数量查询
- **/
-function DBread($method, $data)
-{
-    $conn = DBconnect();
-    $data = json_decode($data, true);
+    // 获取所有数据
+    public function getAll($table = null)
+    {
+        $link = $this->_db;
+        if (!$link) return false;
+        $sql = "SELECT * FROM {$table}";
+        $data = mysqli_fetch_all($this->execute($sql));
+        return $data;
+    }
 
-    switch ($method) {
-            // 输出全部
-        case 'EchoALL':
-            $sql = "SELECT " . $data['id'] . " FROM " . $data['name'];
-            $res = $conn->query($sql);
-            return $res;
+    // 设置数据表
+    public function table($table)
+    {
+        $this->_table = $table;
+        return $this;
+    }
 
-            // 条件查询
-        case 'EchoWHERE':
-            $sql = "SELECT " . $data['id'] . " FROM " . $data['name'] . " WHERE " . $data['whereid'] . "='" . $data['whereinfo'] . "'";
-            $res = $conn->query($sql);
-            return $res;
+    // select查询
+    public function select($fields = "*")
+    {
+        $fieldsStr = '';
+        $link = $this->_db;
+        if (!$link) return false;
+        if (is_array($fields)) {
+            $fieldsStr = implode(',', $fields);
+        } elseif (is_string($fields) && !empty($fields)) {
+            $fieldsStr = $fields;
+        }
+        $sql = "SELECT {$fields} FROM {$this->_table} {$this->_where} {$this->_order} {$this->_limit}";
+        $data = mysqli_fetch_all($this->execute($sql));
+        return $data;
+    }
 
-            // 分页查询
-        case 'EchoPage':
+    // order排序查询
+    public function order($order = '')
+    {
+        $orderStr = '';
+        $link = $this->_db;
+        if (!$link) return false;
+        if (is_string($order) && !empty($order)) {
+            $orderStr = "ORDER BY " . $order;
+        }
+        $this->_order = $orderStr;
+        return $this;
+    }
 
-            // 数量查询
-        case 'EchoSize':
-            $sql = $conn->query("SELECT " . $data['id'] . " FROM " . $data['name']);
-            $res = mysqli_num_rows($sql);
-            return $res;
-
-            // 是否存在
-        case 'EchoExist':
-            $sql = $conn->query("SELECT * from " . $data['name'] . " where " . $data['whereid'] . " = '" . $data['whereinfo'] . "' limit 1");
-            $res = mysqli_num_rows($sql);
-            switch ($res) {
-                case '1':
-                    return true;
-                default:
-                    return false;
+    // where条件查询
+    public function where($where = '')
+    {
+        $whereStr = '';
+        $link = $this->_db;
+        if (!$link) return $link;
+        if (is_array($where)) {
+            foreach ($where as $key => $value) {
+                if ($value == end($where)) {
+                    $whereStr .= "`" . $key . "` = '" . $value . "'";
+                } else {
+                    $whereStr .= "`" . $key . "` = '" . $value . "' AND ";
+                }
             }
-
-            // 异常处理
-        default:
-            $error = mysqli_error($conn);
-            sys_error('数据库错误', $error);
+            $whereStr = "WHERE " . $whereStr;
+        } elseif (is_string($where) && !empty($where)) {
+            $whereStr = "WHERE " . $where;
+        }
+        $this->_where = $whereStr;
+        return $this;
     }
-}
 
-/**
- * @name: DBwrite
- * @desc: 数据写入函数
- * @author: fish
- * @date: 20230330
- **/
-function DBwrite($data)
-{
-    $conn = DBconnect();
-    $data = json_decode($data, true);
-
-    // 数据写入
-    $sql = "INSERT INTO " . $data['name'] . " (" . $data['id'] . ") VALUES (" . $data['info'] . ")";
-    if ($conn->query($sql) === TRUE) {
-        return true;
-    } else {
-        // 异常处理
-        $error = mysqli_error($conn);
-        sys_error('数据库错误', $error);
+    // exist存在查询
+    public function exist($exist = '')
+    {
+        $existStr = '';
+        $link = $this->_db;
+        if (!$link) return $link;
+        if (is_string($exist)) {
+            $existStr = "LIMIT " . $exist;
+        }
+        $this->_exist = $existStr;
+        return $this;
     }
-}
 
-/**
- * @name: DBupdate
- * @desc: 数据更新函数
- * @author: fish
- * @date: 20230405
- **/
-function DBupdate($data)
-{
-    $conn = DBconnect();
-    $data = json_decode($data, true);
+    // group分组查询
+    public function group($group = '')
+    {
+        $groupStr = '';
+        $link = $this->_db;
+        if (!$link) return false;
+        if (is_array($group)) {
+            $groupStr = "GROUP BY " . implode(',', $group);
+        } elseif (is_string($group) && !empty($group)) {
+            $groupStr = "GROUP BY " . $group;
+        }
+        $this->_group = $groupStr;
+        return $this;
+    }
 
-    // s'g
-    $sql = "INSERT INTO " . $data['name'] . " (" . $data['id'] . ") VALUES (" . $data['info'] . ")";
-    if ($conn->query($sql) === TRUE) {
-        return true;
-    } else {
-        // 异常处理
-        $error = mysqli_error($conn);
-        sys_error('数据库错误', $error);
+    // limit限定查询
+    public function limit($limit = '')
+    {
+        $limitStr = '';
+        $link = $this->_db;
+        if (!$link) return $link;
+        if (is_string($limit) || !empty($limit)) {
+            $limitStr = "LIMIT " . $limit;
+        } elseif (is_numeric($limit)) {
+            $limitStr = "LIMIT " . $limit;
+        }
+        $this->_limit = $limitStr;
+        return $this;
+    }
+
+    // 执行语句
+    public function execute($sql = null)
+    {
+        $link = $this->_db;
+        if (!$link) return false;
+        $res = mysqli_query($this->_db, $sql);
+        if (!$res) {
+            $errors = mysqli_error_list($this->_db);
+            System::ERROR('数据库错误', "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error']);
+            die();
+        }
+        return $res;
+    }
+
+    // insert插入数据
+    public function insert($data)
+    {
+        $link = $this->_db;
+        if (!$link) return false;
+        if (is_array($data)) {
+            $keys = '';
+            $values = '';
+            foreach ($data as $key => $value) {
+                $keys .= "`" . $key . "`,";
+                $values .= "'" . $value . "',";
+            }
+            $keys = rtrim($keys, ',');
+            $values = rtrim($values, ',');
+        }
+        $sql = "INSERT INTO `{$this->_table}`({$keys}) VALUES({$values})";
+        mysqli_query($this->_db, $sql);
+        $insertId = mysqli_insert_id($this->_db);
+        return $insertId;
+    }
+
+    // update数据更新
+    public function update($data)
+    {
+        $link = $this->_db;
+        if (!$link) return $link;
+        if (is_array($data)) {
+            $dataStr = '';
+            foreach ($data as $key => $value) {
+                $dataStr .= "`" . $key . "`='" . $value . "',";
+            }
+            $dataStr = rtrim($dataStr, ',');
+        }
+        $sql = "UPDATE `{$this->_table}` SET {$dataStr} {$this->_where} {$this->_order} {$this->_limit}";
+        $res = $this->execute($sql);
+        return $res;
+    }
+
+    // delete数据删除
+    public function delete()
+    {
+        $link = $this->_db;
+        if (!$link) return $link;
+        $sql = "DELETE FROM `{$this->_table}` {$this->_where}";
+        $res = $this->execute($sql);
+        return $res;
+    }
+
+    // 异常输出
+    private function ShowException($var)
+    {
+        if (is_bool($var)) {
+            var_dump($var);
+        } else if (is_null($var)) {
+            var_dump(NULL);
+        } else {
+            System::ERROR('数据库错误', $var);
+            // echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
+        }
     }
 }
