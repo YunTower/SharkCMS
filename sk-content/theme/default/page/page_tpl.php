@@ -1,12 +1,26 @@
-<?php
-Theme::import('header.php');
-Theme::import('home_left.php');
-Theme::import('home_nav.php'); ?>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="right">
-    <div class="content">
-        <?php Theme::PageContent() ?>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><? Theme::PageTitle() ?> - <? Theme::SiteTitle() ?></title>
+    <? Theme::import('header.php'); ?>
+</head>
+
+<body>
+    <?
+    Theme::import('home_left.php');
+    Theme::import('home_nav.php'); ?>
+
+    <div class="right">
+        <div class="content">
+            <? Theme::PageContent(Route::getAction()) ?>
+        </div>
     </div>
-</div>
 
-<?php Theme::import('footer.php'); ?>
+    <? Theme::import('footer.php'); ?>
+</body>
+
+</html>

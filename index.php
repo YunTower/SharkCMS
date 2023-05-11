@@ -1,20 +1,20 @@
 <?php
 
-
 /**
  * --------------------------------------------------------------------------------
- * @ Author：fish (https://gitee.com/fish_nb)
+ * @ Author：fish（https://gitee.com/fish_nb）
  * @ Gitee：https://gitee.com/sharkcms/sharkcms
- * @ Link：https://sharkcms.icu
- * @ License：MIT License (https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE)
+ * @ Link：https://sharkcms.cn
+ * @ License：https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE
  * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
  * --------------------------------------------------------------------------------
  */
 
+
 header('Content-Type: text/html; charset=utf-8');
 // 系统基础信息
 define('App_N', 'SharkCMS');
-define('App_V', '1.0.0-dev.6');
+define('App_V', '1.0.0-dev.7');
 define('App_T', 'Develop');
 // 云端接口地址
 define('API_HOST', 'https://api.sharkcms.cn/');

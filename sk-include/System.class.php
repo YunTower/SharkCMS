@@ -4,7 +4,7 @@
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
  * @ Gitee：https://gitee.com/sharkcms/sharkcms
- * @ Link：https://sharkcms.icu
+ * @ Link：https://sharkcms.cn
  * @ License：https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE
  * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
  * --------------------------------------------------------------------------------
@@ -90,6 +90,7 @@ class Route
 				include INS . 'index.php';
 			}
 		} else {
+			// 初始化数据库类
 			$DB = new DB();
 			// 主路由
 			switch ($this->getModule()) {
@@ -112,11 +113,6 @@ class Route
 							System::ERROR('404', '页面不存在');
 						}
 					}
-					break;
-
-					// 测试使用
-				case 'test':
-					include ROOT . 'test.php';
 					break;
 
 					// 后台

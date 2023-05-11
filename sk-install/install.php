@@ -48,7 +48,6 @@
                             $sql_1 = "CREATE TABLE sk_content (
                             `cid` INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
                             `title` VARCHAR(40) NOT NULL,
-                            `introduction` VARCHAR(50),
                             `content` TEXT NOT NULL,
                             `cover` VARCHAR(190),
                             `power` VARCHAR(10), 
@@ -133,16 +132,16 @@
 
                                         // 写入数据库配置
                                         $dbconfig =
-"<?php\n 
+                                            "<?php\n 
     return [\n
         'INSTALL'=>'ok',\n
-        'KEY'=>'" . System::CreateKey(16) . "',\n
+        'KEY'=>'" . System::CreateKey(64) . "',\n
         'DB_CONNECT' => [\n
         'hostname' => '" . $dbhost .
-            "',\n'username' => '" . $dbuser .
-            "',\n'password' => '" . $dbpwd .
-            "',\n'dbname' => '" . $dbname .
-            "',\n
+                                            "',\n'username' => '" . $dbuser .
+                                            "',\n'password' => '" . $dbpwd .
+                                            "',\n'dbname' => '" . $dbname .
+                                            "',\n
             'port' => '3306',\n
         ],\n
         'DB_CHARSET' => 'utf8'\n
@@ -156,14 +155,14 @@
 
                                         // 写入初始数据
                                         $time = date('YmdHi');
-                                        $w_post = json_encode(array('name' => 'sk_content', 'id' => 'title,introduction,content,uid,name,comment', 'info' => "'Hello SharkCMS','Hello World','当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！','1','$adminname',true"));
-                                        $w_user = json_encode(array("name" => "sk_user", "id" => "name,pwd,mail,ugroup,ban,logintime", "info" => "'$adminname','$adminpwd', '$adminmail', 'admin','false','$time'"));
-
-                                        if (DBwrite($w_post) == true && DBwrite($w_user) == true) {
-
-                                            echo '数据库安装成功';
-                                        } else {
-                                            sys_error('数据库错误', mysqli_error($conn));
+                                        $DB = new DB;
+                                        $SQLINIT = $DB->table('sk_content')->insert(array('name' => 'sk_content', 'title' => 'Hello SharkCMS', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'name' => $adminname, 'comment' => true));
+                                        $SQLINIT = $DB->table('sk_user')->insert(array('name' => $adminname, 'pwd' => $adminpwd, 'mail' => $adminmail, 'ugroup' => 'admin', 'ban' => false, 'logintime' => $time));
+                                        if (!$SQLINIT) {
+                                            System::ERROR('数据库错误', '初始数据写入失败，请先清空 “/sk-include/config.php” 文件，并删除数据库中前缀为 “sk-” 的数据表后<a style="color:red">重新安装</a>');
+                                        }
+                                        else{
+                                            echo '安装成功！';
                                         }
                                     }
                                 }

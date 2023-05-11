@@ -1,3 +1,1 @@
-<!-- <script src=""></script> -->
-</body>
-</html>
+<? // Theme::SettingFooter() ?>

@@ -4,7 +4,7 @@
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
  * @ Gitee：https://gitee.com/sharkcms/sharkcms
- * @ Link：https://sharkcms.icu
+ * @ Link：https://sharkcms.cn
  * @ License：https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE
  * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
  * --------------------------------------------------------------------------------
@@ -20,7 +20,6 @@ class DB
     private $_where = null; //where条件
     private $_order = null; //order排序
     private $_limit = null; //limit限定查询
-    private $_exist = null; //存在查询
     private $_group = null; //group分组
     private $_configs = null; //数据库配置
 
@@ -47,7 +46,7 @@ class DB
         $link = $this->_db;
         if (!$link) return false;
         $sql = "SELECT * FROM {$table}";
-        $data = mysqli_fetch_all($this->execute($sql));
+        $data = mysqli_fetch_all($this->execute($sql), MYSQLI_ASSOC);
         return $data;
     }
 
@@ -70,7 +69,7 @@ class DB
             $fieldsStr = $fields;
         }
         $sql = "SELECT {$fields} FROM {$this->_table} {$this->_where} {$this->_order} {$this->_limit}";
-        $data = mysqli_fetch_all($this->execute($sql));
+        $data = mysqli_fetch_array($this->execute($sql), MYSQLI_ASSOC);
         return $data;
     }
 
@@ -106,19 +105,6 @@ class DB
             $whereStr = "WHERE " . $where;
         }
         $this->_where = $whereStr;
-        return $this;
-    }
-
-    // exist存在查询
-    public function exist($exist = '')
-    {
-        $existStr = '';
-        $link = $this->_db;
-        if (!$link) return $link;
-        if (is_string($exist)) {
-            $existStr = "LIMIT " . $exist;
-        }
-        $this->_exist = $existStr;
         return $this;
     }
 
@@ -182,9 +168,11 @@ class DB
             $values = rtrim($values, ',');
         }
         $sql = "INSERT INTO `{$this->_table}`({$keys}) VALUES({$values})";
-        mysqli_query($this->_db, $sql);
-        $insertId = mysqli_insert_id($this->_db);
-        return $insertId;
+        if (mysqli_query($this->_db, $sql)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // update数据更新
