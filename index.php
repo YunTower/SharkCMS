@@ -17,7 +17,7 @@ define('App_N', 'SharkCMS');
 define('App_V', '1.0.0-dev.7');
 define('App_T', 'Develop');
 // 云端接口地址
-define('API_HOST', 'https://api.sharkcms.cn/');
+define('API_HOST', 'http://127.0.0.1:888/api');
 // 云端接口版本
 define('API_V','v1');
 // 运行模式 0->线上模式（日志） 1->开发模式（报错+日志）
@@ -33,6 +33,7 @@ define('CON', ROOT . 'sk-content/');
 // 系统后台目录
 define('ADM', ROOT . 'sk-admin/');
 
+
 // PHP版本检查
 if (PHP_VERSION < '7.0') {
     echo ("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于7.0</a> 的版本！<br>");
@@ -44,25 +45,11 @@ if (PHP_VERSION < '7.0') {
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
-// 加载系统类
-include_once INC . 'System.class.php';
 
-// 加载数据库类
-include_once INC . 'Db.class.php';
+// 框架文件
+include_once INC .'core/FrameWork.php';
+// 框架初始化
+FrameWork::init();
 
-// 加载主题类
-include_once INC . 'Theme.class.php';
-
-// 初始化类库
-$Route = new Route;
-$System = new System;
-$Theme = new Theme;
-
-// 设置session存储路径
-session_save_path(CON . 'temp/session');
-
-// 开启session缓存
-session_start();
-
-// 启动路由
-$Route->Run();
+// 启动程序
+FrameWork::run();

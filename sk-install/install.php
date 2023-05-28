@@ -156,14 +156,9 @@
                                         // 写入初始数据
                                         $time = date('YmdHi');
                                         $DB = new DB;
-                                        $SQLINIT = $DB->table('sk_content')->insert(array('name' => 'sk_content', 'title' => 'Hello SharkCMS', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'name' => $adminname, 'comment' => true));
-                                        $SQLINIT = $DB->table('sk_user')->insert(array('name' => $adminname, 'pwd' => $adminpwd, 'mail' => $adminmail, 'ugroup' => 'admin', 'ban' => false, 'logintime' => $time));
-                                        if (!$SQLINIT) {
-                                            System::ERROR('数据库错误', '初始数据写入失败，请先清空 “/sk-include/config.php” 文件，并删除数据库中前缀为 “sk-” 的数据表后<a style="color:red">重新安装</a>');
-                                        }
-                                        else{
-                                            echo '安装成功！';
-                                        }
+                                        $DB->table('sk_content')->insert(array('name' => 'sk_content', 'title' => 'Hello SharkCMS', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'name' => $adminname, 'comment' => true));
+                                        $DB->table('sk_user')->insert(array('name' => $adminname, 'pwd' => $adminpwd, 'mail' => $adminmail, 'ugroup' => 'admin', 'ban' => false, 'logintime' => $time));
+                                        
                                     }
                                 }
                             } else {
