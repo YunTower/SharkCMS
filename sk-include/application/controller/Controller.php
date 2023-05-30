@@ -46,7 +46,6 @@ class Controller
     {
         //加载视图文件
         $file = VIEW_PATH . $view . '.php';
-
         if (file_exists($file)) {
             require_once $file;
         } else {

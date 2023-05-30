@@ -7,12 +7,13 @@ class index extends Controller
     {
         parent::__construct();
         $this->data=array(
-            'img_logo'=>'theme/static/img/logo.jpg'
+            'img_logo'=>'http://127.0.0.1/sk-content/theme/default/static/img/logo.jpg',
+            'css_style'=>'http://127.0.0.1/sk-content/theme/default/static/css/style.css'
         );
     }
 
     function index()
     {
-        $this->view('default/index', $this->data);
+        $this->view('index', $this->data);
     }
 }

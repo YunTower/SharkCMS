@@ -12,22 +12,10 @@
 
 
 header('Content-Type: text/html; charset=utf-8');
-// 系统基础信息
-define('App_N', 'SharkCMS');
-define('App_V', '1.0.0-dev.7');
-define('App_T', 'Develop');
-// 云端接口地址
-define('API_HOST', 'http://127.0.0.1:888/api');
-// 云端接口版本
-define('API_V','v1');
-// 运行模式 0->线上模式（日志） 1->开发模式（报错+日志）
-define('DEBUG', '1');
 // 系统根目录
 define('ROOT', str_replace('\\', '/', __DIR__) . '/');
 // 系统文件目录
 define('INC', ROOT . 'sk-include/');
-// 系统安装目录
-define('INS', ROOT . 'sk-install/');
 // 内容存储目录
 define('CON', ROOT . 'sk-content/');
 // 系统后台目录

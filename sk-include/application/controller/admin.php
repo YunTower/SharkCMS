@@ -2,12 +2,16 @@
 class admin{
     function __construct()
     {
-        echo '后台页面';
+    }
+
+    function login(){
+        echo '登陆';
     }
 
     function index(){
-        echo '后台首页';
+        header('Location: /admin/login');
     }
+    
     function admin(){
         echo '页面正常';
     }
