@@ -1,6 +1,6 @@
 <div align="center">
 <a href="https://sharkcms.cn">
-<img src="http://43.155.98.95:3000/fishnb/sharkcms/raw/branch/master/sk-include/static/img/logo.svg" />
+<img src="./sk-include/static/img/logo.svg" />
 </a>
 <br>
 
@@ -10,9 +10,7 @@
 
 [ 官网 ](https://sharkcms.cn") |
 [ 演示 ](https://demo.sharkcms.cn/)|
-[ 文档 ](https://doc.sharkcms.cn/) |
-[ 反馈 ](https://www.yuque.com/forms/share/22763685-8937-4beb-9683-ad0442f37b2f) |
-[更新日志](https://www.yuque.com/fishnb/sn8ugg/zkdnnh)
+[ 文档 ](https://doc.sharkcms.cn/)
 
 </div>
 <hr>
@@ -59,10 +57,10 @@ Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
   <tbody>
     <tr>
       <td>
-      <img height="200px" width="200px" src="http://43.155.98.95:3000/fishnb/sharkcms/raw/branch/master/sk-include/static/img/wxpay.png" alt="微信赞助"/>
+      <img height="200px" width="200px" src="./sk-include/static/img/wxpay.png" alt="微信赞助"/>
       </td>
       <td>
-      <img height="200px" width="200px" src="http://43.155.98.95:3000/fishnb/sharkcms/raw/branch/master/sk-include/static/img/alipay.png" alt="支付宝赞助"/>
+      <img height="200px" width="200px" src="./sk-include/static/img/alipay.png" alt="支付宝赞助"/>
       </td>
     </tr>
   </tbody>
