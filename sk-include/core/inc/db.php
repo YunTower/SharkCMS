@@ -28,7 +28,7 @@ class DB
     // 构造数据库连接函数
     public function __construct()
     {
-        $path = CONFIG_PATH . 'database.ini';
+        $path = INC . 'config/database.ini';
         $this->_configs = parse_ini_file($path);
         $link = $this->_db;
         if (!$link) {

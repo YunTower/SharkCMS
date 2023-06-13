@@ -3,155 +3,186 @@
 
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<title>后台 - SharkCMS内容管理系统</title>
-	<link rel="alternate icon" href="<?php echo sys_domain(); ?>/sk-include/static/img/logo.png" type="image/png">
-	<!-- 依 赖 样 式 -->
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/component/pear/css/pear.css" />
-	<!-- 加 载 样 式 -->
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/loader.css" />
-	<!-- 布 局 样 式 -->
-	<link rel="stylesheet" href="<?php echo sys_domain(); ?>/sk-admin/admin/css/admin.css" />
-</head>
-<!-- 结 构 代 码 -->
+	<title>SharkCMS 后台管理</title>
+	<link rel="icon" type="image/svg+xml" href="/sk-include/static/img/logo.png" />
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
+	<link rel="stylesheet" href="/sk-include/static/css/remixicon.css" />
+	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
+	<script src="/sk-include/static/layui/layui.js"></script>
 
-<body class="layui-layout-body pear-admin">
-	<!-- 布 局 框 架 -->
+
+</head>
+
+<body>
 	<div class="layui-layout layui-layout-admin">
-		<!-- 顶 部 样 式 -->
 		<div class="layui-header">
-			<!-- 菜 单 顶 部 -->
-			<div class="layui-logo">
-				<!-- 图 标 -->
-				<img class="logo">
-				<!-- 标 题 -->
-				<span class="title"></span>
-			</div>
-			<!-- 顶 部 左 侧 功 能 -->
+			<div class="layui-logo layui-hide-xs layui-bg-black">SharkCMS</div>
+			<!-- 头部区域（可配合layui 已有的水平导航） -->
 			<ul class="layui-nav layui-layout-left">
-				<li class="collapse layui-nav-item"><a href="#" class="layui-icon layui-icon-shrink-right"></a></li>
-				<li class="refresh layui-nav-item"><a href="#" class="layui-icon layui-icon-refresh-1" loading=600></a></li>
-			</ul>
-			<!-- 多 系 统 菜 单 -->
-			<div id="control" class="layui-layout-control"></div>
-			<!-- 顶 部 右 侧 菜 单 -->
-			<ul class="layui-nav layui-layout-right">
-				<li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a></li>
-				<li class="layui-nav-item layui-hide-xs"><a href="#" class="fullScreen layui-icon layui-icon-screen-full"></a></li>
-				<li class="layui-nav-item layui-hide-xs"><a target="_blank" href="https://sharkcms.cn/" class="layui-icon layui-icon-website"></a></li>
-				<!--系统通知组件 开发中-->
-				<!-- <li class="layui-nav-item layui-hide-xs message"></li> -->
-				<li class="layui-nav-item user">
-					<!-- 头 像 -->
-					<a class="layui-icon layui-icon-username" href="javascript:;"></a>
-					<!-- 功 能 菜 单 -->
-					<dl class="layui-nav-child" style="text-align:center">
-						<dd><a user-menu-title="<?php echo admin_user_name(); ?>"><?php echo admin_user_name(); ?></a></dd>
-						<dd><a user-menu-url="view/system/person.html" user-menu-id="5555" user-menu-title="基本资料">基本资料</a></dd>
-						<dd><a href="javascript:void(0);" class="logout">退出登录</a></dd>
+				<!-- 移动端显示 -->
+				<li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+					<i class="layui-icon layui-icon-spread-left"></i>
+				</li>
+				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 1</a></li>
+				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 2</a></li>
+				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 3</a></li>
+				<li class="layui-nav-item">
+					<a href="javascript:;">nav groups</a>
+					<dl class="layui-nav-child">
+						<dd><a href="javascript:;">menu 11</a></dd>
+						<dd><a href="javascript:;">menu 22</a></dd>
+						<dd><a href="javascript:;">menu 33</a></dd>
 					</dl>
 				</li>
-				<!-- 主 题 配 置 -->
-				<li class="layui-nav-item setting"><a href="#" class="layui-icon layui-icon-more-vertical"></a></li>
+			</ul>
+			<ul class="layui-nav layui-layout-right">
+				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+					<a href="javascript:;">
+						<img src="//unpkg.com/outeres@0.0.10/img/layui/icon-v2.png" class="layui-nav-img">
+						<?php echo $this->info['name'] ?>
+					</a>
+					<dl class="layui-nav-child">
+						<dd><a href="javascript:;"><?php echo $this->info['name'] ?></a></dd>
+						<dd><a href="javascript:;">设置</a></dd>
+						<dd><a href="javascript:;">退出</a></dd>
+					</dl>
+				</li>
+				<li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+					<a href="javascript:;">
+						<i class="layui-icon layui-icon-more-vertical"></i>
+					</a>
+				</li>
 			</ul>
 		</div>
-		<!-- 侧 边 区 域 -->
 		<div class="layui-side layui-bg-black">
-			<!-- 菜 单 顶 部 -->
-			<div class="layui-logo">
-				<!-- 图 标 -->
-				<img class="logo">
-				<!-- 标 题 -->
-				<span class="title"></span>
-			</div>
-			<!-- 菜 单 内 容 -->
 			<div class="layui-side-scroll">
-				<div id="sideMenu"></div>
+				<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+				<ul class="layui-nav layui-nav-tree" lay-filter="test">
+					<li class="layui-nav-item">
+						<a href="/admin/index">
+							<i class="ri-home-3-line"></i>
+							首页
+						</a>
+					</li>
+					<li class="layui-nav-item layui-nav-itemed">
+						<a class="" href="javascript:;">
+							<i class="ri-article-line"></i>
+							内容
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/content/new">新建</a></dd>
+							<dd><a href="/admin/content/all">全部</a></dd>
+							<dd><a href="/admin/content/type">分类</a></dd>
+							<dd><a href="/admin/content/label">标签</a></dd>
+							<dd><a href="/admin/content/file">附件</a></dd>
+
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<i class="ri-pages-line"></i>
+							页面
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/page/new">新建</a></dd>
+							<dd><a href="/admin/page/all">全部</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="/admin/user/index">
+							<i class="ri-user-3-line"></i>
+							用户
+						</a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<i class="ri-apps-2-line"></i>
+							资源
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/module/theme">主题</a></dd>
+							<dd><a href="/admin/module/plugin">插件</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<i class="ri-settings-line"></i>
+							设置
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/set/base">基础</a></dd>
+							<dd><a href="/admin/set/senior">高级</a></dd>
+							<dd><a href="/admin/set/me">个人</a></dd>
+							<dd><a href="/admin/set/system">系统</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="/admin/about/index">
+							<i class="ri-information-line"></i>
+							关于
+						</a>
+					</li>
+				</ul>
 			</div>
 		</div>
-		<!-- 视 图 页 面 -->
 		<div class="layui-body">
-			<!-- 内 容 页 面 -->
-			<div id="content"></div>
-		</div>
-		<!-- 页脚 -->
-		<div class="layui-footer layui-text">
-			<span class="left">
-				Released under the MIT license.
-			</span>
-			<span class="center"></span>
-			<span class="right">
+			<!-- 内容主体区域 -->
+			<div style="padding: 15px;">
 				<?php
-				$start = "2023";
-				$now = date('Y');
-				if ($start == $now) {
-					echo "Copyright © $start <a href='https://sharkcms.cn'>sharkcms.cn</a>";
+				$url = FrameWork::getAction() . '/' . FrameWork::getData() . '.php';
+				if (FrameWork::getAction() == 'index' || null) {
+					include_once ADM . 'console.php';
 				} else {
-					echo "Copyright © $start-$now <a href='https://sharkcms.cn'>sharkcms.cn</a>";
+					$file = ADM . $url;
+					if (!file_exists($file)) {
+						$title = 404;
+						$error = '页面不存在';
+						include_once INC . 'view/error/error.php';
+					} else {
+						include_once $file;
+					}
 				}
 				?>
-			</span>
+			</div>
 		</div>
-		<!-- 遮 盖 层 -->
-		<div class="pear-cover"></div>
-		<!-- 加 载 动 画 -->
-		<div class="loader-main">
-			<!-- 动 画 对 象 -->
-			<div class="loader"></div>
+		<div class="layui-footer" style="text-align: right;">
+			<!-- 底部固定区域 -->
+			Powered by SharkCMS
 		</div>
 	</div>
-	<!-- 移 动 端 便 捷 操 作 -->
-	<div class="pear-collapsed-pe collapse">
-		<a href="#" class="layui-icon layui-icon-shrink-right"></a>
-	</div>
-	<!-- 依 赖 脚 本 -->
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/layui/layui.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-admin/component/pear/pear.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-include/static/libs/jquery.min.js"></script>
-	<script src="<?php echo sys_domain(); ?>/sk-include/static/js/sharkcms.min.js"></script>
-	<!-- 框 架 初 始 化 -->
+
 	<script>
-		layui.use(['admin', 'jquery', 'popup'], function() {
-			var $ = layui.jquery,
-				admin = layui.admin,
-				popup = layui.popup,
-				layer = layui.layer,
-				table = layui.table,
-				carousel = layui.carousel,
-				key = '<?php echo DBconfig('KEY');?>',
-				domain = '';
+		//JS 
+		layui.use(['element', 'layer', 'util'], function() {
+			var element = layui.element;
+			var layer = layui.layer;
+			var util = layui.util;
+			var $ = layui.$;
 
-				console.log(key)
-			$.ajax({
-				url: "../../index.php/sk-include/api?action=site_info",
-				headers: {
-					'Content-Type': 'application/json;charset=utf8',
-					'key': key
+			//头部事件
+			util.event('lay-header-event', {
+				menuLeft: function(othis) { // 左侧菜单事件
+					layer.msg('展开左侧菜单的操作', {
+						icon: 0
+					});
 				},
-				type: "GET",
-				success: function(data) {
-					var obj = JSON.parse(data);
-					domain = obj.domain
+				menuRight: function() { // 右侧菜单事件
+					layer.open({
+						type: 1,
+						title: '个性化',
+						content: '<div style="padding: 15px;">系统主题</div>',
+						area: ['260px', '100%'],
+						offset: 'rt', // 右上角
+						anim: 'slideLeft', // 从右侧抽屉滑出
+						shadeClose: true,
+						scrollbar: false
+					});
 				}
-			})
-
-			admin.setConfigType("json");
-			admin.setConfigPath("<?php echo sys_domain(); ?>/sk-admin/config/pear.config.json");
-
-			admin.render();
-
-			// 登出逻辑 
-			admin.logout(function() {
-				popup.success("注销成功", function() {
-					location.href = "<?php echo sys_domain(); ?>/index.php/sk-admin/login";
-				})
-				// 注销逻辑 返回 true / false
-				return true;
-			})
-
-
-			
-		})
+			});
+		});
 	</script>
 </body>
 

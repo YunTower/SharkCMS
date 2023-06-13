@@ -21,7 +21,6 @@ define('CON', ROOT . 'sk-content/');
 // 系统后台目录
 define('ADM', ROOT . 'sk-admin/');
 
-
 // PHP版本检查
 if (PHP_VERSION < '7.0') {
     echo ("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于7.0</a> 的版本！<br>");
@@ -33,9 +32,20 @@ if (PHP_VERSION < '7.0') {
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
 !is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
 
+ // 设置session缓存目录
+ session_save_path(CON . 'temp/session');
+
+ // 开启session缓存
+ session_start();
 
 // 框架文件
-include_once INC .'core/FrameWork.php';
+include_once INC . 'core/FrameWork.php';
+include_once INC . 'core/inc/db.php';
+include_once INC . 'core/inc/file.php';
+include_once INC . 'core/inc/theme.php';
+include_once INC . 'core/inc/user.php';
+include_once INC . 'core/inc/cloud.php';
+
 // 框架初始化
 FrameWork::init();
 

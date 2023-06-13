@@ -20,20 +20,6 @@ class Controller
     {
 
         // 设置session缓存目录
-        session_save_path(CON . 'temp/session');
-
-        // 开启session缓存
-        session_start();
-        //加载库文件
-        $lib_file = INC . 'core/inc/cloud.php';
-        $lib_file = INC . 'core/inc/db.php';
-        $lib_file = INC . 'core/inc/system.php';
-        $lib_file = INC . 'core/inc/theme.php';
-        if (file_exists($lib_file)) {
-            include_once $lib_file;
-        } else {
-            exit('库文件加载失败！');
-        }
         
     }
 

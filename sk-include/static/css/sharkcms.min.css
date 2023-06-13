@@ -1,4 +1,4 @@
-.sharkcms-error-body {
+.sk-error-body {
     background-color: #2d8cf0;
     height: auto;
     padding: 20px;
@@ -8,7 +8,7 @@
     justify-content: center;
 }
 
-.sharkcms-error-content {
+.sk-error-content {
     /* background-color: #fff; */
     color: #fff;
     font-size: 20px;
@@ -18,3 +18,23 @@
     margin: 0 auto;
 }
 
+.sk-admin .about-logo img {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.sk-form {
+    width: 300px;
+    margin: 21px auto 0;
+}
+
+.sk-login-other .layui-icon {
+    position: relative;
+    display: inline-block;
+    margin: 0 2px;
+    top: 2px;
+    font-size: 26px;
+}
