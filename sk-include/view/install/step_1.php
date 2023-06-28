@@ -6,12 +6,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
-	<link rel="stylesheet" href="/sk-admin/component/layui/css/layui.css" />
-    <link rel="stylesheet" href="/sk-include/static/css/sharkcms.install.css" />
+	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
+    <link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 
 </head>
 
-<body class="layui-bg-gray">
+<body class="layui-bg-gray sk-form">
 <div class="layui-panel card">
 	<form class="layui-form layui-form-pane" action="">
 		<div class="layui-form-item">
@@ -45,21 +45,43 @@
 	</form>
 </div>
 	<!-- 资 源 引 入 -->
-	<script src="/sk-admin/component/layui/layui.js"></script>
-	<script src="/sk-admin/component/pear/pear.js"></script>
+	<script src="/sk-include/static/js/jquery.min.js"></script>
+    <script src="/sk-include/static/layui/layui.js"></script>
+    <script src="/sk-include/static/js/sharkcms.base64.js"></script>
 	<script>
-		layui.use(['form'], function() {
-			var form = layui.form;
-			var layer = layui.layer;
-			// 提交事件
-			form.on('submit(upload)', function(data) {
-				var field = data.field; // 获取表单字段值
-				// 显示填写结果，仅作演示用
-				layer.msg(JSON.stringify(field))
-				
-				return false; // 阻止默认 form 跳转
-			});
-		});
+		        layui.use(['form'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            // 提交事件
+            form.on('submit(upload)', function(data) {
+                var data = JSON.stringify(data.field);
+                // base64 加密传输
+                var data = Base64.encode(data)
+                // ajax请求
+                $.ajax({
+                    type: 'POST',
+                    url: '/install/install/connect',
+                    dataType: "json",
+                    data: data,
+                    contentType: "application/jsoan",
+                    success: function(data) {
+                        // 连接状态
+                        if (data.code == 1000) {
+                            // if 1000 ==> 弹出层 && 跳转 /install/step/2
+                            layer.msg('数据库连接成功',{time:5*1000,icon:1});
+                            window.location.href = '/install/step/2';
+                        } else {
+                            // 弹出层
+                            layer.alert(data.error, {
+                                title: '数据库连接错误',
+                                icon: '2'
+                            })
+                        }
+                    }
+                })
+                return false;
+            });
+        });
 	</script>
 </body>
 

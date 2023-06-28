@@ -1,3 +1,14 @@
+:root {
+    --main-color-1: #2d8cf0;
+    --main-color-2: #fff;
+    --text-color-1: dimgray;
+    --text-color-2: #000
+}
+
+.sk-bg-white {
+    background-color: var(--main-color-2);
+}
+
 .sk-error-body {
     background-color: #2d8cf0;
     height: auto;
@@ -26,6 +37,26 @@
     align-items: center;
 }
 
+.sk-admin-line-vertical {
+    display: flex;
+    width: 0;
+    height: calc(3.375rem - 2rem);
+    border-left: 1px solid #e3e6f0;
+    margin: 0 10px;
+}
+
+.sk-admin-login-out i {
+    font-size: 15px;
+}
+
+.sk-admin-editor-bottom{
+    margin-top: 20px;
+}
+
+#sk-toolbar-top,#sk-toolbar-bottom{
+    display:none;
+}
+
 .sk-form {
     width: 300px;
     margin: 21px auto 0;
@@ -37,4 +68,126 @@
     margin: 0 2px;
     top: 2px;
     font-size: 26px;
+}
+
+.sk-admin-nav ul {
+    color: var(--text-color-1);
+    background-color: var(--main-color-2);
+}
+
+.sk-admin-nav-tree a {
+    color: var(--text-color-1);
+}
+
+.layui-nav-itemed dl {
+    color: var(--text-color-1);
+    background-color: #FAFAFA;
+}
+
+.layui-nav-tree .layui-nav-child a {
+    color: var(--text-color-1);
+
+}
+
+.sk-admin-logo {
+    font-size: 21px;
+    font-weight: 550;
+    color: var(--main-color-1);
+    background-color: var(--main-color-2);
+    font-size: 20px;
+}
+
+.sk-admin-nav-bg {
+    background-color: var(--main-color-2);
+}
+
+.layui-side-scroll {
+    background-color: var(--main-color-2);
+}
+
+.sk-admin-content {
+    background-color: whitesmoke;
+    height: fit-content;
+    z-index: -99999;
+
+}
+
+.sk-page-main {
+    background-color: var(--main-color-2);
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.sk-admin-footer-left {
+    float: left;
+    padding: 0 15px;
+}
+
+.sk-admin-footer-right {
+    float: right;
+}
+
+.sk-form .layui-panel {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    max-width: 624px;
+    width: 86%;
+    background-color: #fff;
+    transform: translateX(-50%);
+    padding: 30px 40px 30px;
+    box-sizing: border-box;
+    border: 1px solid #e5e6eb;
+    border-radius: 2px;
+
+}
+
+.sk-form ul {
+    padding-left: 20px;
+}
+
+.sk-form .title {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.sk-form li {
+    font-size: 15px;
+    padding: 1px;
+}
+
+.sk-form .red {
+    color: red;
+}
+
+.sk-form .blue {
+    color: blue;
+}
+
+.sk-form .main-color {
+    color: #2d8cf0
+}
+
+.sk-form .button-next {
+    transform: translateX(30%);
+}
+
+.sk-form .success-svg {
+    text-align: center;
+    color: #32C682;
+}
+
+.sk-form h1,
+h2,
+h3 {
+    font-weight: 400;
+    text-align: center;
+}
+
+.sk-form .desc {
+    margin-top: 25px;
+    width: 60%;
+    margin-left: 20%;
+    color: rgba(0, 0, 0, .45);
+    text-align: center;
 }

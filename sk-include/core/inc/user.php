@@ -11,12 +11,19 @@ class USER extends FrameWork
 
         $this->_db = new DB();
     }
-    
-    public function CreateToken($uid)
+
+    public function id($id)
+    {
+        if (is_numeric($id)) {
+            $this->id = $id;
+        }
+    }
+
+    public function CreateToken($id)
     {
         $time = time();
         // 生成Token
-        $token = base64_encode(json_encode(array('uid' => $uid, 'time' => $time)));
+        $token = base64_encode(json_encode(array('uid' => $id, 'time' => $time)));
         // 保存Token
         $this->_db->table('sk_user')->insert(array('token' => $token));
         $this->token = $token;
@@ -24,8 +31,13 @@ class USER extends FrameWork
         return $token;
     }
 
-    public function info($uid)
+    public function info($id)
     {
-        return $this->_db->table('sk_user')->where('uid = "' . $uid . '"')->select();
+        return $this->_db->table('sk_user')->where('uid = "' . $id . '"')->select();
+    }
+
+    public function encode_pwd($pwd)
+    {
+        return md5(md5($pwd).time());
     }
 }

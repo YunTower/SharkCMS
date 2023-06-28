@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Demo</title>
+    <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
+    <link href="//unpkg.com/layui@2.8.8/dist/css/layui.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- 给容器追加 class="layui-form-pane"，即可显示为方框风格 -->
+    <form class="layui-form layui-form-pane" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">长输入框</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" autocomplete="off" placeholder="请输入" lay-verify="required"
+                    class="layui-input">
+            </div>
+        </div>
+
+            <button class="layui-btn" lay-submit lay-filter="demo2">确认</button>
+    </form>
+
+    <!-- 请勿在项目正式环境中引用该 layui.js 地址 -->
+    <script src="//unpkg.com/layui@2.8.8/dist/layui.js"></script>
+    <script>
+        layui.use(['form'], function () {
+            var form = layui.form;
+            var layer = layui.layer;
+            // 提交事件
+            form.on('submit(demo2)', function (data) {
+
+                var dataTitle=$('input[name=title]').val()
+                console.log(dataTitle)
+                
+                var field = data.field; // 获取表单字段值
+                // 显示填写结果，仅作演示用
+                layer.alert(JSON.stringify(field), {
+                    title: '当前填写的字段值'
+                });
+                // 此处可执行 Ajax 等操作
+                // …
+                return false; // 阻止默认 form 跳转
+            });
+        });
+    </script>
+</body>
+
+</html>

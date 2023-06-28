@@ -6,12 +6,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
-	<link rel="stylesheet" href="/sk-admin/component/layui/css/layui.css" />
-	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.install.css" />
-	
+	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
+	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
+
 </head>
 
-<body class="layui-bg-gray">
+<body class="layui-bg-gray sk-form">
 	<div class="layui-panel card">
 		<p class="title">欢迎使用<a class="main-color">SharkCMS</a>，以下是在安装之前你所需要知道的事情：</p>
 		<ul>
@@ -26,8 +26,8 @@
 		</div>
 	</div>
 	<script>
-		function jump(){
-			window.location.href='/install/step/1'
+		function jump() {
+			window.location.href = '/install/step/1'
 		}
 	</script>
 </body>

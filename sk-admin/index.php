@@ -12,36 +12,34 @@
 	<link rel="stylesheet" href="/sk-include/static/css/remixicon.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 	<script src="/sk-include/static/layui/layui.js"></script>
-
+	<script src="/sk-include/static/js/jquery.min.js"></script>
 
 </head>
 
 <body>
 	<div class="layui-layout layui-layout-admin">
-		<div class="layui-header">
-			<div class="layui-logo layui-hide-xs layui-bg-black">SharkCMS</div>
+		<div class="layui-header sk-bg-white">
+			<span class="layui-logo layui-hide-xs sk-admin-logo">SharkCMS</span>
 			<!-- 头部区域（可配合layui 已有的水平导航） -->
 			<ul class="layui-nav layui-layout-left">
 				<!-- 移动端显示 -->
 				<li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
 					<i class="layui-icon layui-icon-spread-left"></i>
 				</li>
-				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 1</a></li>
-				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 2</a></li>
-				<li class="layui-nav-item layui-hide-xs"><a href="javascript:;">nav 3</a></li>
-				<li class="layui-nav-item">
-					<a href="javascript:;">nav groups</a>
-					<dl class="layui-nav-child">
-						<dd><a href="javascript:;">menu 11</a></dd>
-						<dd><a href="javascript:;">menu 22</a></dd>
-						<dd><a href="javascript:;">menu 33</a></dd>
-					</dl>
-				</li>
+				<div class="layui-btn-group" id="sk-toolbar-top">
+					<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+						<button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除文章</button>
+					</li>
+					<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+						<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="save">发表文章</button>
+					</li>
+				</div>
 			</ul>
 			<ul class="layui-nav layui-layout-right">
+				<!-- 下拉菜单 -->
 				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
 					<a href="javascript:;">
-						<img src="//unpkg.com/outeres@0.0.10/img/layui/icon-v2.png" class="layui-nav-img">
+						<img src="/api/avatar/<?php echo $this->info['uid'] ?>" class="layui-nav-img">
 						<?php echo $this->info['name'] ?>
 					</a>
 					<dl class="layui-nav-child">
@@ -50,24 +48,27 @@
 						<dd><a href="javascript:;">退出</a></dd>
 					</dl>
 				</li>
-				<li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+				<li class="layui-nav-item sk-admin-line-vertical"></li>
+				<!-- 登出 -->
+				<li class="layui-nav-item sk-admin-login-out">
 					<a href="javascript:;">
-						<i class="layui-icon layui-icon-more-vertical"></i>
+						<i class="ri-logout-box-r-line"></i>
 					</a>
 				</li>
 			</ul>
 		</div>
-		<div class="layui-side layui-bg-black">
+
+		<div class="layui-side sk-admin-nav">
 			<div class="layui-side-scroll">
 				<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-				<ul class="layui-nav layui-nav-tree" lay-filter="test">
+				<ul class="layui-nav layui-nav-tree sk-admin-nav-tree" lay-filter="test">
 					<li class="layui-nav-item">
 						<a href="/admin/index">
 							<i class="ri-home-3-line"></i>
 							首页
 						</a>
 					</li>
-					<li class="layui-nav-item layui-nav-itemed">
+					<li class="layui-nav-item">
 						<a class="" href="javascript:;">
 							<i class="ri-article-line"></i>
 							内容
@@ -78,24 +79,39 @@
 							<dd><a href="/admin/content/type">分类</a></dd>
 							<dd><a href="/admin/content/label">标签</a></dd>
 							<dd><a href="/admin/content/file">附件</a></dd>
-
 						</dl>
 					</li>
 					<li class="layui-nav-item">
-						<a href="javascript:;">
-							<i class="ri-pages-line"></i>
-							页面
+						<a href="/admin/user/index">
+							<i class="ri-message-2-line"></i>
+							评论
 						</a>
-						<dl class="layui-nav-child">
-							<dd><a href="/admin/page/new">新建</a></dd>
-							<dd><a href="/admin/page/all">全部</a></dd>
-						</dl>
 					</li>
 					<li class="layui-nav-item">
 						<a href="/admin/user/index">
 							<i class="ri-user-3-line"></i>
 							用户
 						</a>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<i class="ri-paint-fill"></i>
+							外观
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/page/new">页面</a></dd>
+							<dd><a href="/admin/page/all">导航</a></dd>
+							<dd><a href="/admin/page/all">主题</a></dd>
+						</dl>
+					</li>
+					<li class="layui-nav-item">
+						<a href="javascript:;">
+							<i class="ri-plug-2-line"></i>
+							插件
+						</a>
+						<dl class="layui-nav-child">
+							<dd><a href="/admin/module/theme">插件</a></dd>
+						</dl>
 					</li>
 					<li class="layui-nav-item">
 						<a href="javascript:;">
@@ -107,16 +123,15 @@
 							<dd><a href="/admin/module/plugin">插件</a></dd>
 						</dl>
 					</li>
+
 					<li class="layui-nav-item">
 						<a href="javascript:;">
 							<i class="ri-settings-line"></i>
-							设置
+							系统
 						</a>
 						<dl class="layui-nav-child">
-							<dd><a href="/admin/set/base">基础</a></dd>
-							<dd><a href="/admin/set/senior">高级</a></dd>
-							<dd><a href="/admin/set/me">个人</a></dd>
-							<dd><a href="/admin/set/system">系统</a></dd>
+							<dd><a href="/admin/set/base">设置</a></dd>
+							<dd><a href="/admin/set/system">数据</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item">
@@ -128,60 +143,45 @@
 				</ul>
 			</div>
 		</div>
-		<div class="layui-body">
+		<div class="layui-body sk-admin-content ">
 			<!-- 内容主体区域 -->
-			<div style="padding: 15px;">
+			<div class="sk-page-main" style="padding: 15px;">
 				<?php
-				$url = FrameWork::getAction() . '/' . FrameWork::getData() . '.php';
-				if (FrameWork::getAction() == 'index' || null) {
-					include_once ADM . 'console.php';
+				@$url = ADM . FrameWork::getAction() . '/' . FrameWork::getdata() . '.php';
+				if (FrameWork::getAction() == 'index' || FrameWork::getAction() == null) {
+					include_once ADM . 'index.php';
 				} else {
-					$file = ADM . $url;
-					if (!file_exists($file)) {
-						$title = 404;
-						$error = '页面不存在';
-						include_once INC . 'view/error/error.php';
-					} else {
-						include_once $file;
-					}
+					include_once $url;
 				}
 				?>
 			</div>
 		</div>
-		<div class="layui-footer" style="text-align: right;">
+		<div class="layui-footer">
 			<!-- 底部固定区域 -->
-			Powered by SharkCMS
+			<div class="sk-admin-footer-left" id="sk-toolbar-bottom">
+				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+					<button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除文章</button>
+				</li>
+				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+					<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="save">发表文章</button>
+				</li>
+			</div>
+			<div class="sk-admin-footer-right">
+				Powered by <a href="https://www.sharkcms.cn" style="color:var(--main-color-1)">SharkCMS</a>
+			</div>
 		</div>
 	</div>
 
+
+	<script src="/sk-include/static/js/sharkcms.base64.js"></script>
 	<script>
-		//JS 
+		//layui
 		layui.use(['element', 'layer', 'util'], function() {
 			var element = layui.element;
 			var layer = layui.layer;
 			var util = layui.util;
-			var $ = layui.$;
 
-			//头部事件
-			util.event('lay-header-event', {
-				menuLeft: function(othis) { // 左侧菜单事件
-					layer.msg('展开左侧菜单的操作', {
-						icon: 0
-					});
-				},
-				menuRight: function() { // 右侧菜单事件
-					layer.open({
-						type: 1,
-						title: '个性化',
-						content: '<div style="padding: 15px;">系统主题</div>',
-						area: ['260px', '100%'],
-						offset: 'rt', // 右上角
-						anim: 'slideLeft', // 从右侧抽屉滑出
-						shadeClose: true,
-						scrollbar: false
-					});
-				}
-			});
+
 		});
 	</script>
 </body>

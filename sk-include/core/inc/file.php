@@ -42,21 +42,9 @@ class File
         return true;
     }
 
-    public static function List($dir)
-    {
-        // 输出文件列表
-        $handler = opendir($dir);
-        while (($filename = readdir($handler)) !== false) { //务必使用!==，防止目录下出现类似文件名“0”等情况 
-            if ($filename != "." && $filename != "..") {
-                $files[] = $filename;
-            }
-        }
-        closedir($handler);
 
-        // 获取文件信息
-        foreach ($files as $list){
-            return (array('name'=>$list,'size'=>filesize($dir.'/'.$list),'time'=>date('Y-m-d H:i:s',filemtime($dir.'/'.$list))));
-        }
-        // return $files;
+    public function md5($name)
+    {
+        return md5_file($name, true);
     }
 }

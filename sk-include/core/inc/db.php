@@ -22,6 +22,7 @@ class DB
     private $_limit = null; //limit限定查询
     private $_group = null; //group分组
     private $_configs = null; //数据库配置
+    private $_error;
 
 
 
@@ -39,6 +40,37 @@ class DB
             }
             $this->_db = $db;
         }
+    }
+
+    // 数据库导入
+    public function import($file)
+    {
+        // 创建MySQL连接
+        $mysqli = $this->_db;
+
+        if ($mysqli->connect_error) {
+            die("连接数据库失败: " . $mysqli->connect_error);
+        }
+        
+        // 读取.sql文件内容
+        $sql = file_get_contents($file);
+        // 执行SQL语句
+        if (!$mysqli->multi_query($sql)) {
+            //若导入失败
+            return false;
+        }
+        // 清空结果集
+        while ($mysqli->more_results() && $mysqli->next_result()) {
+            $discard = $mysqli->use_result();
+            if ($discard instanceof mysqli_result) {
+                $discard->free();
+            }
+        }
+
+        // 关闭MySQL连接
+        $mysqli->close();
+
+        return true;
     }
 
     // 获取所有数据
@@ -147,7 +179,7 @@ class DB
         $res = mysqli_query($this->_db, $sql);
         if (!$res) {
             $errors = mysqli_error_list($this->_db);
-            System::ERROR('数据库错误', "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error']);
+            echo '数据库错误', "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
             die();
         }
         return $res;
@@ -172,6 +204,7 @@ class DB
         if (mysqli_query($this->_db, $sql)) {
             return true;
         } else {
+            $this->_error=mysqli_error_list($link);
             return false;
         }
     }
@@ -203,6 +236,12 @@ class DB
         return $res;
     }
 
+
+    // 异常输出
+    public function error(){
+        return $this->_error[0];
+    }
+
     // 异常输出
     private function ShowException($var)
     {
@@ -211,8 +250,7 @@ class DB
         } else if (is_null($var)) {
             var_dump(NULL);
         } else {
-            System::ERROR('数据库错误', $var);
-            // echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
+            echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
         }
     }
 }

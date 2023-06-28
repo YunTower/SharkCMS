@@ -15,59 +15,58 @@
 
 </head>
 
-<body class="layui-bg-gray body">
-	<!-- <div class="layui-panel card" style="padding:5px;width:auto;"> -->
+<body class="layui-bg-gray body sk-form">
+	<div class="layui-panel card" style="padding:5px;width:auto;">
 		<div class="title">
 			<h2 style="font-weight: 200">登陆</h2>
 		</div>
 		<form class="layui-form" method="POST" action="">
-			<div class="sk-form">
-				<div class="layui-form-item">
-					<div class="layui-input-wrap">
-						<div class="layui-input-prefix">
-							<i class="layui-icon layui-icon-email"></i>
-						</div>
-						<input type="email" name="umail" value="286267038@qq.com" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
+			<div class="layui-form-item">
+				<div class="layui-input-wrap">
+					<div class="layui-input-prefix">
+						<i class="layui-icon layui-icon-email"></i>
 					</div>
+					<input type="email" name="umail" value="286267038@qq.com" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
 				</div>
-				<div class="layui-form-item">
-					<div class="layui-input-wrap">
-						<div class="layui-input-prefix">
-							<i class="layui-icon layui-icon-password"></i>
-						</div>
-						<input type="password" name="upwd" value="testtest" lay-verify="required" placeholder="密 码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-wrap">
+					<div class="layui-input-prefix">
+						<i class="layui-icon layui-icon-password"></i>
 					</div>
+					<input type="password" name="upwd" value="testtest" lay-verify="required" placeholder="密 码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
 				</div>
-				<div class="layui-form-item">
-					<div class="layui-row">
-						<div class="layui-col-xs7">
-							<div class="layui-input-wrap">
-								<div class="layui-input-prefix">
-									<i class="layui-icon layui-icon-vercode"></i>
-								</div>
-								<input type="text" name="captcha" value="" lay-verify="required" placeholder="验证码" lay-reqtext="请填写验证码" autocomplete="off" class="layui-input" lay-affix="clear">
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-row">
+					<div class="layui-col-xs7">
+						<div class="layui-input-wrap">
+							<div class="layui-input-prefix">
+								<i class="layui-icon layui-icon-vercode"></i>
 							</div>
+							<input type="text" name="captcha" value="" lay-verify="required" placeholder="验证码" lay-reqtext="请填写验证码" autocomplete="off" class="layui-input" lay-affix="clear">
 						</div>
-						<div class="layui-col-xs5">
-							<div style="margin-left: 10px;">
-								<img src="/captcha/create" id="captcha" onclick="this.src='/captcha/create/'+ new Date().getTime();">
-							</div>
+					</div>
+					<div class="layui-col-xs5">
+						<div style="margin-left: 10px;">
+							<img src="/captcha/create" id="captcha" onclick="this.src='/captcha/create/'+ new Date().getTime();">
 						</div>
 					</div>
 				</div>
-				<div class="layui-form-item">
-					<input type="checkbox" name="keep" lay-skin="primary" title="记住密码">
-					<a href="/admin/reg" style="float: right; margin-top: 7px;">注册账号</a>
-				</div>
-				<div class="layui-form-item">
-					<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">登录</button>
-				</div>
-				<!-- <div class="layui-form-item demo-login-other" style="text-align: center;">
+			</div>
+			<div class="layui-form-item">
+				<input type="checkbox" name="keep" lay-skin="primary" title="记住密码">
+				<a href="/admin/reg" style="float: right; margin-top: 7px;">注册账号</a>
+			</div>
+			<div class="layui-form-item">
+				<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">登录</button>
+			</div>
+			<!-- <div class="layui-form-item demo-login-other" style="text-align: center;">
 					<a href="/admin/reg">注册帐号</a>
 				</div> -->
-			</div>
 		</form>
 	</div>
+
 	<script src="/sk-include/static/js/jquery.min.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>
 	<script src="/sk-include/static/js/sharkcms.base64.js"></script>
@@ -101,7 +100,7 @@
 							});
 
 							// 连接状态
-							if (data.code == 200) {
+							if (data.code == 1000) {
 								// if 200 ==> 弹出层 && 跳转 /admin/index
 								layer.close(loadIndex)
 								layer.msg('登陆成功', {

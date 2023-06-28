@@ -39,11 +39,11 @@ class FrameWork
         $controller = $controller_action['controller'];
         $action = $controller_action['action'];
         //拼接控制器类文件名称
-        $class_file = INC . 'application/controller/' . $controller . '.php';
+        $class_file = INC . 'app/controller/' . $controller . '.php';
         if ($controller != 'sk-content') {
             if (file_exists($class_file)) {
                 //加载基础控制器类
-                $controller_file = INC . 'application/controller/controller.php';
+                $controller_file = INC . 'app/controller/controller.php';
                 if (file_exists($controller_file)) {
                     require_once $controller_file;
                 }
@@ -65,11 +65,14 @@ class FrameWork
                 }
                 //若方法不存在，则跳转到错误控制器
                 if ($method == '') {
-                    ob_clean();
-                    exit('页面不存在');
+                    if (FrameWork::getController() != 'admin') {
+                        ob_clean();
+                        exit('页面不存在');
+                    }
+                } else {
+                    //执行方法
+                    $method->invoke($instance);
                 }
-                //执行方法
-                $method->invoke($instance);
             } else {
                 exit('非法访问');
             }
