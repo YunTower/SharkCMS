@@ -4860,8 +4860,7 @@ body .layui-table-tips .layui-layer-content {
 
 .layui-nav-tree .layui-nav-child,
 .layui-nav-tree .layui-nav-child a:hover {
-    /* background: 0 0; */
-    color: #fff
+    color: var(--main-color-1)
 }
 
 .layui-nav-itemed>.layui-nav-child {

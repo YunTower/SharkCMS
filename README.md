@@ -1,6 +1,10 @@
+
+# 开发版本请勿下载！
+## 开发版本包含了大量的测试数据，直接使用会造成一些问题，所以请不要使用！
+
 <div align="center">
 <a href="https://sharkcms.cn">
-<img src="./sk-include/static/img/logo.svg" />
+<img src="https://cdn.sharkcms.cn/img/logo.svg" />
 </a>
 <br>
 
@@ -57,10 +61,10 @@ Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
   <tbody>
     <tr>
       <td>
-      <img height="200px" width="200px" src="./sk-include/static/img/wxpay.png" alt="微信赞助"/>
+      <img height="200px" width="200px" src="https://cdn.sharkcms.cn/img/wxpay.png" alt="微信赞助"/>
       </td>
       <td>
-      <img height="200px" width="200px" src="./sk-include/static/img/alipay.png" alt="支付宝赞助"/>
+      <img height="200px" width="200px" src="https://cdn.sharkcms.cn/img/alipay.png" alt="支付宝赞助"/>
       </td>
     </tr>
   </tbody>
