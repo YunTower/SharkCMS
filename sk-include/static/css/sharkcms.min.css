@@ -57,6 +57,11 @@
     display:none;
 }
 
+.sk-admin-home{
+    background-color:#fff;
+}
+
+
 .sk-form {
     width: 300px;
     margin: 21px auto 0;
@@ -107,15 +112,14 @@
 
 .sk-admin-content {
     background-color: whitesmoke;
-    height: fit-content;
+    height: calc(100% - 42px) !important;
     z-index: -99999;
 
 }
 
-.sk-page-main {
-    background-color: var(--main-color-2);
-    margin: 10px;
-    border-radius: 5px;
+.sk-newpost{
+    background-color: #fff;
+    padding: 22px;
 }
 
 .sk-admin-footer-left {
@@ -126,6 +130,21 @@
 .sk-admin-footer-right {
     float: right;
 }
+
+
+#title{
+    font-weight: none;
+    text-align: center;
+}
+
+#count{
+    font-size: 25px;
+    color: var(--main-color-1);
+    font-weight: 700;
+    text-align: center;
+    height: 40px;
+}
+
 
 .sk-form .layui-panel {
     position: absolute;
@@ -190,4 +209,13 @@ h3 {
     margin-left: 20%;
     color: rgba(0, 0, 0, .45);
     text-align: center;
+}
+
+@
+
+@media screen and (max-width:750px) {
+    .sk-admin-nav{
+        /* display: none; */
+        animation: ;
+    }
 }

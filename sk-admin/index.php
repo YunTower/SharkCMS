@@ -13,6 +13,7 @@
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 	<script src="/sk-include/static/layui/layui.js"></script>
 	<script src="/sk-include/static/js/jquery.min.js"></script>
+	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 
 </head>
 
@@ -42,15 +43,10 @@
 						<img src="/api/avatar/<?php echo $this->info['uid'] ?>" class="layui-nav-img">
 						<?php echo $this->info['name'] ?>
 					</a>
-					<dl class="layui-nav-child">
-						<dd><a href="javascript:;"><?php echo $this->info['name'] ?></a></dd>
-						<dd><a href="javascript:;">设置</a></dd>
-						<dd><a href="javascript:;">退出</a></dd>
-					</dl>
 				</li>
 				<li class="layui-nav-item sk-admin-line-vertical"></li>
 				<!-- 登出 -->
-				<li class="layui-nav-item sk-admin-login-out">
+				<li class="layui-nav-item sk-admin-login-out" onclick="sk.loginOut()">
 					<a href="javascript:;">
 						<i class="ri-logout-box-r-line"></i>
 					</a>
@@ -131,7 +127,10 @@
 						</a>
 						<dl class="layui-nav-child">
 							<dd><a href="/admin/set/base">设置</a></dd>
+							<dd><a href="/admin/set/base">资料</a></dd>
 							<dd><a href="/admin/set/system">数据</a></dd>
+							<dd><a href="/admin/set/update">更新</a></dd>
+
 						</dl>
 					</li>
 					<li class="layui-nav-item">
@@ -145,11 +144,11 @@
 		</div>
 		<div class="layui-body sk-admin-content ">
 			<!-- 内容主体区域 -->
-			<div class="sk-page-main" style="padding: 15px;">
+			<div class="sk-page-main" style="padding: 10px;">
 				<?php
 				@$url = ADM . FrameWork::getAction() . '/' . FrameWork::getdata() . '.php';
 				if (FrameWork::getAction() == 'index' || FrameWork::getAction() == null) {
-					include_once ADM . 'index.php';
+					include_once ADM . 'console.php';
 				} else {
 					include_once $url;
 				}
@@ -181,8 +180,8 @@
 			var layer = layui.layer;
 			var util = layui.util;
 
-
 		});
+
 	</script>
 </body>
 

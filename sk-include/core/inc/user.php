@@ -12,13 +12,6 @@ class USER extends FrameWork
         $this->_db = new DB();
     }
 
-    public function id($id)
-    {
-        if (is_numeric($id)) {
-            $this->id = $id;
-        }
-    }
-
     public function CreateToken($id)
     {
         $time = time();

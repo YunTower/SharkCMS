@@ -83,6 +83,12 @@ class api extends Controller
         unset($_SESSION['captcha']);
     }
 
+    function loginOut()
+    {
+        unset($_SESSION['token']);
+        exit(json_encode(array('code' => 1000, 'msg' => '操作成功', 'error' => null)));
+    }
+
     // 后台接口
     function admin()
     {
@@ -162,7 +168,7 @@ class api extends Controller
     {
         switch ($this->action) {
             case 'cover':
-                $file=CON . "upload/cover/" . $_FILES["file"]["name"];
+                $file = CON . "upload/cover/" . $_FILES["file"]["name"];
                 echo filesize($file);
                 if (file_exists($file)) {
                     exit(json_encode(array('code' => 1000, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));

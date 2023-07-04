@@ -55,7 +55,7 @@
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<input type="checkbox" name="keep" lay-skin="primary" title="记住密码">
+				<!-- <input type="checkbox" name="keep" lay-skin="primary" title="记住密码"> -->
 				<a href="/admin/reg" style="float: right; margin-top: 7px;">注册账号</a>
 			</div>
 			<div class="layui-form-item">

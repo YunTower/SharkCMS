@@ -1,7 +1,7 @@
 <link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
 <link href="/sk-include/static/css/editor.css" rel="stylesheet">
 
-<form class="layui-form layui-form-pane" action="">
+<form class="layui-form layui-form-pane sk-newpost" action="">
     <!-- 基础功能 -->
     <div class="sk-admin-editor-top">
         <div class="layui-form-item">
@@ -52,4 +52,5 @@
 <script>
     $('#sk-toolbar-top').show();
     $('#sk-toolbar-bottom').show();
+    sk.noSave();
 </script>
