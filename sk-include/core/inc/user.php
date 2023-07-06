@@ -1,15 +1,12 @@
 <?php
-class USER extends FrameWork
+class User extends FrameWork
 {
-    private $_db;
     private $token;
 
     public function __construct()
     {
         if (isset($_SESSION['token'])) {
         }
-
-        $this->_db = new DB();
     }
 
     public function CreateToken($id)
@@ -18,7 +15,7 @@ class USER extends FrameWork
         // 生成Token
         $token = base64_encode(json_encode(array('uid' => $id, 'time' => $time)));
         // 保存Token
-        $this->_db->table('sk_user')->insert(array('token' => $token));
+        self::$_db->table('sk_user')->insert(array('token' => $token));
         $this->token = $token;
         $_SESSION['token'] = $token;
         return $token;
@@ -26,7 +23,7 @@ class USER extends FrameWork
 
     public function info($id)
     {
-        return $this->_db->table('sk_user')->where('uid = "' . $id . '"')->select();
+        return self::$_db->table('sk_user')->where('uid = "' . $id . '"')->select();
     }
 
     public function encode_pwd($pwd)

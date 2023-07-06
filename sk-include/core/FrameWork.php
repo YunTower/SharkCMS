@@ -3,29 +3,48 @@
 class FrameWork
 {
 
-    /**
-     * 构造方法
-     */
-    public function __construct()
-    {
-        include_once INC . 'core/inc/db.php';
-    }
-
+    public static $_App;
+    public static $_db;
+    public static $_theme;
+    public static $_user;
+    public static $_cloud;
 
     /**
      * 框架初始化方法
      */
     public static function init()
     {
-        //加载配置文件;
-        $config_file = INC . 'config/app.ini';
+        //加载配置文件
+        $config_file = INC . 'config/app.php';
         if (file_exists($config_file)) {
-            $config = parse_ini_file($config_file);
-            foreach ($config as $key => $value) {
-                define(strtoupper($key), "$value");
-            }
+            self::$_App = include $config_file;
         } else {
             exit('没有找到配置文件！');
+        }
+
+        // 加载内核依赖
+        include_once INC . 'core/inc/db.php';
+        include_once INC . 'core/inc/theme.php';
+        include_once INC . 'core/inc/user.php';
+        include_once INC . 'core/inc/cloud.php';
+
+        // 初始化类
+        self::$_db = new DB();
+        self::$_theme = new Theme();
+        self::$_user = new User();
+        self::$_cloud = new Cloud();
+
+
+        // 检查安装状态
+        // if (self::$_App['app']['Install'] == false) {
+        //     if (self::getController() != 'install') {
+        //         header('Location:/install/');
+        //     }
+        // }
+
+        // 运行模式 1=>线上环境 2=>开发环境
+        if (Mode == 1) {
+        } else {
         }
     }
 
@@ -42,11 +61,6 @@ class FrameWork
         $class_file = INC . 'app/controller/' . $controller . '.php';
         if ($controller != 'sk-content') {
             if (file_exists($class_file)) {
-                //加载基础控制器类
-                $controller_file = INC . 'app/controller/controller.php';
-                if (file_exists($controller_file)) {
-                    require_once $controller_file;
-                }
                 //加载控制器类文件            
                 require_once $class_file;
                 //获取控制器类
@@ -113,7 +127,7 @@ class FrameWork
         if (isset(self::getURI()[0]) && !empty(self::getURI()[0])) {
             return self::getURI()[0];
         } else {
-            return DEFAULT_CONTROLLER;
+            return 'index';
         }
     }
 
@@ -123,7 +137,7 @@ class FrameWork
         if (isset(self::getURI()[1]) && !empty(self::getURI()[1])) {
             return self::getURI()[1];
         } else {
-            return DEFAULT_ACTION;
+            return 'index';
         }
     }
 
@@ -137,9 +151,8 @@ class FrameWork
         }
     }
 
-    /**
-     * 获取URL中的控制器与方法
-     */
+
+    // 获取URL中的控制器与方法
     public static function controller_action()
     {
         return array(
@@ -147,5 +160,14 @@ class FrameWork
             'action' => self::getAction(),
             'data' => self::getData()
         );
+    }
+
+    // 配置修改
+    public static function setConfig($new)
+    {
+        $config = self::$_App;
+        $file = INC . 'config/app.php';
+        $_new = var_export(array_replace($config, $new), true);
+        file_put_contents($file, "<?php \n return $_new;\n");
     }
 }

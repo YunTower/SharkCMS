@@ -1,21 +1,18 @@
 <?php
-class index extends Controller
+class index extends FrameWork
 {
     private $data;
     private $theme;
-    private $_db;
-    private $_user;
 
     function __construct()
     {
-        parent::__construct();
-        $this->_db = new DB();
-        $this->_user = new USER();
-        $this->theme = $this->_db->table('sk_setting')->where('name = "theme-name"')->select()['value'];
+        self::$_theme = self::$_db->table('sk_setting')->where('name = "theme-name"')->select()['value'];
     }
 
     public function index()
     {
-        include CON . 'theme/' . $this->theme . '/index.php';
+        self::setConfig(array('db'=>array('Host'=>'a')));
+        var_dump(self::$_App);
+        
     }
 }

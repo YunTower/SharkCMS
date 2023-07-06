@@ -1,16 +1,8 @@
 <?php
 
-class install extends Controller
+class install extends FrameWork
 {
     private $_step;
-    private $_db;
-    private $_user;
-
-    public function __construct()
-    {
-        $this->_db = new DB();
-        $this->_user = new USER();
-    }
 
     public function index()
     {
@@ -58,12 +50,12 @@ class install extends Controller
 
                 case 'install';
                     // 导入数据表
-                    if ($this->_db->import(INC . 'config/db.sql')) {
+                    
+                    if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
-                        $pwd = $this->_user->encode_pwd($data['ad_pwd']);
-                        $this->_db->table('sk_user')->insert(array('uid' => '1', 'name' => $data['ad_name'], 'pwd' => $pwd, 'group' => 'admin'));
-                        $this->_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug'=>'你好！世界！','content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'uname' => $data['ad_name']));
-
+                        $pwd = self::$_user->encode_pwd($data['ad_pwd']);
+                        self::$_db->table('sk_user')->insert(array('uid' => '1', 'name' => $data['ad_name'], 'pwd' => $pwd, 'group' => 'admin'));
+                        self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug'=>'你好！世界！','content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'uname' => $data['ad_name']));
                         exit(json_encode(array('code' => 1000, 'msg' => '安装成功', 'error' => null)));
                     } else {
                         exit(json_encode(array('code' => 1003, 'msg' => '系统安装失败', 'error' => null)));

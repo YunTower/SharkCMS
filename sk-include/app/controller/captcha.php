@@ -1,5 +1,5 @@
 <?php
-class captcha extends Controller
+class captcha extends FrameWork
 {
     public function __construct()
     {

@@ -29,14 +29,16 @@ class DB
     // 构造数据库连接函数
     public function __construct()
     {
-        $path = INC . 'config/database.ini';
-        $this->_configs = parse_ini_file($path);
+        // 加载配置
+        $path = FrameWork::$_App;
+        $path = $path['db'];
+        $this->_configs = $path;
         $link = $this->_db;
         if (!$link) {
-            $db = mysqli_connect($this->_configs['db_host'], $this->_configs['db_user'], $this->_configs['db_password'], $this->_configs['db_name']);
+            $db = mysqli_connect($this->_configs['Host'], $this->_configs['User'], $this->_configs['Pwd'], $this->_configs['Name']);
             mysqli_query($db, "set names utf8");
             if (!$db) {
-                System::ERROR('数据库错误', mysqli_connect_error());
+                exit('系统错误：' . mysqli_connect_error());
             }
             $this->_db = $db;
         }
@@ -51,7 +53,7 @@ class DB
         if ($mysqli->connect_error) {
             die("连接数据库失败: " . $mysqli->connect_error);
         }
-        
+
         // 读取.sql文件内容
         $sql = file_get_contents($file);
         // 执行SQL语句
@@ -204,7 +206,7 @@ class DB
         if (mysqli_query($this->_db, $sql)) {
             return true;
         } else {
-            $this->_error=mysqli_error_list($link);
+            $this->_error = mysqli_error_list($link);
             return false;
         }
     }
@@ -238,7 +240,8 @@ class DB
 
 
     // 异常输出
-    public function error(){
+    public function error()
+    {
         return $this->_error[0];
     }
 

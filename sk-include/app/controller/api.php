@@ -1,12 +1,9 @@
 <?php
-class api extends Controller
+class api extends FrameWork
 {
     private $data;
     private $info;
     private $action;
-    private $_db;
-    private $_user;
-    private $_file;
 
     function __construct()
     {
@@ -16,9 +13,6 @@ class api extends Controller
         $data = base64_decode($data);
         $data = json_decode($data, true);
         $this->data = $data;
-        $this->_db = new DB();
-        $this->_user = new USER();
-        $this->_file = new File();
 
         $this->action = FrameWork::getData();
 
@@ -31,7 +25,7 @@ class api extends Controller
                 // 获取用户信息
                 $_uid = $_token->uid;
                 // 查询用户信息
-                $this->info = $this->_db->table('sk_user')->where('uid =' . $_uid)->select();
+                $this->info = self::$_db->table('sk_user')->where('uid =' . $_uid)->select();
                 // 验证用户组
                 if (!$this->info) {
                     exit(json_encode(array('code' => 1003, 'msg' => '非真实用户!用户信息不存在!', 'error' => null)));
@@ -44,7 +38,7 @@ class api extends Controller
     function login()
     {
         $data = $this->data;
-        $user = $this->_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->select();
+        $user = self::$_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->select();
 
         // 没有验证码
         if (isset($data['captcha'])) {
@@ -59,7 +53,7 @@ class api extends Controller
                             // 权限组 != admin
                             if ($user['group'] == 'admin') {
                                 // 生成Token
-                                $this->_user->CreateToken($user['uid']);
+                                self::$_user->CreateToken($user['uid']);
                                 // 返回成功信息
                                 echo json_encode(array('code' => 1000, 'msg' => '登陆成功'));
                             } else {
@@ -118,8 +112,10 @@ class api extends Controller
 
         switch ($this->action) {
             case 'post':
-                exit(json_encode(array('code' => 0, 'count' => 1, 'msg' => '查询成功', 'data' => $this->_db->getAll('sk_content'))));
+                exit(json_encode(array('code' => 0, 'count' => 1, 'msg' => '查询成功', 'data' => self::$_db->getAll('sk_content'))));
                 break;
+            case 'news':
+
             default:
                 exit(json_encode(array('code' => 1000,)));
                 break;
@@ -130,7 +126,7 @@ class api extends Controller
     function avatar()
     {
         if (is_numeric($this->action)) {
-            $data = $this->_db->table('sk_user')->where('uid = ' . $this->action)->select();
+            $data = self::$_db->table('sk_user')->where('uid = ' . $this->action)->select();
             header('Content-type: image/webp');
             if ($data['avatar']) {
                 include $data['avatar'];
@@ -149,11 +145,11 @@ class api extends Controller
         switch ($this->action) {
             case 'save':
                 $data = $this->data;
-                $sql = $this->_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $this->info['uid'], 'uname' => $this->info['name']));
+                $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $this->info['uid'], 'uname' => $this->info['name']));
                 if ($sql) {
                     exit(json_encode(array('code' => 1000, 'msg' => '操作成功', 'error' => null)));
                 } else {
-                    exit(json_encode(array('code' => 1008, 'msg' => '操作失败', 'error' => $this->_db->error()['error'])));
+                    exit(json_encode(array('code' => 1008, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
                 }
 
                 break;
@@ -187,19 +183,7 @@ class api extends Controller
         }
     }
 
-    // 云端接口
-    function cloud()
-    {
-        $options = array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => 'Content-type:application/x-www-form-urlencoded',
-                // 'content' => $postdata,
-                'timeout' => 15 * 60 // 超时时间（单位:s）
-            )
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents('http://127.0.0.1:888', false, $context);
-        echo $result;
-    }
+
+
+
 }

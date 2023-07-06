@@ -15,7 +15,7 @@
 	<div class="layui-panel card">
 		<form class="layui-form layui-form-pane" action="">
 			<div class="layui-form-item">
-				<label class="layui-form-label">管理员名字</label>
+				<label class="layui-form-label">管理员昵称</label>
 				<div class="layui-input-block">
 					<input type="text" value="test" name="ad_name" autocomplete="off" placeholder="请输入" value="127.0.0.1" lay-verify="required" class="layui-input">
 				</div>
