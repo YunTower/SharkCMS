@@ -38,7 +38,7 @@ class DB
             $db = mysqli_connect($this->_configs['Host'], $this->_configs['User'], $this->_configs['Pwd'], $this->_configs['Name']);
             mysqli_query($db, "set names utf8");
             if (!$db) {
-                exit('系统错误：' . mysqli_connect_error());
+                FrameWork::Error('数据库错误', mysqli_connect_error());
             }
             $this->_db = $db;
         }
@@ -51,7 +51,7 @@ class DB
         $mysqli = $this->_db;
 
         if ($mysqli->connect_error) {
-            die("连接数据库失败: " . $mysqli->connect_error);
+            FrameWork::Error('数据库连接失败', $mysqli->connect_error);
         }
 
         // 读取.sql文件内容
@@ -82,6 +82,16 @@ class DB
         if (!$link) return false;
         $sql = "SELECT * FROM {$table}";
         $data = mysqli_fetch_all($this->execute($sql), MYSQLI_ASSOC);
+        return $data;
+    }
+
+    // 获取结果集的行数
+    public function count()
+    {
+        $link = $this->_db;
+        if (!$link) return false;
+        $sql = "SELECT * FROM {$this->_table} {$this->_where}";
+        $data = mysqli_num_rows($this->execute($sql));
         return $data;
     }
 
@@ -181,8 +191,8 @@ class DB
         $res = mysqli_query($this->_db, $sql);
         if (!$res) {
             $errors = mysqli_error_list($this->_db);
-            echo '数据库错误', "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
-            die();
+            $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
+            FrameWork::Error('数据库错误', $msg);
         }
         return $res;
     }

@@ -5,7 +5,7 @@ class FrameWork
 
     public static $_App;
     public static $_db;
-    public static $_theme;
+    public static $_view;
     public static $_user;
     public static $_cloud;
 
@@ -24,13 +24,13 @@ class FrameWork
 
         // 加载内核依赖
         include_once INC . 'core/inc/db.php';
-        include_once INC . 'core/inc/theme.php';
+        include_once INC . 'core/inc/view.php';
         include_once INC . 'core/inc/user.php';
         include_once INC . 'core/inc/cloud.php';
 
         // 初始化类
         self::$_db = new DB();
-        self::$_theme = new Theme();
+        self::$_view = new View();
         self::$_user = new User();
         self::$_cloud = new Cloud();
 
@@ -80,21 +80,20 @@ class FrameWork
                 //若方法不存在，则跳转到错误控制器
                 if ($method == '') {
                     if (FrameWork::getController() != 'admin') {
-                        ob_clean();
-                        exit('页面不存在');
+                        self::Error('404 页面不存在', '你所访问的页面不存在');
                     }
                 } else {
                     //执行方法
                     $method->invoke($instance);
                 }
             } else {
-                exit('非法访问');
+                self::Error('404 页面不存在', '你所访问的页面不存在');
             }
         }
     }
 
     // 获取域名
-    public static function Domain()
+    public static function getDomain()
     {
         $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
         return $http_type . $_SERVER['HTTP_HOST'];
@@ -169,5 +168,14 @@ class FrameWork
         $file = INC . 'config/app.php';
         $_new = var_export(array_replace($config, $new), true);
         file_put_contents($file, "<?php \n return $_new;\n");
+    }
+
+    public static function Error($title, $msg)
+    {
+        ob_clean();
+        $title;
+        $msg;
+        include_once INC . 'view/error/error.php';
+        exit();
     }
 }

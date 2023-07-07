@@ -50,7 +50,7 @@ class install extends FrameWork
 
                 case 'install';
                     // 导入数据表
-                    
+                    self::setConfig(array('db'=>array('Host'=>)));
                     if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
                         $pwd = self::$_user->encode_pwd($data['ad_pwd']);

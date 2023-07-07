@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主机： localhost
--- 生成日期： 2023-06-27 15:27:44
+-- 生成日期： 2023-07-07 17:39:48
 -- 服务器版本： 5.7.26
 -- PHP 版本： 8.0.2
 
@@ -41,7 +41,7 @@ CREATE TABLE `sk_comment` (
 -- --------------------------------------------------------
 
 --
--- 表的结构 `sk_content
+-- 表的结构 `sk_content`
 --
 
 CREATE TABLE `sk_content` (
@@ -50,8 +50,8 @@ CREATE TABLE `sk_content` (
   `slug` varchar(60) NOT NULL,
   `content` text NOT NULL,
   `cover` varchar(190) DEFAULT NULL,
-  `order` varchar(10) DEFAULT NULL,
-  `type` varchar(10) DEFAULT NULL,
+  `category` varchar(20) DEFAULT NULL,
+  `tag` varchar(20) DEFAULT NULL,
   `status` varchar(10) DEFAULT NULL,
   `pwd` varchar(32) DEFAULT NULL,
   `uid` varchar(10) NOT NULL,
@@ -64,8 +64,38 @@ CREATE TABLE `sk_content` (
 -- 转存表中的数据 `sk_content`
 --
 
-INSERT INTO `sk_content` (`cid`,`title`,`slug`, `content`, `cover`, `order`, `type`, `status`, `pwd`, `uid`, `uname`, `allowComment`,`created`) VALUES
-(1, 'Hello SharkCMS','你好！世界！', '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', NULL, NULL, NULL, NULL, NULL, '1', 'test', NULL, '2023-06-02 03:35:25');
+INSERT INTO `sk_content` (`cid`, `title`, `slug`, `content`, `cover`, `category`, `tag`, `status`, `pwd`, `uid`, `uname`, `allowComment`, `created`) VALUES
+(1, 'Hello SharkCMS', '你好！世界！', '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', NULL, NULL, NULL, NULL, NULL, '1', 'test', NULL, '2023-06-02 03:35:25');
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `sk_tag`
+--
+
+CREATE TABLE `sk_tag` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` text NOT NULL,
+  `cid` text NOT NULL,
+  `uid` text NOT NULL,
+  `uname` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `sk_category`
+--
+
+CREATE TABLE `sk_category` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` text NOT NULL,
+  `cid` text NOT NULL,
+  `uid` text NOT NULL,
+  `uname` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -101,7 +131,7 @@ CREATE TABLE `sk_setting` (
 --
 
 INSERT INTO `sk_setting` (`name`, `value`, `created`) VALUES
-('theme-name', 'test', '2023-06-24 04:53:45');
+('theme-name', 'default', '2023-07-06 12:48:51');
 
 -- --------------------------------------------------------
 
@@ -116,21 +146,12 @@ CREATE TABLE `sk_theme` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
-
 --
--- 表的结构 `sk_file`
+-- 转存表中的数据 `sk_theme`
 --
 
-CREATE TABLE `sk_file` (
-  `fid` int(6) UNSIGNED NOT NULL,
-  `name` TEXT NOT NULL,
-  `value` TEXT NOT NULL,
-  `md5` TEXT NOT NULL,
-  `uid` TEXT NOT NULL,
-  `uname` TEXT NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+INSERT INTO `sk_theme` (`tid`, `name`, `value`, `created`) VALUES
+(1, 'd-home-avatar', '/sk-content/upload/avatar/default.webp', '2023-07-07 09:00:32');
 
 -- --------------------------------------------------------
 
@@ -175,6 +196,18 @@ ALTER TABLE `sk_content`
   ADD PRIMARY KEY (`cid`);
 
 --
+-- 表的索引 `sk_tag`
+--
+ALTER TABLE `sk_tag`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- 表的索引 `sk_category`
+--
+ALTER TABLE `sk_category`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- 表的索引 `sk_page`
 --
 ALTER TABLE `sk_page`
@@ -185,12 +218,6 @@ ALTER TABLE `sk_page`
 --
 ALTER TABLE `sk_theme`
   ADD PRIMARY KEY (`tid`);
-
---
--- 表的索引 `sk_file`
---
-ALTER TABLE `sk_file`
-  ADD PRIMARY KEY (`fid`);
 
 --
 -- 表的索引 `sk_user`
@@ -215,6 +242,18 @@ ALTER TABLE `sk_content`
   MODIFY `cid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- 使用表AUTO_INCREMENT `sk_tag`
+--
+ALTER TABLE `sk_tag`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- 使用表AUTO_INCREMENT `sk_category`
+--
+ALTER TABLE `sk_category`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  
+--
 -- 使用表AUTO_INCREMENT `sk_page`
 --
 ALTER TABLE `sk_page`
@@ -224,13 +263,7 @@ ALTER TABLE `sk_page`
 -- 使用表AUTO_INCREMENT `sk_theme`
 --
 ALTER TABLE `sk_theme`
-  MODIFY `tid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- 使用表AUTO_INCREMENT `sk_file`
---
-ALTER TABLE `sk_file`
-  MODIFY `fid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `tid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- 使用表AUTO_INCREMENT `sk_user`
