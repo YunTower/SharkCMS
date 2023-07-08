@@ -31,9 +31,9 @@
                                 <i class="i-mdi-comment-outline h-3 w-3"></i>
                                 <a>0</a>
                                 <i class="i-mdi-folder-outline h-3 w-3"></i>
-                                <a href="/page/category/default" title="默认分类">默认分类</a>
+                                <a href="/page/category/<?php echo $a['category'] ?>" title="<?php echo $a['category'] ?>"><?php echo $a['category'] ?></a>
                                 <i class="i-mdi-tag h-3 w-3"></i>
-                                <a href="/page/tags/SharkCMS/" title="Halo">SharkCMS</a>
+                                <a href="/page/tag/<?php echo $a['tag'] ?>/" title="<?php echo $a['tag'] ?>"><?php echo $a['tag'] ?></a>
                             </div>
                         </div>
                     </div>

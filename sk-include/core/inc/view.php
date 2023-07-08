@@ -106,7 +106,11 @@ class View extends FrameWork
 			case 'tag':
 				$key = self::$vKey;
 				$cid = self::$_db->table('sk_tag')->where("name = '$key'")->select()['cid'];
-				return self::$_db->table('sk_content')->where('cid = ' . $cid)->select();
+				return array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+			case 'category':
+				$key = self::$vKey;
+				$cid = self::$_db->table('sk_category')->where("name = '$key'")->select()['cid'];
+				return array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
 			default:
 				self::Error('Error', '在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】');
 				break;
@@ -119,6 +123,9 @@ class View extends FrameWork
 		switch ($a) {
 			case 'tag':
 				echo self::$_db->table('sk_tag')->where("name = '$key'")->count();
+				break;
+			case 'category':
+				echo self::$_db->table('sk_category')->where("name = '$key'")->count();
 				break;
 			default:
 				self::Error('Error', '在调用模板方法时产生错误【View::count】，没有方法【' . $a . '】');

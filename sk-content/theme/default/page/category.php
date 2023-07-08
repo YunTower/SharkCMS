@@ -13,14 +13,14 @@
             <div class="animated fadeInDown m-[30px] mt-[20px] border-b border-gray-200">
                 <div class="flex flex-col pb-3">
                     <div class="flex flex-wrap items-end">
-                        <h3 class="text-xl font-medium leading-6 text-gray-900">标签：<?php echo View::$vKey ?></h3>
-                        <span class="ml-2 text-sm text-gray-500"><?php View::count('tag') ?> 篇文章</span>
+                        <h3 class="text-xl font-medium leading-6 text-gray-900">分类：<?php echo View::$vKey ?></h3>
+                        <span class="ml-2 text-sm text-gray-500"><?php View::count('category') ?> 篇文章</span>
                     </div>
 
                 </div>
             </div>
             <div class="post animated fadeInDown">
-                <?php foreach (View::query('tag') as $a) : ?>
+                <?php foreach (View::query('category') as $a) : ?>
                     <div class="post-title">
                         <h3 class="font-medium">
                             <a href="/page/article/<?php echo $a['cid'] ?>"><?php echo $a['title'] ?></a>
@@ -41,7 +41,7 @@
                                 <i class="i-mdi-folder-outline h-3 w-3"></i>
                                 <a href="/page/category/<?php echo $a['category'] ?>" title="<?php echo $a['category'] ?>"><?php echo $a['category'] ?></a>
                                 <i class="i-mdi-tag h-3 w-3"></i>
-                                <a href="/page/tags/<?php echo $a['tag'] ?>" title="<?php echo $a['tag'] ?>"><?php echo $a['tag'] ?></a>
+                                <a href="/page/tag/<?php echo $a['tag'] ?>" title="<?php echo $a['tag'] ?>"><?php echo $a['tag'] ?></a>
 
                             </div>
                         </div>
