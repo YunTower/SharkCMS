@@ -1,0 +1,10 @@
+array(5) {
+  ["page"]=>
+  string(49) "/admin/reg/%3Cscript%3Ealert('test')%3C/script%3E"
+  ["title"]=>
+  string(12) "系统提示"
+  ["content"]=>
+  string(18) "功能暂不开放"
+  ["time"]=>
+  int(1688911271000)
+}

@@ -53,14 +53,26 @@
 					官方公告
 				</div>
 				<div class="layui-card-body">
-					<table class="layui-table" lay-data="{height:315,method:'POST', url:'/api/get/news', page:true}" id="ID-table-demo-init">
+					<table class="layui-table">
 						<thead>
 							<tr>
-								<th lay-data="{field:'id', width:80, sort: true}">ID</th>
-								<th lay-data="{field:'username', width:200}">标题</th>
-								<th lay-data="{field:'sex', width:100, sort: true}">分类</th>
-								<th lay-data="{field:'city,width:150'}">发布时间</th>
+								<th>ID</th>
+								<th>标题</th>
+								<th>摘要</th>
+								<th>分类</th>
+								<th>发布时间</th>
 							</tr>
+							<?php
+							foreach (Cloud::getNews() as $n) {
+								print <<<EOT
+								<td>$n[id]</td>
+								<td><a class="sk-url" target="_blank" href="https://www.sharkcms.cn/index/news/$n[id]">$n[title]</a></td>
+								<td>$n[slug]</td>
+								<td><a class="sk-url" target="_blank" href="https://www.sharkcms.cn/index/news/$n[category]">$n[category]</a></td>
+								<td>$n[created]</td>
+								EOT;
+							}
+							?>
 						</thead>
 					</table>
 				</div>

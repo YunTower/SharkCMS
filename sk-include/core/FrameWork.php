@@ -7,6 +7,7 @@ class FrameWork
     public static $_db;
     public static $_view;
     public static $_user;
+    public static $_http;
     public static $_cloud;
 
     /**
@@ -22,29 +23,32 @@ class FrameWork
             exit('没有找到配置文件！');
         }
 
-        // 加载内核依赖
-        include_once INC . 'core/inc/db.php';
-        include_once INC . 'core/inc/view.php';
-        include_once INC . 'core/inc/user.php';
-        include_once INC . 'core/inc/cloud.php';
-
-        // 初始化类
-        self::$_db = new DB();
-        self::$_view = new View();
-        self::$_user = new User();
-        self::$_cloud = new Cloud();
-
-
         // 检查安装状态
-        // if (self::$_App['app']['Install'] == false) {
-        //     if (self::getController() != 'install') {
-        //         header('Location:/install/');
-        //     }
-        // }
+        if (!self::inStatus()) {
+
+            if (self::getController() != 'install') {
+                header('Location:/install/');
+            }
+        } else {
+            // 加载模块文件
+            include_once INC . 'core/inc/db.php';
+            include_once INC . 'core/inc/user.php';
+            include_once INC . 'core/inc/view.php';
+            include_once INC . 'core/inc/http.php';
+            include_once INC . 'core/inc/cloud.php';
+
+            // 初始化类
+            self::$_db = new DB();
+            self::$_user = new User();
+            self::$_view = new View();
+            self::$_http = new Http();
+            self::$_cloud = new Cloud();
+        }
 
         // 运行模式 1=>线上环境 2=>开发环境
         if (Mode == 1) {
         } else {
+
         }
     }
 
@@ -151,7 +155,7 @@ class FrameWork
     }
 
 
-    // 获取URL中的控制器与方法
+    // 整合参数
     public static function controller_action()
     {
         return array(
@@ -166,10 +170,17 @@ class FrameWork
     {
         $config = self::$_App;
         $file = INC . 'config/app.php';
-        $_new = var_export(array_replace($config, $new), true);
+        $_new = var_export(array_replace_recursive($config, $new), true);
         file_put_contents($file, "<?php \n return $_new;\n");
     }
 
+    // 安装状态
+    public static function inStatus(){
+        return self::$_App['app']['Install'];
+    }
+
+
+    // 错误处理
     public static function Error($title, $msg)
     {
         ob_clean();

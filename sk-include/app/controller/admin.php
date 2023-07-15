@@ -16,8 +16,10 @@ class admin extends FrameWork
             $this->info = self::$_user->info($uid);
         } else {
             // ==>未登录
-            include ADM . 'login.php';
-            exit();
+            if (self::getAction() != 'reg') {
+                include ADM . 'login.php';
+                exit();
+            }
         }
     }
 
@@ -32,6 +34,15 @@ class admin extends FrameWork
     }
 
     public function login()
+    {
+        include ADM . 'index.php';
+    }
+    public function reg()
+    {
+        include ADM . 'reg.php';
+    }
+
+    public function theme()
     {
         include ADM . 'index.php';
     }

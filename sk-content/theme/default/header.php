@@ -21,3 +21,4 @@
         width: calc(100% - 40%);
     }
 </style>
+<!--[if IE]><br> 哥，你这浏览器太老了吧，<a href="https://www.microsoft.com/zh-cn/edge/download?form=MA13FJ">试试最新的Edge浏览器吧</a>！<![endif]-->

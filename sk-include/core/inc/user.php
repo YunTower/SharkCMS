@@ -26,8 +26,8 @@ class User extends FrameWork
         return self::$_db->table('sk_user')->where('uid = "' . $id . '"')->select();
     }
 
-    public function encode_pwd($pwd)
+    public function encode_pwd($pwd, $t)
     {
-        return md5(md5($pwd).time());
+        return md5(md5($pwd) . $t);
     }
 }

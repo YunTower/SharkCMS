@@ -1,15 +1,15 @@
 <?php
 class Cloud extends FrameWork
 {
-    private $link;
+    public static $host;
 
     public function __construct()
     {
-        // 连接服务器
-        $this->link=$this->connect();
+        self::$host = self::$_App['api']['Host'];
     }
 
-    public function connect(){
-
+    public static function getNews()
+    {
+        return json_decode(self::$_http->get(self::$host . 'getNews'),true);
     }
 }

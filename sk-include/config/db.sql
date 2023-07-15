@@ -60,13 +60,6 @@ CREATE TABLE `sk_content` (
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
---
--- 转存表中的数据 `sk_content`
---
-
-INSERT INTO `sk_content` (`cid`, `title`, `slug`, `content`, `cover`, `category`, `tag`, `status`, `pwd`, `uid`, `uname`, `allowComment`, `created`) VALUES
-(1, 'Hello SharkCMS', '你好！世界！', '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', NULL, NULL, NULL, NULL, NULL, '1', 'test', NULL, '2023-06-02 03:35:25');
-
 -- --------------------------------------------------------
 
 --
@@ -171,13 +164,6 @@ CREATE TABLE `sk_user` (
   `token` varchar(150) DEFAULT NULL,
   `created` int(10) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- 转存表中的数据 `sk_user`
---
-
-INSERT INTO `sk_user` (`uid`, `name`, `pwd`, `mail`, `avatar`, `group`, `ban`, `logintime`, `token`, `created`) VALUES
-(1, 'test', 'ad2aa4540bd3f1f73ae2582074bb5e83', '286267038@qq.com', NULL, 'admin', NULL, '1685676925', '8D02A364C623440D46D3FC10144FF84F', 1685676925);
 
 --
 -- 转储表的索引

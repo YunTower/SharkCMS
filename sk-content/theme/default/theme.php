@@ -1,11 +1,12 @@
 <?php
 return [
     'app' => array(
-        'Name' => 'Default',
+        'Name' => 'Anatole',
         'Theme Url' => '',
-        'Author' => 'SharkCMS Team',
-        'Author Url'=>'',
-        'Description'=>'由SharkCMS官方提供的默认主题',
+        'Author' => 'SharkCMS Team & Cai Cai',
+        'Author Url' => '',
+        'Description' => '由SharkCMS官方提供的默认主题，由<a href="https://www.caicai.me/" target="_blank">Cai Cai设计</a>。',
         'Version' => '1.0',
-    )
+    ),
+    'use' => true,
 ];

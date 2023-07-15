@@ -19,8 +19,8 @@ class View extends FrameWork
 	public static $vName;
 	public static $vUrl;
 	public static $vKey;
-	private $arr = array();
-	private $config = array();
+	public static $vTheme = array();
+	public static $vConfig = array();
 
 	public function __construct()
 	{
@@ -40,19 +40,29 @@ class View extends FrameWork
 		foreach ($dir as $d) {
 			$url = CON . 'theme/' . $d;
 			$url = array($d => $url);
-			$this->arr = $this->arr + $url;
+			self::$vTheme = self::$vTheme + $url;
 		}
 
 		// 读取配置
-		foreach ($this->arr as $k => $v) {
+		foreach (self::$vTheme as $k => $v) {
 			if (is_dir($v)) {
 				$c = $v . '/theme.php';
 				if (file_exists($c)) {
 					$b = include_once $v . '/theme.php';
-					$this->config = $this->config + array($k => $b);
+					self::$vConfig = self::$vConfig + array($k => $b);
 				}
 			}
 		}
+	}
+
+	public static function allTheme()
+	{
+		return self::$vTheme;
+	}
+
+	public static function ThemeConfig()
+	{
+		return self::$vConfig;
 	}
 
 	public static function view($page)

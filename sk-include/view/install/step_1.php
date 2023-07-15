@@ -47,7 +47,7 @@
 	<!-- 资 源 引 入 -->
 	<script src="/sk-include/static/js/jquery.min.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>
-	<script src="/sk-include/static/js/sharkcms.base64.js"></script>
+	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
 		layui.use(['form'], function() {
 			var form = layui.form;
@@ -66,7 +66,7 @@
 					contentType: "application/jsoan",
 					success: function(data) {
 						// 连接状态
-						if (data.code == 1000) {
+						if (data.code == 200) {
 							// if 1000 ==> 弹出层 && 跳转 /install/step/2
 							layer.msg('数据库连接成功', {
 								time: 5 * 1000,

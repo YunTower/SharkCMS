@@ -4,6 +4,7 @@ class api extends FrameWork
     private $data;
     private $info;
     private $action;
+    private $eDate = array();
 
     function __construct()
     {
@@ -28,7 +29,7 @@ class api extends FrameWork
                 $this->info = self::$_db->table('sk_user')->where('uid =' . $_uid)->select();
                 // 验证用户组
                 if (!$this->info) {
-                    exit(json_encode(array('code' => 1003, 'msg' => '非真实用户!用户信息不存在!', 'error' => null)));
+                    exit(json_encode(array('code' => 500, 'msg' => '非真实用户!用户信息不存在!', 'error' => null)));
                 }
             }
         }
@@ -55,24 +56,24 @@ class api extends FrameWork
                                 // 生成Token
                                 self::$_user->CreateToken($user['uid']);
                                 // 返回成功信息
-                                echo json_encode(array('code' => 1000, 'msg' => '登陆成功'));
+                                echo json_encode(array('code' => 200, 'msg' => '登陆成功'));
                             } else {
-                                echo json_encode(array('code' => 1003, 'msg' => '【权限组】不是管理员'));
+                                echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
                             }
                         } else {
-                            echo json_encode(array('code' => 1003, 'msg' => '【密码】错误'));
+                            echo json_encode(array('code' => 500, 'msg' => '【密码】错误'));
                         }
                     } else {
-                        echo json_encode(array('code' => 1003, 'msg' => '【账号】已封禁'));
+                        echo json_encode(array('code' => 500, 'msg' => '【账号】已封禁'));
                     }
                 } else {
-                    echo json_encode(array('code' => 1004, 'msg' => '【账号】不存在'));
+                    echo json_encode(array('code' => 404, 'msg' => '【账号】不存在'));
                 }
             } else {
-                echo json_encode(array('code' => 1003, 'msg' => '【验证码】错误'));
+                echo json_encode(array('code' => 500, 'msg' => '【验证码】错误'));
             }
         } else {
-            echo json_encode(array('code' => 1003, 'msg' => '请填写【验证码】'));
+            echo json_encode(array('code' => 500, 'msg' => '请填写【验证码】'));
         }
         unset($_SESSION['captcha']);
     }
@@ -80,12 +81,7 @@ class api extends FrameWork
     function loginOut()
     {
         unset($_SESSION['token']);
-        exit(json_encode(array('code' => 1000, 'msg' => '操作成功', 'error' => null)));
-    }
-
-    // 后台接口
-    function admin()
-    {
+        exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
     }
 
     // // 文件操作
@@ -107,7 +103,7 @@ class api extends FrameWork
     // }
 
     // 列表输出
-    function get()
+    public function get()
     {
 
         switch ($this->action) {
@@ -117,7 +113,7 @@ class api extends FrameWork
             case 'news':
 
             default:
-                exit(json_encode(array('code' => 1000,)));
+                exit(json_encode(array('code' => 400,)));
                 break;
         }
     }
@@ -134,7 +130,7 @@ class api extends FrameWork
                 include CON . 'upload/avatar/default.webp';
             }
         } else {
-            exit(json_encode(array('code' => 1008, 'msg' => 'uid 格式不正确!', 'error' => null)));
+            exit(json_encode(array('code' => 403, 'msg' => 'uid 格式不正确!', 'error' => null)));
         }
     }
 
@@ -147,14 +143,14 @@ class api extends FrameWork
                 $data = $this->data;
                 $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $this->info['uid'], 'uname' => $this->info['name']));
                 if ($sql) {
-                    exit(json_encode(array('code' => 1000, 'msg' => '操作成功', 'error' => null)));
+                    exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
                 } else {
-                    exit(json_encode(array('code' => 1008, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
+                    exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
                 }
 
                 break;
             default:
-                exit(json_encode(array('code' => 1008, 'msg' => '操作失败', 'error' => null)));
+                exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
         }
     }
@@ -167,10 +163,10 @@ class api extends FrameWork
                 $file = CON . "upload/cover/" . $_FILES["file"]["name"];
                 echo filesize($file);
                 if (file_exists($file)) {
-                    exit(json_encode(array('code' => 1000, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));
+                    exit(json_encode(array('code' => 400, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));
                 } else {
                     move_uploaded_file($_FILES["file"]["tmp_name"], $file);
-                    exit(json_encode(array('code' => 1000, 'msg' => '文件上传成功', 'error' => null, 'data' => $file)));
+                    exit(json_encode(array('code' => 200, 'msg' => '文件上传成功', 'error' => null, 'data' => $file)));
                 }
 
                 break;
@@ -178,12 +174,8 @@ class api extends FrameWork
             case 'video':
 
             default:
-                exit(json_encode(array('code' => 1008, 'msg' => '操作失败', 'error' => null)));
+                exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
                 break;
         }
     }
-
-
-
-
 }

@@ -27,12 +27,13 @@ class DB
 
 
     // 构造数据库连接函数
-    public function __construct()
+    public function __construct($config = null)
     {
         // 加载配置
-        $path = FrameWork::$_App;
-        $path = $path['db'];
-        $this->_configs = $path;
+        if (FrameWork::$_App['db']['Host']) {
+            $this->_configs =  FrameWork::$_App['db'];
+        } 
+
         $link = $this->_db;
         if (!$link) {
             $db = mysqli_connect($this->_configs['Host'], $this->_configs['User'], $this->_configs['Pwd'], $this->_configs['Name']);
@@ -47,7 +48,6 @@ class DB
     // 数据库导入
     public function import($file)
     {
-        // 创建MySQL连接
         $mysqli = $this->_db;
 
         if ($mysqli->connect_error) {
@@ -59,6 +59,7 @@ class DB
         // 执行SQL语句
         if (!$mysqli->multi_query($sql)) {
             //若导入失败
+            $this->_error = mysqli_error_list($mysqli);
             return false;
         }
         // 清空结果集
@@ -68,9 +69,6 @@ class DB
                 $discard->free();
             }
         }
-
-        // 关闭MySQL连接
-        $mysqli->close();
 
         return true;
     }
@@ -190,7 +188,8 @@ class DB
         if (!$link) return false;
         $res = mysqli_query($this->_db, $sql);
         if (!$res) {
-            $errors = mysqli_error_list($this->_db);
+            $this->_error = mysqli_error_list($this->_db);
+            $errors = $this->_error;
             $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
             FrameWork::Error('数据库错误', $msg);
         }

@@ -12,7 +12,7 @@
 <img src="https://img.shields.io/badge/license-MIT-green"/>
 <img src="https://img.shields.io/badge/Mysql-%3E%3D5.6-blue"/>
 
-[ 官网 ](https://sharkcms.cn") |
+[ 官网 ](https://sharkcms.cn/) |
 [ 演示 ](https://demo.sharkcms.cn/)|
 [ 文档 ](https://doc.sharkcms.cn/)
 
@@ -37,12 +37,9 @@ Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
 
 ## 😋 致谢
 
-- [Layui 生态](https://layui.gitee.io/)
-  - [Layui 前端 UI 组件 （MIT License）](https://gitee.com/layui/layui)
-  - [Layer 弹出层组件 （MIT License）](https://gitee.com/layui/layer)
-  - [Pear Admin Layui （MIT License）](https://gitee.com/pear-admin/Pear-Admin-Layui)
-- [Editor.md 富文本编辑器（MIT License）](https://github.com/pandao/editor.md)
-- [jQuery.js JavaScript框架（MIT License）](https://jquery.com/)
+- [Layui（MIT License）](https://gitee.com/layui/layui)
+- [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
+- [jQuery.js（MIT License）](https://jquery.com/)
 
 ## 💰 <a id="zanzhu">捐赠</a>
 

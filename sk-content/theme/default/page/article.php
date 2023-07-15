@@ -44,8 +44,6 @@
                     </div>
                 </div>
                 <div class="pagination flex items-center justify-between">
-
-
                 </div>
                 <?php //View::get_comment() 
                 ?>

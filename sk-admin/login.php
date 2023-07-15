@@ -16,7 +16,7 @@
 </head>
 
 <body class="layui-bg-gray body sk-form">
-	<div class="layui-panel card" style="padding:5px;width:auto;">
+	<div class="layui-panel card" style="padding:25px;width:auto;">
 		<div class="title">
 			<h2 style="font-weight: 200">登陆</h2>
 		</div>
@@ -26,7 +26,7 @@
 					<div class="layui-input-prefix">
 						<i class="layui-icon layui-icon-email"></i>
 					</div>
-					<input type="email" name="umail" value="286267038@qq.com" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
+					<input type="email" name="umail" value="test@test.test" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
 				</div>
 			</div>
 			<div class="layui-form-item">
@@ -54,22 +54,22 @@
 					</div>
 				</div>
 			</div>
-			<div class="layui-form-item">
-				<!-- <input type="checkbox" name="keep" lay-skin="primary" title="记住密码"> -->
+			<!-- <div class="layui-form-item">
+				<input type="checkbox" name="keep" lay-skin="primary" title="记住密码">
 				<a href="/admin/reg" style="float: right; margin-top: 7px;">注册账号</a>
-			</div>
+			</div> -->
 			<div class="layui-form-item">
 				<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">登录</button>
 			</div>
-			<!-- <div class="layui-form-item demo-login-other" style="text-align: center;">
-					<a href="/admin/reg">注册帐号</a>
-				</div> -->
+			<div class="layui-form-item demo-login-other" style="text-align: center">
+				<a href="/admin/reg">注册帐号</a>
+			</div>
 		</form>
 	</div>
 
 	<script src="/sk-include/static/js/jquery.min.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>
-	<script src="/sk-include/static/js/sharkcms.base64.js"></script>
+	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
 		layui.use(function() {
 			var form = layui.form;
@@ -100,7 +100,7 @@
 							});
 
 							// 连接状态
-							if (data.code == 1000) {
+							if (data.code == 200) {
 								// if 200 ==> 弹出层 && 跳转 /admin/index
 								layer.close(loadIndex)
 								layer.msg('登陆成功', {

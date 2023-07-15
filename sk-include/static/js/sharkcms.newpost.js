@@ -40,7 +40,7 @@ layui.use(function () {
     accept: "images",
     acceptMime: "image/png,image/jpg,image/jpeg,image/webp",
     done: function (res) {
-      if (res.code == 1000) {
+      if (res.code == 200) {
         layer.msg(res.msg);
         $("#cover-upload").val(res.data);
       } else {
@@ -89,7 +89,7 @@ layui.use(function () {
             });
 
             // 连接状态
-            if (data.code == 1000) {
+            if (data.code == 200) {
               // if 200 ==> 弹出层 && 跳转 /admin/index
               layer.close(loadIndex);
               layer.msg("文章保存成功", {

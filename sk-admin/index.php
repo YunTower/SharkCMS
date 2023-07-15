@@ -95,9 +95,9 @@
 							外观
 						</a>
 						<dl class="layui-nav-child">
-							<dd><a href="/admin/page/new">页面</a></dd>
-							<dd><a href="/admin/page/all">导航</a></dd>
-							<dd><a href="/admin/page/all">主题</a></dd>
+							<dd><a href="/admin/theme/page">页面</a></dd>
+							<dd><a href="/admin/theme/menu">导航</a></dd>
+							<dd><a href="/admin/theme/setting">主题</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item">
@@ -106,7 +106,7 @@
 							插件
 						</a>
 						<dl class="layui-nav-child">
-							<dd><a href="/admin/module/theme">插件</a></dd>
+							<dd><a href="/admin/plugin/setting">插件</a></dd>
 						</dl>
 					</li>
 					<li class="layui-nav-item">
@@ -172,7 +172,7 @@
 	</div>
 
 
-	<script src="/sk-include/static/js/sharkcms.base64.js"></script>
+	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
 		//layui
 		layui.use(['element', 'layer', 'util'], function() {

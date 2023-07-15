@@ -26,8 +26,18 @@
             <p class="desc">
                 ShrkCMS已经安装成功了，接下来<a class="main-color" href="/admin">进入后台</a>配置你的博客吧！
             </p>
+            <div class="sk-center" style="margin-top:20px">
+                <a href="/">
+                    <button class="layui-btn layui-btn-primary layui-border-blue layui-btn-sm">去前台看看</button>
+                </a>
+                <div style="margin: 0 3px;"></div>
+                <a href="/admin">
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm">进入后台</button>
+                </a>
+            </div>
         </div>
     </div>
+
 </body>
 
 </html>

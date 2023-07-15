@@ -4,6 +4,13 @@ class install extends FrameWork
 {
     private $_step;
 
+    public function __construct()
+    {
+        if (self::$_App['app']['Install'] && self::getData() != 3) {
+            self::Error('系统提示', '你已安装SharkCMS，无需再次安装');
+        }
+    }
+
     public function index()
     {
         include_once  INC . 'view/install/index.php';
@@ -30,7 +37,7 @@ class install extends FrameWork
         // 判断请求是否是ajax请求
         $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(trim($_SERVER['HTTP_X_REQUESTED_WITH'])) == 'xmlhttprequest');
         if (!$ajax) {
-            exit(json_encode(array('code' => 1003, 'msg' => '请求无效', 'error' => null)));
+            exit(json_encode(array('code' => 400, 'msg' => '请求无效', 'error' => null)));
         } else {
             $data = file_get_contents("php://input");
             $data = base64_decode($data);
@@ -42,29 +49,45 @@ class install extends FrameWork
                     $conn = new mysqli($data['db_host'], $data['db_user'], $data['db_pwd'], $data['db_name']);
                     if ($conn->connect_error) {
                         ob_clean();
-                        exit(json_encode(array('code' => 1008, 'msg' => '数据库连接失败', 'error' => $conn->connect_error)));
+                        exit(json_encode(array('code' => 500, 'msg' => '数据库连接失败', 'error' => $conn->connect_error)));
                     } else {
-                        exit(json_encode(array('code' => 1000, 'msg' => '数据库连接成功', 'error' => null)));
+                        self::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf-8')]);
+                        exit(json_encode(array('code' => 200, 'msg' => '数据库连接成功', 'error' => null)));
                     }
                     break;
 
                 case 'install';
-                    // 导入数据表
-                    self::setConfig(array('db'=>array('Host'=>)));
+                    // 加载内核依赖
+                    include_once INC . 'core/inc/db.php';
+                    include_once INC . 'core/inc/user.php';
+
+                    // 初始化类
+                    self::$_db = new DB();
+                    self::$_user = new User();
+
                     if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
-                        $pwd = self::$_user->encode_pwd($data['ad_pwd']);
-                        self::$_db->table('sk_user')->insert(array('uid' => '1', 'name' => $data['ad_name'], 'pwd' => $pwd, 'group' => 'admin'));
-                        self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug'=>'你好！世界！','content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'uid' => '1', 'uname' => $data['ad_name']));
-                        exit(json_encode(array('code' => 1000, 'msg' => '安装成功', 'error' => null)));
+                        // var_dump($data);
+                        // echo $data['ad_mail'];
+                        $t=time();
+                        $pwd = self::$_user->encode_pwd($data['ad_pwd'],$t);
+                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'group' => 'admin','created'=>$t));
+                        self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
+                        self::$_db->table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+                        self::$_db->table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+
+                        // 修改安装状态
+                        self::setConfig(array('app' => array('Install' => true, 'Time' => date('Y-m-d H:i:s'))));
+
+                        exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
                     } else {
-                        exit(json_encode(array('code' => 1003, 'msg' => '系统安装失败', 'error' => null)));
+                        exit(json_encode(array('code' => 500, 'msg' => '安装出错', 'error' => self::$_db->error())));
                     }
-                    exit(json_encode(array('code' => 1000, 'msg' => '安装成功', 'error' => null)));
+                    var_dump($data);
                     break;
 
                 default:
-                    exit(json_encode(array('code' => 1003, 'msg' => '请求无效', 'error' => null)));
+                    exit(json_encode(array('code' => 400, 'msg' => '请求无效', 'error' => null)));
                     break;
             }
         }
