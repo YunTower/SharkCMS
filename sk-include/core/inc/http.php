@@ -182,14 +182,14 @@ class Http
      * 文件post上传
      * HttpCurl::post('http://api.example.com/', array('abc'=>'123', 'file1'=>'@/data/1.jpg'), 'json');
      */
-    public function post($url, $data = null , $dataType = 'text')
+    public function post($url, $data = null, $dataType = 'text')
     {
         if (stripos($url, 'https://') !== FALSE) {
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($this->ch, CURLOPT_SSLVERSION, 1);
         }
-        curl_setopt($this->ch, CURLOPT_URL, $url);
+        curl_setopt($this->ch, CURLOPT_URL, FrameWork::$_App['api']['Host'] . $url);
         // 设置post body
         if (!empty($this->httpParams)) {
             if (is_array($this->httpParams)) {
@@ -201,7 +201,7 @@ class Http
         // end 设置post body
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($this->ch, CURLOPT_POST, 1);
-        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($data));
         $content = curl_exec($this->ch);
         $status = curl_getinfo($this->ch);
         curl_close($this->ch);

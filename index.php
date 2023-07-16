@@ -20,8 +20,6 @@ define('INC', ROOT . 'sk-include/');
 define('CON', ROOT . 'sk-content/');
 // 系统后台目录
 define('ADM', ROOT . 'sk-admin/');
-// 系统运行模式
-define('Mode', 2);
 
 // PHP版本检查
 if (PHP_VERSION < '7.0') {

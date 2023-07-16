@@ -45,11 +45,6 @@ class FrameWork
             self::$_cloud = new Cloud();
         }
 
-        // 运行模式 1=>线上环境 2=>开发环境
-        if (Mode == 1) {
-        } else {
-
-        }
     }
 
     /**
