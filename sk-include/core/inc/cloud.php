@@ -10,6 +10,7 @@ class Cloud extends FrameWork
 
     public static function getNews()
     {
-        return json_decode(self::$_http->get(self::$host . 'getNews'),true);
+        return json_decode(self::$_http->get(self::$host . 'getNews'), true);
     }
+
 }

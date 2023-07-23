@@ -19,7 +19,7 @@
                         </h3>
                     </div>
                     <div class="post-content text-sm text-black/50">
-                        <p class="py-2.5"><?php echo $a['content'] ?></p>
+                        <p class="py-2.5"><?php echo $a['slug'] ?></p>
                     </div>
                     <div class="post-info border-b border-b-[#f2f2f2] pb-[30px]">
                         <div class="meta">

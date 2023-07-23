@@ -60,26 +60,37 @@ class install extends FrameWork
                     // 加载内核依赖
                     include_once INC . 'core/inc/db.php';
                     include_once INC . 'core/inc/user.php';
+                    include_once INC . 'core/inc/http.php';
 
                     // 初始化类
                     self::$_db = new DB();
                     self::$_user = new User();
+                    self::$_http=new Http();
 
                     if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
                         // var_dump($data);
                         // echo $data['ad_mail'];
-                        $t=time();
-                        $pwd = self::$_user->encode_pwd($data['ad_pwd'],$t);
-                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'group' => 'admin','created'=>$t));
+                        $t = time();
+                        $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
+                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'],'avatar'=>'/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
                         self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                         self::$_db->table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
                         self::$_db->table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
 
-                        // 修改安装状态
-                        self::setConfig(array('app' => array('Install' => true, 'Time' => date('Y-m-d H:i:s'))));
+                        $arr =self::$_http->post('install', self::$_App, 'json');
+                        
+                        // $arr=json_decode($arr,true);
+                        // var_dump($arr);
+                        if ($arr['code'] == 200) {
 
-                        exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
+                            // 写入信息
+                            self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')],'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
+
+                            exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
+                        } else {
+                            exit(json_encode(array('code' => 400, 'msg' => $arr['msg'], 'error' => null)));
+                        }
                     } else {
                         exit(json_encode(array('code' => 500, 'msg' => '安装出错', 'error' => self::$_db->error())));
                     }

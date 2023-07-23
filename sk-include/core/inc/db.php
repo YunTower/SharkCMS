@@ -112,6 +112,7 @@ class DB
             $fieldsStr = $fields;
         }
         $sql = "SELECT {$fields} FROM {$this->_table} {$this->_where} {$this->_order} {$this->_limit}";
+        echo $sql;
         $data = mysqli_fetch_array($this->execute($sql), MYSQLI_ASSOC);
         return $data;
     }
@@ -190,8 +191,8 @@ class DB
         if (!$res) {
             $this->_error = mysqli_error_list($this->_db);
             $errors = $this->_error;
-            $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
-            FrameWork::Error('数据库错误', $msg);
+            // $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
+            // FrameWork::Error('数据库错误', $msg);
         }
         return $res;
     }

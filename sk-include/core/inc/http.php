@@ -1,16 +1,18 @@
 <?php
 
-class Http
+class Http extends FrameWork
 {
     private $ch = null; // curl handle
     private $headers = array(); // request header
     private $proxy = null; // http proxy
     private $timeout = 5;    // connnect timeout
     private $httpParams = null;
+    private $host;
 
 
     public function __construct()
     {
+        $this->host = self::$_App['api']['Host'];
         $this->ch = curl_init();
     }
 
@@ -137,7 +139,7 @@ class Http
      */
     public function get($url, $dataType = 'text')
     {
-        if (stripos($url, 'https://') !== FALSE) {
+        if (stripos( $url, 'https://') !== FALSE) {
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, FALSE);
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($this->ch, CURLOPT_SSLVERSION, 1);
@@ -151,18 +153,16 @@ class Http
             }
         }
         // end 设置get参数
-        curl_setopt($this->ch, CURLOPT_URL, $url);
+        curl_setopt($this->ch, CURLOPT_URL, $this->host .$url);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
         $content = curl_exec($this->ch);
         $status = curl_getinfo($this->ch);
         curl_close($this->ch);
-        if (isset($status['http_code']) && $status['http_code'] == 200) {
+        if (isset($status['http_code'])) {
             if ($dataType == 'json') {
                 $content = json_decode($content, true);
             }
             return $content;
-        } else {
-            return false;
         }
     }
 
@@ -189,7 +189,7 @@ class Http
             curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($this->ch, CURLOPT_SSLVERSION, 1);
         }
-        curl_setopt($this->ch, CURLOPT_URL, FrameWork::$_App['api']['Host'] . $url);
+        curl_setopt($this->ch, CURLOPT_URL, $this->host . $url);
         // 设置post body
         if (!empty($this->httpParams)) {
             if (is_array($this->httpParams)) {
@@ -205,13 +205,11 @@ class Http
         $content = curl_exec($this->ch);
         $status = curl_getinfo($this->ch);
         curl_close($this->ch);
-        if (isset($status['http_code']) && $status['http_code'] == 200) {
+        if (isset($status['http_code'])) {
             if ($dataType == 'json') {
                 $content = json_decode($content, true);
             }
             return $content;
-        } else {
-            return false;
-        }
+        } 
     }
 }

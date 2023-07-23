@@ -157,7 +157,7 @@ CREATE TABLE `sk_user` (
   `name` varchar(32) NOT NULL,
   `pwd` varchar(32) NOT NULL,
   `mail` varchar(150) NOT NULL,
-  `avatar` varchar(150) DEFAULT NULL,
+  `avatar` text DEFAULT NULL,
   `group` varchar(64) NOT NULL,
   `ban` varchar(32) DEFAULT NULL,
   `logintime` varchar(64) DEFAULT NULL,
@@ -225,7 +225,7 @@ ALTER TABLE `sk_comment`
 -- 使用表AUTO_INCREMENT `sk_content`
 --
 ALTER TABLE `sk_content`
-  MODIFY `cid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `cid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_tag`
@@ -249,13 +249,13 @@ ALTER TABLE `sk_page`
 -- 使用表AUTO_INCREMENT `sk_theme`
 --
 ALTER TABLE `sk_theme`
-  MODIFY `tid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `tid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_user`
 --
 ALTER TABLE `sk_user`
-  MODIFY `uid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `uid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

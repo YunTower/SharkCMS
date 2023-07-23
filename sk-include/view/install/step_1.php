@@ -44,6 +44,9 @@
 			</div>
 		</form>
 	</div>
+	<p class="sk-copyright">
+		<a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
+	</p>
 	<!-- 资 源 引 入 -->
 	<script src="/sk-include/static/js/jquery.min.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>

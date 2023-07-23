@@ -102,35 +102,23 @@ class api extends FrameWork
     //     }
     // }
 
-    // 列表输出
-    public function get()
-    {
-
-        switch ($this->action) {
-            case 'post':
-                exit(json_encode(array('code' => 0, 'count' => 1, 'msg' => '查询成功', 'data' => self::$_db->getAll('sk_content'))));
-                break;
-            case 'news':
-
-            default:
-                exit(json_encode(array('code' => 400,)));
-                break;
-        }
-    }
 
     // 输出头像
     function avatar()
     {
         if (is_numeric($this->action)) {
             $data = self::$_db->table('sk_user')->where('uid = ' . $this->action)->select();
-            header('Content-type: image/webp');
-            if ($data['avatar']) {
-                include $data['avatar'];
+            if (!empty($data['avatar'])) {
+                $file = self::getDomain() . $data['avatar'];
+                if (file_exists($file)) {
+                    header('Content-type: image/webp');
+                    include $file;
+                }
             } else {
-                include CON . 'upload/avatar/default.webp';
+                exit(json_encode(['code' => 404, 'msg' => '头像文件不存在！']));
             }
         } else {
-            exit(json_encode(array('code' => 403, 'msg' => 'uid 格式不正确!', 'error' => null)));
+            exit(json_encode(array('code' => 403, 'msg' => '参数不合法!', 'error' => null)));
         }
     }
 
@@ -149,6 +137,8 @@ class api extends FrameWork
                 }
 
                 break;
+            case 'list':
+                exit(json_encode(['code'=>0,'msg'=>'操作成功','data'=>self::$_db->getAll('sk_content')]));
             default:
                 exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
@@ -177,5 +167,9 @@ class api extends FrameWork
                 exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
                 break;
         }
+    }
+
+    public function getNews(){
+        echo self::$_http->get('getNews');
     }
 }

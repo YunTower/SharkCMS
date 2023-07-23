@@ -53,28 +53,7 @@
 					官方公告
 				</div>
 				<div class="layui-card-body">
-					<table class="layui-table">
-						<thead>
-							<tr>
-								<th>ID</th>
-								<th>标题</th>
-								<th>摘要</th>
-								<th>分类</th>
-								<th>发布时间</th>
-							</tr>
-							<?php
-							foreach (Cloud::getNews() as $n) {
-								print <<<EOT
-								<td>$n[id]</td>
-								<td><a class="sk-url" target="_blank" href="https://www.sharkcms.cn/index/news/$n[id]">$n[title]</a></td>
-								<td>$n[slug]</td>
-								<td><a class="sk-url" target="_blank" href="https://www.sharkcms.cn/index/news/$n[category]">$n[category]</a></td>
-								<td>$n[created]</td>
-								EOT;
-							}
-							?>
-						</thead>
-					</table>
+					<table class="layui-hide" id="table-news"></table>
 				</div>
 			</div>
 		</div>
@@ -111,3 +90,23 @@
 		</div>
 	</div>
 </div>
+<script>
+layui.use('table', function(){
+  var table = layui.table;
+  
+  // 创建渲染实例
+  table.render({
+    elem: '#table-news',
+    url:'/api/getNews', // 此处为静态模拟数据，实际使用时需换成真实接口
+    cols: [[
+      {field:'id', width:50, title: 'ID', sort: true},
+      {field:'title', width:200, title: '标题'},
+      {field:'slug', title: '摘要'},
+      {field:'category', width:100, title: '分类'},
+      {field:'uname', width:100,title: '作者'},
+      {field:'created', width:180, title: '时间', sort: true}
+    ]]
+  });
+
+});
+</script>

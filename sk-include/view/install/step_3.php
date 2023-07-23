@@ -37,6 +37,9 @@
             </div>
         </div>
     </div>
+    <p class="sk-copyright">
+        <a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
+    </p>
 
 </body>
 

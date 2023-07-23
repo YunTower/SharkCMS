@@ -26,7 +26,7 @@
 					<div class="layui-input-prefix">
 						<i class="layui-icon layui-icon-email"></i>
 					</div>
-					<input type="email" name="umail" value="test@test.test" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
+					<input type="email" name="umail" value="286267038@qq.com" lay-verify="required|email" placeholder="邮 箱" lay-reqtext="请填写邮箱" autocomplete="off" class="layui-input" lay-affix="clear">
 				</div>
 			</div>
 			<div class="layui-form-item">

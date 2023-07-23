@@ -1,3 +1,8 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 :root {
     --main-color-1: #2d8cf0;
     --main-color-2: #fff;
@@ -5,13 +10,23 @@
     --text-color-2: #000
 }
 
+a[href] {
+    color: var(--main-color-1);
+    text-decoration: none;
+}
+
+a[href]:hover {
+    text-decoration: underline;
+}
+img[src$="break.svg"]{
+    object-fit: contain;}
 .sk-bg-white {
     background-color: var(--main-color-2);
 }
 
-.sk-center{
+.sk-center {
     display: flex;
-    justify-content:center
+    justify-content: center
 }
 
 .sk-error-body {
@@ -58,12 +73,12 @@
     margin-top: 20px;
 }
 
-.sk-url{
+.sk-url {
     color: var(--main-color-1);
     text-decoration: none;
 }
 
-.sk-url:hover{
+.sk-url:hover {
     color: var(--main-color-1);
     text-decoration: underline;
 }
@@ -262,6 +277,15 @@ h3 {
     text-align: center;
 }
 
+.sk-table {
+    margin-top: 0;
+    table-layout: fixed
+}
+
+.sk-table .cid {
+    width: 20px;
+}
+
 .sk-error .main {
     position: absolute;
     left: 50%;
@@ -315,7 +339,7 @@ h3 {
     text-decoration: underline;
 }
 
-.sk-blockquote-warn{
+.sk-blockquote-warn {
     border-color: #e0ad15;
     color: #746000;
     background-color: #fffae3;

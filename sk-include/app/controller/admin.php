@@ -6,6 +6,8 @@ class admin extends FrameWork
 
     public function __construct()
     {
+
+
         // 登陆状态检测
         if (isset($_SESSION['token'])) {
             // ==>登陆
@@ -14,6 +16,21 @@ class admin extends FrameWork
             // 解析session 获取uid
             $uid = json_decode(base64_decode($_SESSION['token']))->uid;
             $this->info = self::$_user->info($uid);
+
+            if (!empty($_GET['_pjax'])) {
+                $action = self::getAction();
+                $data = self::getData();
+                if ($data) {
+                    $file = $action . '/' . $data . '.php';
+                } else {
+                    if ($action == 'index') {
+                        $file = 'console.php';
+                    } else {
+                        $file = $action . '.php';
+                    }
+                }
+                exit(View::pjax($file));
+            }
         } else {
             // ==>未登录
             if (self::getAction() != 'reg') {
@@ -28,11 +45,6 @@ class admin extends FrameWork
         include ADM . 'index.php';
     }
 
-    public function content()
-    {
-        include ADM . 'index.php';
-    }
-
     public function login()
     {
         include ADM . 'index.php';
@@ -40,16 +52,5 @@ class admin extends FrameWork
     public function reg()
     {
         include ADM . 'reg.php';
-    }
-
-    public function theme()
-    {
-        include ADM . 'index.php';
-    }
-
-
-    function test()
-    {
-        echo self::$_user->CreateToken('1');
     }
 }

@@ -25,6 +25,9 @@
 			<button type="button" style="width:200px;height:35px" onclick="jump()" class="layui-btn layui-btn-primary layui-btn-sm">下一步</button>
 		</div>
 	</div>
+	<p class="sk-copyright">
+        <a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
+    </p>
 	<script>
 		function jump() {
 			window.location.href = '/install/step/1'

@@ -11,10 +11,12 @@
 	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/remixicon.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
+	<link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+	<link href="/sk-include/static/css/editor.css" rel="stylesheet">
+	<script src="/sk-include/static/js/editor.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>
 	<script src="/sk-include/static/js/jquery.min.js"></script>
-	<script src="/sk-include/static/js/sharkcms.min.js"></script>
-
+	<script src="/sk-include/static/js/jquery.pjax.js"></script>
 </head>
 
 <body>
@@ -27,7 +29,7 @@
 				<li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
 					<i class="layui-icon layui-icon-spread-left"></i>
 				</li>
-				<div class="layui-btn-group" id="sk-toolbar-top">
+				<div class="layui-btn-group" id="sk-toolbar-top" style="display:none">
 					<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
 						<button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除文章</button>
 					</li>
@@ -40,14 +42,14 @@
 				<!-- 下拉菜单 -->
 				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
 					<a href="javascript:;">
-						<img src="/api/avatar/<?php echo $this->info['uid'] ?>" class="layui-nav-img">
+						<img src="/api/avatar/<?php echo $this->info['uid'] ?>" class="layui-nav-img" onerror="sk.imgErr()" />
 						<?php echo $this->info['name'] ?>
 					</a>
 				</li>
 				<li class="layui-nav-item sk-admin-line-vertical"></li>
 				<!-- 登出 -->
 				<li class="layui-nav-item sk-admin-login-out" onclick="sk.loginOut()">
-					<a href="javascript:;">
+					<a>
 						<i class="ri-logout-box-r-line"></i>
 					</a>
 				</li>
@@ -57,9 +59,9 @@
 		<div class="layui-side sk-admin-nav">
 			<div class="layui-side-scroll">
 				<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-				<ul class="layui-nav layui-nav-tree sk-admin-nav-tree" lay-filter="test">
-					<li class="layui-nav-item">
-						<a href="/admin/index">
+				<ul class="layui-nav layui-nav-tree sk-admin-nav-tree" lay-shrink="all" lay-filter="test">
+					<li class="layui-nav-item layui-this">
+						<a target!=_blank href="/admin/index">
 							<i class="ri-home-3-line"></i>
 							首页
 						</a>
@@ -70,7 +72,7 @@
 							内容
 						</a>
 						<dl class="layui-nav-child">
-							<dd><a href="/admin/content/new">新建</a></dd>
+							<dd><a target!=_blank href="/admin/content/new">新建</a></dd>
 							<dd><a href="/admin/content/all">全部</a></dd>
 							<dd><a href="/admin/content/type">分类</a></dd>
 							<dd><a href="/admin/content/label">标签</a></dd>
@@ -144,20 +146,13 @@
 		</div>
 		<div class="layui-body sk-admin-content ">
 			<!-- 内容主体区域 -->
-			<div class="sk-page-main" style="padding: 10px;">
-				<?php
-				@$url = ADM . FrameWork::getAction() . '/' . FrameWork::getdata() . '.php';
-				if (FrameWork::getAction() == 'index' || FrameWork::getAction() == null) {
-					include_once ADM . 'console.php';
-				} else {
-					include_once $url;
-				}
-				?>
+			<div class="sk-page-main" id="page" style="padding: 10px;">
+				<?php include_once ADM . 'console.php'; ?>
 			</div>
 		</div>
 		<div class="layui-footer">
 			<!-- 底部固定区域 -->
-			<div class="sk-admin-footer-left" id="sk-toolbar-bottom">
+			<div class="sk-admin-footer-left" id="sk-toolbar-bottom" style="display:none">
 				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
 					<button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除文章</button>
 				</li>
@@ -171,7 +166,6 @@
 		</div>
 	</div>
 
-
 	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
 		//layui
@@ -182,6 +176,9 @@
 
 		});
 
+		$(document).pjax('a[target!=_blank]', '#page', {
+			timeout: 6000
+		});
 	</script>
 </body>
 

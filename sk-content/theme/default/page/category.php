@@ -14,7 +14,7 @@
                 <div class="flex flex-col pb-3">
                     <div class="flex flex-wrap items-end">
                         <h3 class="text-xl font-medium leading-6 text-gray-900">分类：<?php echo View::$vKey ?></h3>
-                        <span class="ml-2 text-sm text-gray-500"><?php View::count('category') ?> 篇文章</span>
+                        <span class="ml-2 text-sm text-gray-500"><?php QueryCount('category') ?> 篇文章</span>
                     </div>
 
                 </div>
