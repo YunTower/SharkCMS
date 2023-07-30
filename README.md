@@ -22,9 +22,9 @@
 ## 🎉 简介
 
 SharkCMS 是由<a href="https://www.xyfish.cn/">fish</a>开发的内容管理系统，可用于<code>搭建博客、官网等</code>SharkCMS
-可以安装任意适配 SharkCMS 的主题，也欢迎各位开发者为 SKCMS 开发主题。本主题采用 MIT 开源协议，欢迎二次开发。
+可以安装任意适配 SharkCMS 的主题，也欢迎各位开发者为 SharkCMS 开发主题。
 
-`（二次开发请保留LICENSE和README.md文件）`
+`本主题采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
 
 Gitee 仓库（正式版）：https://gitee.com/fish_nb/skcms<br>
 Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
