@@ -51,6 +51,8 @@
 
         </div>
     </div>
+    
+    <?php View::get_footer() ?>
 </body>
 
 </html>

@@ -17,6 +17,8 @@
 	<script src="/sk-include/static/layui/layui.js"></script>
 	<script src="/sk-include/static/js/jquery.min.js"></script>
 	<script src="/sk-include/static/js/jquery.pjax.js"></script>
+	<script src="/sk-include/static/js/sharkcms.min.js"></script>
+
 </head>
 
 <body>
@@ -147,18 +149,21 @@
 		<div class="layui-body sk-admin-content ">
 			<!-- 内容主体区域 -->
 			<div class="sk-page-main" id="page" style="padding: 10px;">
-				<?php include_once ADM . 'console.php'; ?>
+				<?php
+
+					if (!empty($file && $code==200)) {
+						include_once ADM . $file;
+					} else {
+						include_once ADM . 'console.php';
+					}
+			
+				?>
 			</div>
 		</div>
 		<div class="layui-footer">
 			<!-- 底部固定区域 -->
 			<div class="sk-admin-footer-left" id="sk-toolbar-bottom" style="display:none">
-				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
-					<button type="button" class="layui-btn layui-btn-sm layui-btn-danger">删除文章</button>
-				</li>
-				<li class="layui-nav-item layui-hide layui-show-sm-inline-block">
-					<button type="button" class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="save">发表文章</button>
-				</li>
+				
 			</div>
 			<div class="sk-admin-footer-right">
 				Powered by <a href="https://www.sharkcms.cn" style="color:var(--main-color-1)">SharkCMS</a>
@@ -175,6 +180,7 @@
 			var util = layui.util;
 
 		});
+
 
 		$(document).pjax('a[target!=_blank]', '#page', {
 			timeout: 6000

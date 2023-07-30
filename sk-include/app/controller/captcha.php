@@ -3,11 +3,12 @@ class captcha extends FrameWork
 {
     public function __construct()
     {
-        $code=$this->Code();
-        $_SESSION['captcha']=$code;
+        $code = $this->Code();
+        $_SESSION['captcha'] = $code;
+        ob_clean();
         $this->create($code);
     }
-    
+
     public function Code($count = 5)
     {
         $code = '';
@@ -31,15 +32,14 @@ class captcha extends FrameWork
         imagecolorallocate($img, mt_rand(50, 255), mt_rand(0, 155), mt_rand(0, 155));
         $fontSize = 18; //验证码文字大小
         $fontColor = imagecolorallocate($img, 255, 255, 255); //验证码文字颜色
-        $fontStyle = INC . 'static/font/font.TTF'; //验证码文字样式
+        $fontStyle = INC . 'static/font/STCAIYUN.TTF'; //验证码文字样式
         $len = strlen($code);
         //生成指定长度的验证码
         for ($i = 0; $i < $len; ++$i) {
             imagettftext(
                 $img,
                 $fontSize,
-                mt_rand(0, 20) - mt_rand(0, 25), //设置验证码文字倾斜角度
-                //随机设置验证码文字显示坐标
+                mt_rand(0, 20) - mt_rand(0, 25),
                 $fontSize * $i + 12,
                 mt_rand($height / 2, $height),
                 $fontColor,

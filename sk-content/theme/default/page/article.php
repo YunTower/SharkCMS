@@ -1,3 +1,8 @@
+<?php
+$a = self::$vArticle;
+self::$sTitle=$a['title'] .' - '.'Demo';
+?>
+
 <!DOCTYPE html>
 <html lang="zh">
 
@@ -10,7 +15,6 @@
 
     <div class="main">
         <?php View::include('menu.php') ?>
-        <?php $a = self::$vArticle ?>
         <div class="content">
             <div class="animated fadeInDown m-[30px] mt-[20px] border-b border-gray-200">
                 <div class="flex flex-col pb-3">
@@ -42,15 +46,16 @@
                     <div id="post-content" class="post-content markdown-body">
                         <?php echo $a['content'] ?>
                     </div>
+                    <div class="pagination flex items-center justify-between"></div>
+                    <?php View::get_comment(); ?>
                 </div>
-                <div class="pagination flex items-center justify-between">
-                </div>
-                <?php //View::get_comment() 
-                ?>
+
             </div>
 
         </div>
     </div>
+    
+    <?php View::get_footer() ?>
 </body>
 
 </html>

@@ -28,13 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `sk_comment` (
-  `coid` int(6) UNSIGNED NOT NULL,
+  `id` int(6) UNSIGNED NOT NULL,
   `cid` int(6) NOT NULL,
   `content` text NOT NULL,
-  `authorid` int(16) NOT NULL,
-  `status` varchar(16) NOT NULL,
-  `uid` varchar(10) NOT NULL,
-  `parent` int(10) DEFAULT NULL,
+  `uid` int(16) NOT NULL,
+  `status` varchar(16) DEFAULT NULL,
+  `parent` int DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -57,6 +56,23 @@ CREATE TABLE `sk_content` (
   `uid` varchar(10) NOT NULL,
   `uname` varchar(32) NOT NULL,
   `allowComment` char(1) DEFAULT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `sk_menu`
+--
+
+CREATE TABLE `sk_menu` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` varchar(60) NOT NULL,
+  `url` text NOT NULL,
+  `status` varchar(10) DEFAULT NULL,
+  `uid` varchar(10) NOT NULL,
+  `uname` varchar(32) NOT NULL,
+  `parent` char(1) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -173,13 +189,19 @@ CREATE TABLE `sk_user` (
 -- 表的索引 `sk_comment`
 --
 ALTER TABLE `sk_comment`
-  ADD PRIMARY KEY (`coid`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- 表的索引 `sk_content`
 --
 ALTER TABLE `sk_content`
   ADD PRIMARY KEY (`cid`);
+
+--
+-- 表的索引 `sk_menu`
+--
+ALTER TABLE `sk_menu`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- 表的索引 `sk_tag`
@@ -219,13 +241,19 @@ ALTER TABLE `sk_user`
 -- 使用表AUTO_INCREMENT `sk_comment`
 --
 ALTER TABLE `sk_comment`
-  MODIFY `coid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- 使用表AUTO_INCREMENT `sk_content`
 --
 ALTER TABLE `sk_content`
   MODIFY `cid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- 使用表AUTO_INCREMENT `sk_menu`
+--
+ALTER TABLE `sk_menu`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_tag`

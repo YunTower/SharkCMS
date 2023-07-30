@@ -184,4 +184,5 @@ class FrameWork
         include_once INC . 'view/error/error.php';
         exit();
     }
+
 }

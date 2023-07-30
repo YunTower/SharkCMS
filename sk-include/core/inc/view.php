@@ -79,7 +79,12 @@ class View extends FrameWork
     // pjax
     public static function pjax($file)
     {
-        echo file_get_contents(ADM . $file);
+        $file=ADM . $file;
+        if (file_exists($file)){
+            echo file_get_contents($file);
+        }else{
+            self::Error('404','糟了糟了，页面没找到啊<br>可能还在开发');
+        }
     }
 
     public static function static($file)
@@ -96,7 +101,8 @@ class View extends FrameWork
     // 加载头部文件
     public static function get_header()
     {
-        include self::$vUrl . 'header.php';
+        include_once INC .'view/theme/header.php';
+        include_once self::$vUrl . 'header.php';
     }
 
     // 加载边栏
@@ -104,22 +110,28 @@ class View extends FrameWork
     {
         $f = self::$vUrl . 'sidebar.php';
         if (file_exists($f)) {
-            include $f;
+            include_once $f;
         } else {
             self::Error('系统错误', '主题文件【sidebar.php】不存在');
         }
     }
 
+    // 加载评论功能
+    public static function get_comment(){
+        include_once INC .'view/theme/comment.php';
+    }
+
     // 加载底部文件
     public static function get_footer()
     {
-        include self::$vUrl . 'footer.php';
+        include_once INC .'view/theme/footer.php';
+        include_once self::$vUrl . 'footer.php';
     }
 
     // 查询主题设置
-    public static function vSet($name)
+    public static function vSet($key, $name)
     {
-        echo self::$_db->table('sk_theme')->where("name = '$name'")->select()['value'];
+        echo self::$_db->table('sk_theme')->where("$key = '$name'")->select()['value'];
     }
 
     // 列表查询
@@ -127,20 +139,25 @@ class View extends FrameWork
     {
         switch ($a) {
             case 'article':
-                return self::$_db->table('sk_content')->select();
+                $data = array_reverse(self::$_db->getAll('sk_content'));
+                // var_dump($data);
+                // var_dump (array_reverse($data));
                 break;
             case 'tag':
                 $key = self::$vKey;
                 $cid = self::$_db->table('sk_tag')->where("name = '$key'")->select()['cid'];
-                return array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                $data = array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                break;
             case 'category':
                 $key = self::$vKey;
                 $cid = self::$_db->table('sk_category')->where("name = '$key'")->select()['cid'];
-                return array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                $data = array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                break;
             default:
                 self::Error('Error', '在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】');
                 break;
         }
+        return $data;
     }
 
 

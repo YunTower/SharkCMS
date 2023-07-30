@@ -32,8 +32,9 @@ class DB
         // 加载配置
         if (FrameWork::$_App['db']['Host']) {
             $this->_configs =  FrameWork::$_App['db'];
-        } 
+        }
 
+        $this->_where = null;
         $link = $this->_db;
         if (!$link) {
             $db = mysqli_connect($this->_configs['Host'], $this->_configs['User'], $this->_configs['Pwd'], $this->_configs['Name']);
@@ -89,6 +90,8 @@ class DB
         $link = $this->_db;
         if (!$link) return false;
         $sql = "SELECT * FROM {$this->_table} {$this->_where}";
+        // echo $sql;
+        // echo $this->execute($sql);
         $data = mysqli_num_rows($this->execute($sql));
         return $data;
     }
@@ -112,7 +115,7 @@ class DB
             $fieldsStr = $fields;
         }
         $sql = "SELECT {$fields} FROM {$this->_table} {$this->_where} {$this->_order} {$this->_limit}";
-        echo $sql;
+        // echo $sql;
         $data = mysqli_fetch_array($this->execute($sql), MYSQLI_ASSOC);
         return $data;
     }
@@ -191,10 +194,13 @@ class DB
         if (!$res) {
             $this->_error = mysqli_error_list($this->_db);
             $errors = $this->_error;
-            // $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
-            // FrameWork::Error('数据库错误', $msg);
+            // echo $sql;
+            // exit();
+            $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
+            FrameWork::Error('数据库错误', $msg);
         }
         return $res;
+        $this->_db = null;
     }
 
     // insert插入数据
@@ -253,17 +259,5 @@ class DB
     public function error()
     {
         return $this->_error[0];
-    }
-
-    // 异常输出
-    private function ShowException($var)
-    {
-        if (is_bool($var)) {
-            var_dump($var);
-        } else if (is_null($var)) {
-            var_dump(NULL);
-        } else {
-            echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($var, true) . "</pre>";
-        }
     }
 }

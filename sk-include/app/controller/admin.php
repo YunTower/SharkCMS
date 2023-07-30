@@ -29,8 +29,29 @@ class admin extends FrameWork
                         $file = $action . '.php';
                     }
                 }
-                exit(View::pjax($file));
-            }
+
+                if (file_exists(ADM . $file)) {
+                    exit(View::pjax($file));
+                } else {
+                    self::Error('404', '糟了，页面不见了！');
+                }
+            } else {
+                $code = 200;
+                $file = self::getAction() . '/' . self::getData() . '.php';
+                if (!self::getData()) {
+                    if (self::getAction() == 'index') {
+                        $file =  'console.php';
+                    } else {
+                        $file = self::getAction() . '.php';
+                    }
+                }
+                if (!file_exists($file)) {
+                    $code = 404;
+                }
+                $code;
+                $file;
+                include_once ADM . 'index.php';
+            } 
         } else {
             // ==>未登录
             if (self::getAction() != 'reg') {
@@ -40,10 +61,6 @@ class admin extends FrameWork
         }
     }
 
-    public function index()
-    {
-        include ADM . 'index.php';
-    }
 
     public function login()
     {

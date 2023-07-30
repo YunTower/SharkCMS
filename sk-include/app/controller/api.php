@@ -18,7 +18,7 @@ class api extends FrameWork
         $this->action = FrameWork::getData();
 
         // 接口权限验证
-        if ($this->action == 'avatar' || 'upload' || 'file' || 'get' || 'post') {
+        if ($this->action == 'avatar' || 'upload' || 'file' || 'get' || 'post' || 'comment') {
             // 验证token是否存在
             if (isset($_SESSION['token'])) {
                 // 解码token
@@ -29,7 +29,7 @@ class api extends FrameWork
                 $this->info = self::$_db->table('sk_user')->where('uid =' . $_uid)->select();
                 // 验证用户组
                 if (!$this->info) {
-                    exit(json_encode(array('code' => 500, 'msg' => '非真实用户!用户信息不存在!', 'error' => null)));
+                    exit(json_encode(array('code' => 500, 'msg' => '用户不存在!', 'error' => null)));
                 }
             }
         }
@@ -80,8 +80,30 @@ class api extends FrameWork
 
     function loginOut()
     {
-        unset($_SESSION['token']);
-        exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
+        var_dump($this->info);
+        if (isset($_SESSION['token'])) {
+            unset($_SESSION['token']);
+            $id=$this->info['uid'];
+            echo self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => null));
+            exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
+        } else {
+            exit(json_encode(['code' => 403, 'msg' => '未登录', 'data' => []]));
+        }
+    }
+
+    function user()
+    {
+        switch ($this->action) {
+            case 'token':
+                if (isset($_SESSION['token'])) {
+                    exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => true, 'token' => $_SESSION['token']]]));
+                } else {
+                    exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => false, 'token' => null]]));
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     // // 文件操作
@@ -122,6 +144,21 @@ class api extends FrameWork
         }
     }
 
+    function comment()
+    {
+        $data = $this->data;
+        switch ($this->action) {
+            case 'post':
+                $token = $data['token'];
+                echo self::$_db->table('sk_user')->where("token = '$token'")->count();
+                break;
+            default:
+                break;
+        }
+        var_dump($this->data);
+    }
+
+
 
     // 文章操作
     function post()
@@ -138,7 +175,7 @@ class api extends FrameWork
 
                 break;
             case 'list':
-                exit(json_encode(['code'=>0,'msg'=>'操作成功','data'=>self::$_db->getAll('sk_content')]));
+                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => self::$_db->getAll('sk_content')]));
             default:
                 exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
@@ -169,7 +206,47 @@ class api extends FrameWork
         }
     }
 
-    public function getNews(){
-        echo self::$_http->get('getNews');
+    public function info()
+    {
+        $db = self::$_db;
+        $arr =
+            [
+                'site' =>
+                [
+                    'count' =>
+                    [
+                        'page' => $db->table('sk_page')->where('pid')->count(),
+                        'post' => $db->table('sk_content')->where('cid')->count(),
+                        'user' => $db->table('sk_user')->where('uid')->count(),
+                        // 'menu' => $db->table('sk_menu')->where('mid')->count(),
+                        // 'comment'=>$db->table('sk_comment')->where('id')->count(),
+                        'category' => $db->table('sk_category')->where('id')->count(),
+                        'tag' => $db->table('sk_tag')->where('id')->count()
+                    ],
+
+                    'system' =>
+                    [
+                        'version' => self::$_App
+                    ],
+                ],
+            ];
+        var_dump($arr);
+    }
+
+    public function update()
+    {
+        $a = $this->action;
+        switch ($a) {
+            case 'check':
+                var_dump(self::$_http->post('UpdateCheck', self::$_App, 'json'));
+                break;
+            default:
+                exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
+                break;
+        }
+    }
+    public function getNews()
+    {
+        echo json_encode(self::$_http->setTimeout(5)->post('getNews', self::$_App, 'json'));
     }
 }

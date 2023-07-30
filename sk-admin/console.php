@@ -7,7 +7,7 @@
 					文章数量
 				</div>
 				<div class="layui-card-body" id="count">
-					4
+
 				</div>
 			</div>
 		</div>
@@ -76,10 +76,13 @@
 						<td>版本类型</td>
 						<td>开发版</td>
 					</tr>
-
+					<tr>
+						<td>云端状态</td>
+						<td>连接正常</td>
+					</tr>
 					<tr>
 						<td>PHP版本</td>
-						<td><?php echo PHP_VERSION ?></td>
+						<td>22</td>
 					</tr>
 					<tr>
 						<td>解释引擎</td>
@@ -91,22 +94,56 @@
 	</div>
 </div>
 <script>
-layui.use('table', function(){
-  var table = layui.table;
-  
-  // 创建渲染实例
-  table.render({
-    elem: '#table-news',
-    url:'/api/getNews', // 此处为静态模拟数据，实际使用时需换成真实接口
-    cols: [[
-      {field:'id', width:50, title: 'ID', sort: true},
-      {field:'title', width:200, title: '标题'},
-      {field:'slug', title: '摘要'},
-      {field:'category', width:100, title: '分类'},
-      {field:'uname', width:100,title: '作者'},
-      {field:'created', width:180, title: '时间', sort: true}
-    ]]
-  });
+	$.ajax({
+		url: origin + ''
+	})
 
-});
+	layui.use('table', function() {
+		var table = layui.table;
+		// 创建渲染实例
+		table.render({
+			elem: '#table-news',
+			url: '/api/getNews',
+			parseData:function(res){
+				if (res.code !== 0){
+					layer.alert(res.msg,{title:'系统错误',icon:2})
+				}
+			},
+			cols: [
+				[{
+						field: 'id',
+						width: 50,
+						title: 'ID',
+						sort: true
+					},
+					{
+						field: 'title',
+						width: 200,
+						title: '标题'
+					},
+					{
+						field: 'slug',
+						title: '摘要'
+					},
+					{
+						field: 'category',
+						width: 100,
+						title: '分类'
+					},
+					{
+						field: 'uname',
+						width: 100,
+						title: '作者'
+					},
+					{
+						field: 'created',
+						width: 180,
+						title: '时间',
+						sort: true
+					}
+				]
+			],
+		});
+
+	});
 </script>

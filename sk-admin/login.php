@@ -34,7 +34,7 @@
 					<div class="layui-input-prefix">
 						<i class="layui-icon layui-icon-password"></i>
 					</div>
-					<input type="password" name="upwd" value="testtest" lay-verify="required" placeholder="密 码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
+					<input type="password" name="upwd" value="test" lay-verify="required" placeholder="密 码" lay-reqtext="请填写密码" autocomplete="off" class="layui-input" lay-affix="eye">
 				</div>
 			</div>
 			<div class="layui-form-item">

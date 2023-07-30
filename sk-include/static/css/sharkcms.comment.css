@@ -1,0 +1,136 @@
+:root {
+    --main-color-1: #2d8cf0;
+    --main-color-2: #e5e7eb;
+    --text-color-1: #24292f;
+    --text-color-2: #57606A;
+}
+
+.sk-comment {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-direction: column;
+}
+
+textarea:focus {
+    outline: none;
+}
+
+.sk-comment textarea {
+    line-height: 2rem;
+    border: none;
+    min-height: 50px;
+    /* height: fit-content; */
+    min-width: 300px;
+    width: 100%;
+    padding-left: .75rem;
+    padding-right: .75rem;
+    border: 2px solid var(--main-color-2);
+    /* border: 2px solid var(--main-color-1); */
+    border-radius: 5px;
+}
+
+.sk-comment textarea:focus {
+    border: 2px solid var(--main-color-1);
+    border-radius: 5px;
+}
+
+.sk-comment .sk-btn {
+    display: inline;
+}
+
+.sk-comment .sk-send {
+    color: var(--text-color-2);
+    background-color: #fff;
+    padding: 2px 2px;
+    /* margin-left: auto; */
+    float: right;
+    border-radius: 5px;
+    width: 100px;
+    border: 2px solid var(--main-color-2);
+}
+
+.sk-comment .sk-send:hover {
+    color: var(--text-color-2);
+    border: 2px solid var(--main-color-1);
+    border-radius: 5px;
+}
+
+.sk-comment .sk-user {
+    width: fit-content;
+    color: var(--text-color-2);
+    background-color: #fff;
+    padding: 2px 5px;
+    float: left;
+}
+
+.sk-comment .sk-user:hover {
+    color: var(--main-color-1);
+}
+
+.sk-comment-list {
+    display: flex;
+    margin: 10px 0;
+
+}
+
+.sk-comment-list li {
+    display: grid;
+    grid:
+        'sk-avatar sk-avatar  sk-uname  sk-time'
+        'sk-avatar sk-avatar  sk-comment sk-comment';
+        /* 'sk-avatar sk-avatar sk-comment-reply'; */
+
+    grid-gap: 10px;
+    padding: 10px;
+
+}
+
+.sk-comment-details {
+    -webkit-flex-basis: 80px;
+    /* Safari 6.1+ */
+    flex-basis: 200px;
+    display: inline;
+
+}
+
+.sk-comment-avatar {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    grid-area: sk-avatar;
+
+}
+
+.sk-comment-uname{
+    grid-area: sk-uname;
+    color: var(--text-color-1);
+}
+
+.sk-comment-uname:hover{
+    color: var(--main-color-1);
+}
+
+.sk-comment-time{
+    grid-area: sk-time;
+    color: var(--text-color-2);
+    font-size: .85rem;
+    line-height: 1rem;
+}
+
+.sk-comment-ucomment{
+    grid-area: sk-comment;
+    color: var(--text-color-1);
+    font-size: .975rem;
+}
+
+.sk-comment-reply{
+    grid-area: sk-comment-reply;
+    font-size: .875rem;
+}
+
+.sk-comment-reply:hover{
+    color: var(--main-color-1);
+}

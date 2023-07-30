@@ -13,6 +13,16 @@
                 <input type="text" name="slug" value="Hello World" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
             </div>
         </div>
+        <div class="layui-row">
+            <div class="layui-col-xs3">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">简介</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="slug" value="Hello World" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+            </div>
+        </div>
         <div style="border: 1px solid #ccc;">
             <div id="editor-toolbar" style="border-bottom: 1px solid #ccc;"></div>
             <div id="editor-text-area" style="height: 500px"></div>
@@ -45,6 +55,7 @@
 </form>
 
 <script>
+
     $('#sk-toolbar-top').show();
     $('#sk-toolbar-bottom').show();
     sk.noSave();

@@ -15,7 +15,8 @@ class User extends FrameWork
         // 生成Token
         $token = base64_encode(json_encode(array('uid' => $id, 'time' => $time)));
         // 保存Token
-        self::$_db->table('sk_user')->insert(array('token' => $token));
+        self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => $token));
+
         $this->token = $token;
         $_SESSION['token'] = $token;
         return $token;

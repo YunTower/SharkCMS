@@ -18,15 +18,31 @@ a[href] {
 a[href]:hover {
     text-decoration: underline;
 }
-img[src$="break.svg"]{
-    object-fit: contain;}
+
+img[src$="break.svg"] {
+    object-fit: contain;
+}
+
 .sk-bg-white {
     background-color: var(--main-color-2);
 }
 
+.sk-text-green {
+    color: #32C682;
+}
+
+.sk-text-red {
+    color: red;
+}
+
+.sk-text-blue {
+    color: var(--main-color-1)
+}
+
 .sk-center {
     display: flex;
-    justify-content: center
+    justify-content: center;
+    text-align: center;
 }
 
 .sk-error-body {
@@ -211,6 +227,9 @@ img[src$="break.svg"]{
 
 }
 
+.sk-upadte .btn{
+    padding: 30px;
+}
 
 .sk-form .layui-panel {
     position: absolute;
