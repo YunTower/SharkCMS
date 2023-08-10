@@ -112,7 +112,7 @@ class View extends FrameWork
         if (file_exists($f)) {
             include_once $f;
         } else {
-            self::Error('系统错误', '主题文件【sidebar.php】不存在');
+            self::Error(404, '主题文件【sidebar.php】不存在');
         }
     }
 

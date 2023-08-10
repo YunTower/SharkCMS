@@ -7,7 +7,7 @@ class install extends FrameWork
     public function __construct()
     {
         if (self::$_App['app']['Install'] && self::getData() != 3) {
-            self::Error('系统提示', '你已安装SharkCMS，无需再次安装');
+            self::Error(0, array('title'=>'系统提示','msg'=>'你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
         }
     }
 
@@ -57,7 +57,7 @@ class install extends FrameWork
                     break;
 
                 case 'install';
-                    // 加载内核依赖
+                    // 加载依赖
                     include_once INC . 'core/inc/db.php';
                     include_once INC . 'core/inc/user.php';
                     include_once INC . 'core/inc/http.php';
@@ -65,7 +65,7 @@ class install extends FrameWork
                     // 初始化类
                     self::$_db = new DB();
                     self::$_user = new User();
-                    self::$_http=new Http();
+                    self::$_http = new Http();
 
                     if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
@@ -73,19 +73,17 @@ class install extends FrameWork
                         // echo $data['ad_mail'];
                         $t = time();
                         $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
-                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'],'avatar'=>'/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
+                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
                         self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                         self::$_db->table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
                         self::$_db->table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
 
-                        $arr =self::$_http->post('install', self::$_App, 'json');
-                        
-                        // $arr=json_decode($arr,true);
-                        // var_dump($arr);
+                        $arr = self::$_http->post('install', FrameWork::$_App, 'json');
+
                         if ($arr['code'] == 200) {
 
                             // 写入信息
-                            self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')],'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
+                            self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
 
                             exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
                         } else {
@@ -94,7 +92,7 @@ class install extends FrameWork
                     } else {
                         exit(json_encode(array('code' => 500, 'msg' => '安装出错', 'error' => self::$_db->error())));
                     }
-                    var_dump($data);
+                    // var_dump($data);
                     break;
 
                 default:

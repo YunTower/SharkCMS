@@ -3,8 +3,16 @@
         <textarea id="sk-comment" placeholder="攥写评论"></textarea>
     </div>
     <div class="sk-btn">
-        <span class="sk-user">当前账号：286267038@qq.com</span>
-        <span class="sk-user">[退出]</span>
+        <?php
+        if (isset($_SESSION['token'])) {
+            $uid = json_decode(base64_decode($_SESSION['token']))->uid;
+            $info = self::$_user->info($uid);
+            echo '<span class="sk-user">' . $info['mail'] . '</span>';
+            echo '<span class="sk-user" onclick="sk.loginOut()">[退出]</span>';
+        } else {
+            echo '<span class="sk-user"><a onclick="sk.login()">[登陆]</a></span>';
+        }
+        ?>
         <button class="sk-send" onclick="sk_comment_send()">提交评论</button>
     </div>
     <div class="sk-comment-list">
@@ -24,7 +32,7 @@
 
             </li>
             <li>
-            <img class="sk-comment-avatar" src="http://127.0.0.1/sk-content/upload/avatar/default.webp" />
+                <img class="sk-comment-avatar" src="http://127.0.0.1/sk-content/upload/avatar/default.webp" />
                 <div class="sk-comment-details">
                     <div class="sk-comment-info">
                         <span class="sk-comment-uname">fish</span>

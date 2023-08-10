@@ -5,14 +5,13 @@ class Http extends FrameWork
     private $ch = null; // curl handle
     private $headers = array(); // request header
     private $proxy = null; // http proxy
-    private $timeout = 5;    // connnect timeout
+    private $timeout = null;    // connnect timeout
     private $httpParams = null;
-    private $host='http://cloud.devx.site/signupweb/';
 
 
     public function __construct()
     {
-        // $this->host = self::$_App['api']['Host'];
+        $this->host = self::$_App['api']['Host'];
         $this->ch = curl_init();
     }
 
@@ -159,9 +158,6 @@ class Http extends FrameWork
         $status = curl_getinfo($this->ch);
         curl_close($this->ch);
 
-        if (isset($this->timeout) && @$this->timeout < $status['total_time'] || @$this->timeout = $status['total_time']){
-            exit(json_encode(['code'=>500,'msg'=>'请求超时！','data'=>[]]));
-        }
 
         if (isset($status['http_code'])) {
             if ($dataType == 'json') {
@@ -181,7 +177,7 @@ class Http extends FrameWork
      * @param array $fields
      * @param string $dataType
      * @return mixed
-     * 
+     *
      * HttpCurl::post('http://api.example.com/?a=123', array('abc'=>'123', 'efg'=>'567'), 'json');
      * HttpCurl::post('http://api.example.com/', '这是post原始内容', 'json');
      * 文件post上传
@@ -210,11 +206,6 @@ class Http extends FrameWork
         $content = curl_exec($this->ch);
         $status = curl_getinfo($this->ch);
         curl_close($this->ch);
-       
-
-        if (isset($this->timeout) && @$this->timeout < $status['total_time'] || @$this->timeout = $status['total_time']){
-            exit(json_encode(['code'=>500,'msg'=>'请求超时！','data'=>[]]));
-        }
 
         if (isset($status['http_code']) && @$status['http_code'] != 0) {
             if ($dataType == 'json') {

@@ -1,3 +1,8 @@
+var path = window.location.pathname;
+console.log(path);
+var result = path.split("/");
+var id = result[3];
+
 function getValue(id) {
   const textarea = document.getElementById(id);
   const v = textarea.value;
@@ -26,11 +31,12 @@ function sk_comment_send() {
         } else {
           var data = JSON.stringify({
             uid: 1,
+            id:id,
             comment: comment,
             time: Date.now(),
             token: res.data.token,
           });
-          var data=Base64.encode(data)
+          var data = Base64.encode(data);
 
           // 发送post请求
           $.ajax({

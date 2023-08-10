@@ -1,4 +1,5 @@
 <?php
+
 class admin extends FrameWork
 {
     private $info;
@@ -6,8 +7,6 @@ class admin extends FrameWork
 
     public function __construct()
     {
-
-
         // 登陆状态检测
         if (isset($_SESSION['token'])) {
             // ==>登陆
@@ -16,45 +15,51 @@ class admin extends FrameWork
             // 解析session 获取uid
             $uid = json_decode(base64_decode($_SESSION['token']))->uid;
             $this->info = self::$_user->info($uid);
-
-            if (!empty($_GET['_pjax'])) {
-                $action = self::getAction();
-                $data = self::getData();
-                if ($data) {
-                    $file = $action . '/' . $data . '.php';
-                } else {
-                    if ($action == 'index') {
-                        $file = 'console.php';
+            if ($this->info['group'] == 'admin') {
+                if (!empty($_GET['_pjax'])) {
+                    $action = self::getAction();
+                    $data = self::getData();
+                    if ($data) {
+                        $file = $action . '/' . $data . '.php';
                     } else {
-                        $file = $action . '.php';
+                        if ($action == 'index') {
+                            $file = 'console.php';
+                        } else {
+                            $file = $action . '.php';
+                        }
                     }
-                }
 
-                if (file_exists(ADM . $file)) {
-                    exit(View::pjax($file));
+                    if (file_exists(ADM . $file)) {
+                        exit(View::pjax($file));
+                    } else {
+                        self::Error('404', '糟了，页面不见了！');
+                    }
                 } else {
-                    self::Error('404', '糟了，页面不见了！');
+                    $code = 200;
+                    $file = self::getAction() . '/' . self::getData() . '.php';
+                    if (!self::getData()) {
+                        if (self::getAction() == 'index') {
+                            $file = 'console.php';
+                        } else {
+                            $file = self::getAction() . '.php';
+                        }
+                    }
+                    if (!file_exists($file)) {
+                        $code = 404;
+                    }
+                    $code;
+                    $file;
+                    include_once ADM . 'index.php';
                 }
             } else {
-                $code = 200;
-                $file = self::getAction() . '/' . self::getData() . '.php';
-                if (!self::getData()) {
-                    if (self::getAction() == 'index') {
-                        $file =  'console.php';
-                    } else {
-                        $file = self::getAction() . '.php';
-                    }
-                }
-                if (!file_exists($file)) {
-                    $code = 404;
-                }
-                $code;
-                $file;
-                include_once ADM . 'index.php';
-            } 
+                header('Location:/');
+            }
         } else {
             // ==>未登录
             if (self::getAction() != 'reg') {
+                if (isset(explode('/', self::getOrigin())[4]) && explode('/', self::getOrigin())[4] == 'article') {
+                  FrameWork::$_data = json_encode(['from' => 'article']);
+                }
                 include ADM . 'login.php';
                 exit();
             }
@@ -66,6 +71,7 @@ class admin extends FrameWork
     {
         include ADM . 'index.php';
     }
+
     public function reg()
     {
         include ADM . 'reg.php';

@@ -18,20 +18,13 @@ class api extends FrameWork
         $this->action = FrameWork::getData();
 
         // 接口权限验证
-        if ($this->action == 'avatar' || 'upload' || 'file' || 'get' || 'post' || 'comment') {
-            // 验证token是否存在
-            if (isset($_SESSION['token'])) {
-                // 解码token
-                $_token = (json_decode(base64_decode($_SESSION['token'])));
-                // 获取用户信息
-                $_uid = $_token->uid;
-                // 查询用户信息
-                $this->info = self::$_db->table('sk_user')->where('uid =' . $_uid)->select();
-                // 验证用户组
-                if (!$this->info) {
-                    exit(json_encode(array('code' => 500, 'msg' => '用户不存在!', 'error' => null)));
-                }
+        if ($this->action != 'login'){
+            if (isset($_SESSION['token'])){
+                
+            }else{
+                exit(json_encode(['code'=>403,'msg'=>'权限不足！','data'=>[]]));
             }
+
         }
     }
 
@@ -52,14 +45,14 @@ class api extends FrameWork
                         // 密码错误
                         if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
                             // 权限组 != admin
-                            if ($user['group'] == 'admin') {
-                                // 生成Token
-                                self::$_user->CreateToken($user['uid']);
-                                // 返回成功信息
-                                echo json_encode(array('code' => 200, 'msg' => '登陆成功'));
-                            } else {
-                                echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
-                            }
+                            // if ($user['group'] == 'admin') {
+                            // 生成Token
+                            self::$_user->CreateToken($user['uid']);
+                            // 返回成功信息
+                            echo json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group']]));
+                            // } else {
+                            //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
+                            // }
                         } else {
                             echo json_encode(array('code' => 500, 'msg' => '【密码】错误'));
                         }
@@ -80,11 +73,10 @@ class api extends FrameWork
 
     function loginOut()
     {
-        var_dump($this->info);
         if (isset($_SESSION['token'])) {
             unset($_SESSION['token']);
-            $id=$this->info['uid'];
-            echo self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => null));
+            $id = $this->info['uid'];
+            self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => null));
             exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
         } else {
             exit(json_encode(['code' => 403, 'msg' => '未登录', 'data' => []]));
@@ -150,7 +142,8 @@ class api extends FrameWork
         switch ($this->action) {
             case 'post':
                 $token = $data['token'];
-                echo self::$_db->table('sk_user')->where("token = '$token'")->count();
+
+                    self::$_db->table('sk_comment')->insert(['']);
                 break;
             default:
                 break;

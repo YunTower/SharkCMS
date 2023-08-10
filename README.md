@@ -1,23 +1,21 @@
-
 # 开发版本请勿下载！
-## 开发版本包含了大量的测试数据，直接使用会造成一些问题，所以请不要使用！
+<center>
 
-<div align="center">
-<a href="https://sharkcms.cn">
-<img src="https://cdn.sharkcms.cn/img/logo.svg" />
-</a>
-<br>
+<div style="width: 300px">
 
-<img src="https://img.shields.io/badge/PHP-%3E%3D7.0-orange"/>
-<img src="https://img.shields.io/badge/license-MIT-green"/>
-<img src="https://img.shields.io/badge/Mysql-%3E%3D5.6-blue"/>
+![img](https://cdn.sharkcms.cn/img/text.svg)
+</div>
+
+![img](https://img.shields.io/badge/PHP-%3E%3D7.0-orange)
+![img](https://img.shields.io/badge/license-MIT-green)
+![img](https://img.shields.io/badge/Mysql-%3E%3D5.6-blue)
 
 [ 官网 ](https://sharkcms.cn/) |
 [ 演示 ](https://demo.sharkcms.cn/)|
 [ 文档 ](https://doc.sharkcms.cn/)
+</center>
 
-</div>
-<hr>
+---
 
 ## 🎉 简介
 
@@ -26,43 +24,29 @@ SharkCMS 是由<a href="https://www.xyfish.cn/">fish</a>开发的内容管理系
 
 `本主题采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
 
-Gitee 仓库（正式版）：https://gitee.com/fish_nb/skcms<br>
-Gitea 仓库（开发版）：http://git.xyfish.cn:3000/fishnb/sharkcms
+Gitee：https://gitee.com/fish_nb/skcms  
+Github：https://github.com/fishnb/SharkCMS
 
 ## 🛠 安装要求
 
 - Nginx / Apache / IIS
-- PHP >=7.0
-- Mysql >=5.6
+- PHP >= 7.0
+- Mysql >= 5.6   
+
+```推荐配置：Nginx + PHP 7.4 + Mysql 5.7```  
+```不建议【虚拟主机】使用SharkCMS，可能会导致系统出现一些无法预测的错误```
 
 ## 😋 致谢
 
 - [Layui（MIT License）](https://gitee.com/layui/layui)
 - [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
 - [jQuery.js（MIT License）](https://jquery.com/)
+- 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>
+>所有资金都将用于SharkCMS项目的维护等相关内容，感谢支持   
 
-<table class="layui-table">
-  <colgroup>
-    <col width="200">
-    <col width="200">
-    <col>
-  </colgroup>
-  <thead>
-    <tr align="center">
-      <th>微信</th>
-      <th>支付宝</th>
-    </tr> 
-  </thead>
-  <tbody>
-    <tr>
-      <td>
-      <img height="200px" width="200px" src="https://cdn.sharkcms.cn/img/wxpay.png" alt="微信赞助"/>
-      </td>
-      <td>
-      <img height="200px" width="200px" src="https://cdn.sharkcms.cn/img/alipay.png" alt="支付宝赞助"/>
-      </td>
-    </tr>
-  </tbody>
-</table>
+|    微信    |                      支付宝                       |
+|:--------:|:----------------------------------------------:|
+| ![img](https://cdn.sharkcms.cn/img/wxpay.png) | ![img](https://cdn.sharkcms.cn/img/alipay.png) |
+

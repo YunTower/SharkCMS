@@ -8,7 +8,7 @@
     'Version' => '1.0.0',
     'Mode' => 'online',
     'Install' => true,
-    'Time' => '2023-07-27 19:20:39',
+    'Time' => '2023-08-09 19:42:02',
   ),
   'db' => 
   array (
@@ -21,7 +21,7 @@
   'api' => 
   array (
     'Host' => 'http://127.0.0.1:8787/api/',
-    'Version' => '1.0',
+    'Version' => 'v1',
     'Key' => 'YmRlZmdobW5xcnN0dnpDSElLU1ZZMDEyMzU4ISMkLV8=',
     'Token' => '3e8b3db6a925adc5b1a808a3719df350',
   ),

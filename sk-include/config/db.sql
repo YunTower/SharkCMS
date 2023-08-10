@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `sk_comment` (
   `id` int(6) UNSIGNED NOT NULL,
   `cid` int(6) NOT NULL,
+  `type` int(16) NOT NULL,
   `content` text NOT NULL,
   `uid` int(16) NOT NULL,
   `status` varchar(16) DEFAULT NULL,

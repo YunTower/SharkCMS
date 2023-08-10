@@ -2,13 +2,15 @@
 
 class FrameWork
 {
-
+    // 配置信息
     public static $_App;
     public static $_db;
     public static $_view;
     public static $_user;
     public static $_http;
     public static $_cloud;
+    // 数据传输变量
+    public static $_data = null;
 
     /**
      * 框架初始化方法
@@ -44,7 +46,6 @@ class FrameWork
             self::$_http = new Http();
             self::$_cloud = new Cloud();
         }
-
     }
 
     /**
@@ -79,14 +80,14 @@ class FrameWork
                 //若方法不存在，则跳转到错误控制器
                 if ($method == '') {
                     if (FrameWork::getController() != 'admin') {
-                        self::Error('404 页面不存在', '你所访问的页面不存在');
+                        self::Error(404);
                     }
                 } else {
                     //执行方法
                     $method->invoke($instance);
                 }
             } else {
-                self::Error('404 页面不存在', '你所访问的页面不存在');
+                self::Error(404);
             }
         }
     }
@@ -161,7 +162,7 @@ class FrameWork
     }
 
     // 配置修改
-    public static function setConfig($new)
+    public static function setConfig(array $new)
     {
         $config = self::$_App;
         $file = INC . 'config/app.php';
@@ -170,19 +171,33 @@ class FrameWork
     }
 
     // 安装状态
-    public static function inStatus(){
+    public static function inStatus()
+    {
         return self::$_App['app']['Install'];
     }
 
-
-    // 错误处理
-    public static function Error($title, $msg)
+    // 获取来源
+    public static function getOrigin()
     {
-        ob_clean();
-        $title;
-        $msg;
-        include_once INC . 'view/error/error.php';
-        exit();
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            return $_SERVER['HTTP_REFERER'];
+        }
     }
 
+    // 错误处理
+    public static function Error(int $code, array $info = null)
+    {
+        ob_clean();
+        $file = CON . 'theme/' . View::$vName . '/page/error/' . $code . '.php';
+        if (file_exists($file)) {
+            include_once $file;
+        } else if ($code == 0) {
+            $title = $info['title'];
+            $msg = $info['msg'];
+            include_once INC . 'view/error/error.php';
+        } else {
+            include_once INC . 'view/error/' . $code . '.php';
+        }
+        exit();
+    }
 }
