@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `sk_comment` (
   `id` int(6) UNSIGNED NOT NULL,
   `cid` int(6) NOT NULL,
-  `type` int(16) NOT NULL,
+  `type`text NOT NULL,
   `content` text NOT NULL,
   `uid` int(16) NOT NULL,
   `status` varchar(16) DEFAULT NULL,
@@ -242,7 +242,7 @@ ALTER TABLE `sk_user`
 -- 使用表AUTO_INCREMENT `sk_comment`
 --
 ALTER TABLE `sk_comment`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_content`
@@ -260,19 +260,19 @@ ALTER TABLE `sk_menu`
 -- 使用表AUTO_INCREMENT `sk_tag`
 --
 ALTER TABLE `sk_tag`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_category`
 --
 ALTER TABLE `sk_category`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
   
 --
 -- 使用表AUTO_INCREMENT `sk_page`
 --
 ALTER TABLE `sk_page`
-  MODIFY `pid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `pid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_theme`

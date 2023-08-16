@@ -1,6 +1,6 @@
 <?php
-$a = self::$vArticle;
-self::$sTitle=$a['title'] .' - '.'Demo';
+$a = View::$vArticle;
+View::$sTitle=$a['title'] ;
 ?>
 
 <!DOCTYPE html>

@@ -1,13 +1,13 @@
 <?php
 
-class install extends FrameWork
+class Install extends FrameWork
 {
     private $_step;
 
     public function __construct()
     {
         if (self::$_App['app']['Install'] && self::getData() != 3) {
-            self::Error(0, array('title'=>'系统提示','msg'=>'你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
+            self::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
         }
     }
 
@@ -36,8 +36,8 @@ class install extends FrameWork
         header('Content-Type: application/json; charset=utf-8');
         // 判断请求是否是ajax请求
         $ajax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(trim($_SERVER['HTTP_X_REQUESTED_WITH'])) == 'xmlhttprequest');
-        if (!$ajax) {
-            exit(json_encode(array('code' => 400, 'msg' => '请求无效', 'error' => null)));
+        if (!$_SERVER['REQUEST_METHOD'] === 'POST') {
+            exit(json_encode(array('code' => 400, 'msg' => '请求无效', 'error' => $_SERVER['HTTP_X_REQUESTED_WITH'])));
         } else {
             $data = file_get_contents("php://input");
             $data = base64_decode($data);
@@ -58,19 +58,18 @@ class install extends FrameWork
 
                 case 'install';
                     // 加载依赖
-                    include_once INC . 'core/inc/db.php';
-                    include_once INC . 'core/inc/user.php';
-                    include_once INC . 'core/inc/http.php';
+                    include_once INC . 'core/inc/Db.php';
+                    include_once INC . 'core/inc/User.php';
+                    include_once INC . 'core/inc/Http.php';
 
                     // 初始化类
-                    self::$_db = new DB();
+                    $_db = FrameWork::$_App['db'];
+                    self::$_db = Db::getInstance($dbHost = $_db['Host'], $dbUser = $_db['User'], $dbPasswd = $_db['Pwd'], $dbName = $_db['Name'], $dbCharset = '');
                     self::$_user = new User();
                     self::$_http = new Http();
 
-                    if (self::$_db->import(INC . 'config/db.sql')) {
+                    if (self::$_db->import(INC . 'config/test.sql')) {
                         // 写入初始数据
-                        // var_dump($data);
-                        // echo $data['ad_mail'];
                         $t = time();
                         $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
                         self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
@@ -85,14 +84,14 @@ class install extends FrameWork
                             // 写入信息
                             self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
 
+                            User::CreateToken(1);
                             exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
                         } else {
-                            exit(json_encode(array('code' => 400, 'msg' => $arr['msg'], 'error' => null)));
+                            exit($arr['msg']);
                         }
                     } else {
-                        exit(json_encode(array('code' => 500, 'msg' => '安装出错', 'error' => self::$_db->error())));
+                        exit(self::$_db->getPDOError());
                     }
-                    // var_dump($data);
                     break;
 
                 default:

@@ -73,21 +73,7 @@ img[src$="break.svg"] {
     align-items: center;
 }
 
-.sk-admin-line-vertical {
-    display: flex;
-    width: 0;
-    height: calc(3.375rem - 2rem);
-    border-left: 1px solid #e3e6f0;
-    margin: 0 10px;
-}
 
-.sk-admin-login-out i {
-    font-size: 15px;
-}
-
-.sk-admin-editor-bottom {
-    margin-top: 20px;
-}
 
 .sk-url {
     color: var(--main-color-1);
@@ -99,137 +85,9 @@ img[src$="break.svg"] {
     text-decoration: underline;
 }
 
-#sk-toolbar-top,
-#sk-toolbar-bottom {
-    display: none;
-}
-
-.sk-admin-home {
-    background-color: #fff;
-}
 
 
-.sk-form {
-    width: 300px;
-    margin: 21px auto 0;
-}
 
-.sk-login-other .layui-icon {
-    position: relative;
-    display: inline-block;
-    margin: 0 2px;
-    top: 2px;
-    font-size: 26px;
-}
-
-.sk-admin-nav ul {
-    color: var(--text-color-1);
-    background-color: var(--main-color-2);
-}
-
-.sk-admin-nav-tree a {
-    color: var(--text-color-1);
-}
-
-.layui-nav-itemed dl {
-    color: var(--text-color-1);
-    background-color: #FAFAFA;
-}
-
-.layui-nav-tree .layui-nav-child a {
-    color: var(--text-color-1);
-
-}
-
-.sk-admin-logo {
-    font-size: 21px;
-    font-weight: 550;
-    color: var(--main-color-1);
-    background-color: var(--main-color-2);
-    font-size: 20px;
-}
-
-.sk-admin-nav-bg {
-    background-color: var(--main-color-2);
-}
-
-.layui-side-scroll {
-    background-color: var(--main-color-2);
-}
-
-.sk-admin-content {
-    background-color: whitesmoke;
-    height: calc(100% - 42px) !important;
-    z-index: -99999;
-
-}
-
-.sk-newpost {
-    background-color: #fff;
-    padding: 22px;
-}
-
-.sk-admin-footer-left {
-    float: left;
-    padding: 0 15px;
-}
-
-.sk-admin-footer-right {
-    float: right;
-}
-
-
-#title {
-    font-weight: none;
-    text-align: center;
-}
-
-#count {
-    font-size: 25px;
-    color: var(--main-color-1);
-    font-weight: 700;
-    text-align: center;
-    height: 40px;
-}
-
-.sk-theme .card-main {
-    min-height: fit-content;
-}
-
-.sk-theme .card-img {
-    position: relative;
-    padding-bottom: calc(var(--tw-aspect-h) / var(--tw-aspect-w) * 100%);
-
-}
-
-.sk-theme .card-img img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.sk-theme .card-info {
-    position: relative;
-    line-height: 42px;
-    padding: 0 15px;
-    border-bottom: 1px solid #f8f8f8;
-    color: #333;
-    border-radius: 2px 2px 0 0;
-    font-size: 14px;
-}
-
-.sk-theme .card-title {
-    font-size: 25px;
-    font-weight: 490;
-    border-bottom: 1px solid #f8f8f8;
-    padding: 10px 0;
-
-}
-
-.sk-upadte .btn{
-    padding: 30px;
-}
 
 .sk-form .layui-panel {
     position: absolute;

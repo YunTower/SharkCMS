@@ -7,6 +7,7 @@
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
 	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
+	<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 
 </head>
@@ -45,16 +46,19 @@
 		</form>
 	</div>
 	<p class="sk-copyright">
-        <a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
-    </p>
+		<a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
+	</p>
 	<!-- 资 源 引 入 -->
-	<script src="/sk-include/static/js/jquery.min.js"></script>
+	<script src="/sk-include/static/js/axios.min.js"></script>
 	<script src="/sk-include/static/layui/layui.js"></script>
+	<script src="/sk-admin/component/pear/pear.js"></script>
 	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
-		layui.use(['form'], function() {
-			var form = layui.form;
-			var layer = layui.layer;
+		layui.use(['form', 'layer', 'popup'], function() {
+			var form = layui.form,
+				layer = layui.layer,
+				popup = layui.popup;
+
 			// 提交事件
 			form.on('submit(upload)', function(data) {
 				var data = JSON.stringify(data.field);
@@ -65,31 +69,20 @@
 				} else {
 					// base64 加密传输
 					var data = Base64.encode(data)
-					// ajax请求
-					$.ajax({
-						type: 'POST',
-						url: '/install/install/install',
-						dataType: "json",
-						data: data,
-						contentType: "application/jsoan",
-						success: function(data) {
-							// 连接状态
-							if (data.code == 200) {
-								// if 1000 ==> 弹出层 && 跳转 /install/step/3
-								layer.msg('安装成功', {
-									time: 5 * 1000,
-									icon: 1
-								});
-								window.location.href = '/install/step/3';
-							} else {
-								// 弹出层
-								layer.alert(data.msg, {
-									title: '安装失败',
-									icon: '2'
+					// 发送请求
+					axios.post('/install/install/install', data)
+						.then(function(response) {
+							if (response.data.code == 200) {
+								popup.success(response.data.msg, function() {
+									window.location.href = '/install/step/3';
 								})
+							} else {
+								layer.alert(response.data, {
+									'title': '安装错误'
+								});
 							}
-						}
-					})
+						})
+
 				}
 				return false;
 			});

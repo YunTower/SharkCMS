@@ -58,7 +58,7 @@ textarea:focus {
     border-radius: 5px;
 }
 
-.sk-comment .sk-user {
+.sk-comment .sk-comment-user {
     width: fit-content;
     color: var(--text-color-2);
     background-color: #fff;
@@ -66,7 +66,7 @@ textarea:focus {
     float: left;
 }
 
-.sk-comment .sk-user:hover {
+.sk-comment .sk-comment-user:hover {
     color: var(--main-color-1);
 }
 

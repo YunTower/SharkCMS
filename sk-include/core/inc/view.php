@@ -15,17 +15,23 @@
 class View extends FrameWork
 {
     public static $sTitle;
-    public static $vArticle;
+    public static $sName = 'Demo';
     public static $vName;
     public static $vUrl;
     public static $vKey;
     public static $vTheme = array();
     public static $vConfig = array();
 
+    public static $vArticle;
+    public static $vComment;
+    public static  $_Comment = [];
+
+//    public static $/
+
     public function __construct()
     {
         // 主题名称
-        self::$vName = self::$_db->table('sk_setting')->where('name = "theme-name"')->select()['value'];
+        self::$vName = self::$_db->table('sk_setting')->where('name = "theme-name"')->find()['value'];
 
         // 当前主题路径
         self::$vUrl = CON . 'theme/' . self::$vName . '/';
@@ -53,6 +59,10 @@ class View extends FrameWork
                 }
             }
         }
+        self::$vArticle=self::$_db->table('sk_content')->where('cid != 0')->get();
+        self::$vComment=self::$_db->table('sk_comment')->where('id != 0')->get();
+
+
     }
 
     public static function allTheme()
@@ -79,11 +89,11 @@ class View extends FrameWork
     // pjax
     public static function pjax($file)
     {
-        $file=ADM . $file;
-        if (file_exists($file)){
+        $file = ADM . $file;
+        if (file_exists($file)) {
             echo file_get_contents($file);
-        }else{
-            self::Error('404','糟了糟了，页面没找到啊<br>可能还在开发');
+        } else {
+            self::Error('404', '糟了糟了，页面没找到啊<br>可能还在开发');
         }
     }
 
@@ -93,7 +103,7 @@ class View extends FrameWork
     }
 
     // 文件加载
-    public static function include($file)
+    public static function include(string $file)
     {
         include_once self::$vUrl . $file;
     }
@@ -101,7 +111,7 @@ class View extends FrameWork
     // 加载头部文件
     public static function get_header()
     {
-        include_once INC .'view/theme/header.php';
+        include_once INC . 'view/theme/header.php';
         include_once self::$vUrl . 'header.php';
     }
 
@@ -117,41 +127,42 @@ class View extends FrameWork
     }
 
     // 加载评论功能
-    public static function get_comment(){
-        include_once INC .'view/theme/comment.php';
+    public static function get_comment()
+    {
+        include_once INC . 'view/theme/comment.php';
     }
 
     // 加载底部文件
     public static function get_footer()
     {
-        include_once INC .'view/theme/footer.php';
+        include_once INC . 'view/theme/footer.php';
         include_once self::$vUrl . 'footer.php';
     }
 
     // 查询主题设置
-    public static function vSet($key, $name)
+    public static function vSet(string $key, string $name)
     {
-        echo self::$_db->table('sk_theme')->where("$key = '$name'")->select()['value'];
+        echo self::$_db->table('sk_theme')->where("$key = '$name'")->find()['value'];
     }
 
     // 列表查询
-    public static function query($a)
+    public static function query(string $a)
     {
         switch ($a) {
             case 'article':
-                $data = array_reverse(self::$_db->getAll('sk_content'));
-                // var_dump($data);
+                $data = array_reverse(self::$_db->table('sk_content')->where('cid != 0')->get());
+
                 // var_dump (array_reverse($data));
                 break;
             case 'tag':
                 $key = self::$vKey;
-                $cid = self::$_db->table('sk_tag')->where("name = '$key'")->select()['cid'];
-                $data = array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                $cid = self::$_db->table('sk_tag')->where("name = '$key'")->get()['cid'];
+                $data = self::$_db->table('sk_content')->where('cid = ' . $cid)->get();
                 break;
             case 'category':
                 $key = self::$vKey;
-                $cid = self::$_db->table('sk_category')->where("name = '$key'")->select()['cid'];
-                $data = array(self::$_db->table('sk_content')->where('cid = ' . $cid)->select());
+                $cid = self::$_db->table('sk_ctegory')->where("name = '$key'")->get()['cid'];
+                $data = self::$_db->table('sk_content')->where('cid = ' . $cid)->get();
                 break;
             default:
                 self::Error('Error', '在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】');
@@ -161,15 +172,30 @@ class View extends FrameWork
     }
 
 
+    public static function getComment(int $cid, string $type = 'article')
+    {
+
+        $comment = self::$_db->table('sk_comment')->where("cid = $cid and type = '$type'")->get();
+        foreach ($comment as $d) {
+            $uid = $d['uid'];
+            $info = self::$_db->table('sk_user')->where("uid = $uid")->get()[0];
+            $arr = $d + ['user' => ['uid' => $info['uid'], 'name' => $info['name'], 'avatar' => $info['avatar']]];
+            self::$_Comment[] = $arr;
+        }
+
+        return  array_reverse(self::$_Comment);
+    }
+
+
     /**
      * 数据库分页
      * [$table](数据表)
      * [pSize](每页显示数量)
      * [$pCount](页码)
      */
-    public static function QueryPage($table, $pSize = 15, $pCount = 1)
+    public static function Pager(array $data, int $pSize = 15, int $pCount = 1)
     {
-        $data = self::$_db->getAll($table);
+
         $total = count($data); // 计算数组总数
         $total_page = ceil($total / $pSize); // 计算总页数
         $offset = ($pCount - 1) * $pSize;     // 计算当前数据起始位置
@@ -182,4 +208,21 @@ class View extends FrameWork
             'page_size' => $pSize   // 每页数据条目数
         );
     }
+
+    public static function getRunTime()
+    {
+        $sitestart = strtotime(self::$_App['app']['Time']);
+        $sitenow = time();
+        $sitetime = $sitenow - $sitestart;
+        $sitedays = (int)($sitetime / 86400);
+        return $sitedays;
+    }
+
+//    public static function getStatus(){
+//        return [
+//            'count'=>[
+//                'article'=>
+//            ]
+//        ];
+//    }
 }

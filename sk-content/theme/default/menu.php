@@ -11,6 +11,5 @@
         <div  class="flex h-[32px] w-[32px] cursor-pointer items-center justify-center rounded-full border text-gray-500 transition-all hover:bg-gray-600 hover:text-white">
             <i class="i-mdi-text-box-search h-4 w-4"></i>
         </div>
-
     </div>
 </div>

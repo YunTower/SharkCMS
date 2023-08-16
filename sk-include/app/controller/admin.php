@@ -1,6 +1,6 @@
 <?php
 
-class admin extends FrameWork
+class Admin extends FrameWork
 {
     private $info;
     private $session;
@@ -8,57 +8,18 @@ class admin extends FrameWork
     public function __construct()
     {
         // 登陆状态检测
-        if (isset($_SESSION['token'])) {
+        if (User::$loginStatus) {
             // ==>登陆
-            // 获取session
-            $this->session = $_SESSION['token'];
-            // 解析session 获取uid
-            $uid = json_decode(base64_decode($_SESSION['token']))->uid;
-            $this->info = self::$_user->info($uid);
-            if ($this->info['group'] == 'admin') {
-                if (!empty($_GET['_pjax'])) {
-                    $action = self::getAction();
-                    $data = self::getData();
-                    if ($data) {
-                        $file = $action . '/' . $data . '.php';
-                    } else {
-                        if ($action == 'index') {
-                            $file = 'console.php';
-                        } else {
-                            $file = $action . '.php';
-                        }
-                    }
-
-                    if (file_exists(ADM . $file)) {
-                        exit(View::pjax($file));
-                    } else {
-                        self::Error('404', '糟了，页面不见了！');
-                    }
-                } else {
-                    $code = 200;
-                    $file = self::getAction() . '/' . self::getData() . '.php';
-                    if (!self::getData()) {
-                        if (self::getAction() == 'index') {
-                            $file = 'console.php';
-                        } else {
-                            $file = self::getAction() . '.php';
-                        }
-                    }
-                    if (!file_exists($file)) {
-                        $code = 404;
-                    }
-                    $code;
-                    $file;
-                    include_once ADM . 'index.php';
-                }
-            } else {
-                header('Location:/');
+            $this->info =User::$userInfo;
+            if(FrameWork::getAction()!='view'){
+                include_once ADM.'index.php';
             }
+
         } else {
             // ==>未登录
             if (self::getAction() != 'reg') {
                 if (isset(explode('/', self::getOrigin())[4]) && explode('/', self::getOrigin())[4] == 'article') {
-                  FrameWork::$_data = json_encode(['from' => 'article']);
+                    FrameWork::$_data = json_encode(['from' => 'article']);
                 }
                 include ADM . 'login.php';
                 exit();
@@ -75,5 +36,18 @@ class admin extends FrameWork
     public function reg()
     {
         include ADM . 'reg.php';
+    }
+
+    public function view(){
+        if (isset($_GET['page'])){
+            if (file_exists(ADM.$_GET['page'])){
+include_once ADM.$_GET['page'];
+
+            }else{
+                FrameWork::Error(404);
+            }
+        }else{
+            echo 1;
+        }
     }
 }

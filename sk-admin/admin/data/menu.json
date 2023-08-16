@@ -1,0 +1,134 @@
+[
+  {
+    "id": 10,
+    "title": "仪表盘",
+    "icon": "layui-icon layui-icon-console",
+    "type": 1,
+    "openType": "_iframe",
+    "href": "/admin/view?page=view/console/console.php"
+  },
+  {
+    "id": "content",
+    "title": "内容",
+    "icon": "pear-icon pear-icon-file\n",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 201,
+        "title": "文章",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/admin/view?page=view/content/article.php"
+      },
+      {
+        "id": 202,
+        "title": "标签",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/document/button.html"
+      },
+      {
+        "id": 203,
+        "title": "分类",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/document/button.html"
+      },
+      {
+        "id": 204,
+        "title": "资源",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/document/button.html"
+      }
+    ]
+  },
+  {
+    "id": "user",
+    "title": "用户",
+    "icon": "icon pear-icon pear-icon-user",
+    "type": 1,
+    "openType": "_iframe",
+    "href": "/sk-admin/view/console/console.php"
+  },
+  {
+    "id": "comment",
+    "title": "评论",
+    "icon": "icon pear-icon pear-icon-comment",
+    "type": 1,
+    "openType": "_iframe",
+    "href": "/sk-admin/view/console/console.php"
+  },
+  {
+    "id": "result",
+    "title": "外观",
+    "icon": "icon pear-icon pear-icon-image-text",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 301,
+        "title": "菜单",
+        "icon": "layui-icon layui-icon-face-smile",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/result/success.html"
+      },
+      {
+        "id": 302,
+        "title": "页面",
+        "icon": "layui-icon layui-icon-face-smile",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/result/success.html"
+      },
+      {
+        "id": 303,
+        "title": "主题",
+        "icon": "layui-icon layui-icon-face-cry",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/sk-admin/view/result/error.html"
+      }
+    ]
+  },
+  {
+    "id": "plugin",
+    "title": "扩展",
+    "icon": "icon pear-icon pear-icon-modular",
+    "type": 1,
+    "openType": "_iframe",
+    "href": ""
+  },
+  {
+    "id": "system",
+    "title": "系统",
+    "icon": "icon pear-icon pear-icon-setting",
+    "type": 0,
+    "href": "",
+    "children": [
+      {
+        "id": 501,
+        "title": "设置",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/admin/view?page=view/system/setting.php"
+      },
+      {
+        "id": 502,
+        "title": "更新",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/admin/view?page=view/system/update.php"
+      },
+      {
+        "id": 503,
+        "title": "关于",
+        "type": 1,
+        "openType": "_iframe",
+        "href": "/admin/view?page=view/system/about.php"
+      }
+    ]
+  }
+]

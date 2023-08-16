@@ -1,24 +1,24 @@
 <?php
+
 class Page extends FrameWork
 {
 
     public function __construct()
     {
         View::$vKey = htmlspecialchars(self::getData());
-        if (View::$vKey == null) {
-            self::Error(0, '缺少必要的参数');
-        }
+
     }
+
 
     public function article()
     {
 
         $id = View::$vKey;
         if (is_numeric($id)) {
-            View::$vArticle = self::$_db->table('sk_content')->where('cid = ' . $id)->select();
+            View::$vArticle = self::$_db->table('sk_content')->where('cid = ' . $id)->find();
             self::$_view::view('article');
         } else {
-            self::Error(0, '【文章id】只允许填写数字');
+            FrameWork::Error(404);
         }
     }
 
@@ -32,5 +32,11 @@ class Page extends FrameWork
     {
         $id = View::$vKey;
         self::$_view::view('tag');
+    }
+
+    public function  info(){
+        echo $_SERVER['upload_max_filesize'];
+
+        echo phpinfo();
     }
 }

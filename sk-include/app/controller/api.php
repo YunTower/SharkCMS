@@ -1,30 +1,25 @@
 <?php
-class api extends FrameWork
+
+class Api extends FrameWork
 {
     private $data;
-    private $info;
     private $action;
     private $eDate = array();
 
     function __construct()
     {
-        // 初始化
         header('Content-Type: application/json; charset=utf-8');
         $data = file_get_contents("php://input");
         $data = base64_decode($data);
         $data = json_decode($data, true);
         $this->data = $data;
-
         $this->action = FrameWork::getData();
 
         // 接口权限验证
-        if ($this->action != 'login'){
-            if (isset($_SESSION['token'])){
-                
-            }else{
-                exit(json_encode(['code'=>403,'msg'=>'权限不足！','data'=>[]]));
+        if (FrameWork::getAction() != 'login') {
+            if (!User::$loginStatus) {
+                exit(json_encode(['code' => 403, 'msg' => '权限不足！', 'data' => ['login' => false]]));
             }
-
         }
     }
 
@@ -32,7 +27,7 @@ class api extends FrameWork
     function login()
     {
         $data = $this->data;
-        $user = self::$_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->select();
+        $user = self::$_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->find();
 
         // 没有验证码
         if (isset($data['captcha'])) {
@@ -47,7 +42,7 @@ class api extends FrameWork
                             // 权限组 != admin
                             // if ($user['group'] == 'admin') {
                             // 生成Token
-                            self::$_user->CreateToken($user['uid']);
+                            User::CreateToken($user['uid']);
                             // 返回成功信息
                             echo json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group']]));
                             // } else {
@@ -73,9 +68,9 @@ class api extends FrameWork
 
     function loginOut()
     {
-        if (isset($_SESSION['token'])) {
+        if (User::$loginStatus) {
             unset($_SESSION['token']);
-            $id = $this->info['uid'];
+            $id = User::$userInfo['uid'];
             self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => null));
             exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
         } else {
@@ -87,7 +82,7 @@ class api extends FrameWork
     {
         switch ($this->action) {
             case 'token':
-                if (isset($_SESSION['token'])) {
+                if (User::$loginStatus) {
                     exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => true, 'token' => $_SESSION['token']]]));
                 } else {
                     exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => false, 'token' => null]]));
@@ -121,7 +116,7 @@ class api extends FrameWork
     function avatar()
     {
         if (is_numeric($this->action)) {
-            $data = self::$_db->table('sk_user')->where('uid = ' . $this->action)->select();
+            $data = self::$_db->table('sk_user')->where('uid = ' . $this->action)->find();
             if (!empty($data['avatar'])) {
                 $file = self::getDomain() . $data['avatar'];
                 if (file_exists($file)) {
@@ -139,18 +134,26 @@ class api extends FrameWork
     function comment()
     {
         $data = $this->data;
+
         switch ($this->action) {
             case 'post':
-                $token = $data['token'];
-
-                    self::$_db->table('sk_comment')->insert(['']);
+                $arr=['cid' => $data['cid'], 'type' => $data['type'], 'content' => $data['content'], 'uid' => User::$userInfo['uid'], 'status' => null, 'parent' => 0];
+                $db = self::$_db->table('sk_comment')->insert($arr);
+                if ($db) {
+                    exit(json_encode(['code' => 200, 'msg' => '评论成功', 'data' => ['status' => true, 'login' => true]]));
+                } else {
+                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true,'error'=>self::$_db->error()['error']]]));
+                }
+                break;
+            case'update':
+                break;
+            case 'get':
                 break;
             default:
+                exit(json_encode(['code' => 400, 'msg' => '无效的请求', 'data' => []]));
                 break;
         }
-        var_dump($this->data);
     }
-
 
 
     // 文章操作
@@ -168,7 +171,7 @@ class api extends FrameWork
 
                 break;
             case 'list':
-                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => self::$_db->getAll('sk_content')]));
+                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => self::$_db->table('sk_content')->get()]));
             default:
                 exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
@@ -205,23 +208,23 @@ class api extends FrameWork
         $arr =
             [
                 'site' =>
-                [
-                    'count' =>
                     [
-                        'page' => $db->table('sk_page')->where('pid')->count(),
-                        'post' => $db->table('sk_content')->where('cid')->count(),
-                        'user' => $db->table('sk_user')->where('uid')->count(),
-                        // 'menu' => $db->table('sk_menu')->where('mid')->count(),
-                        // 'comment'=>$db->table('sk_comment')->where('id')->count(),
-                        'category' => $db->table('sk_category')->where('id')->count(),
-                        'tag' => $db->table('sk_tag')->where('id')->count()
-                    ],
+                        'count' =>
+                            [
+                                'page' => $db->table('sk_page')->where('pid')->count(),
+                                'post' => $db->table('sk_content')->where('cid')->count(),
+                                'user' => $db->table('sk_user')->where('uid')->count(),
+                                // 'menu' => $db->table('sk_menu')->where('mid')->count(),
+                                // 'comment'=>$db->table('sk_comment')->where('id')->count(),
+                                'category' => $db->table('sk_category')->where('id')->count(),
+                                'tag' => $db->table('sk_tag')->where('id')->count()
+                            ],
 
-                    'system' =>
-                    [
-                        'version' => self::$_App
+                        'system' =>
+                            [
+                                'version' => self::$_App
+                            ],
                     ],
-                ],
             ];
         var_dump($arr);
     }
@@ -238,6 +241,7 @@ class api extends FrameWork
                 break;
         }
     }
+
     public function getNews()
     {
         echo json_encode(self::$_http->setTimeout(5)->post('getNews', self::$_App, 'json'));

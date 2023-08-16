@@ -33,14 +33,20 @@ class FrameWork
             }
         } else {
             // 加载模块文件
-            include_once INC . 'core/inc/db.php';
-            include_once INC . 'core/inc/user.php';
-            include_once INC . 'core/inc/view.php';
-            include_once INC . 'core/inc/http.php';
-            include_once INC . 'core/inc/cloud.php';
+            include_once INC . 'core/inc/Db.php';
+            include_once INC . 'core/inc/User.php';
+            include_once INC . 'core/inc/Http.php';
+            include_once INC . 'core/inc/Hook.php';
+            include_once INC . 'core/inc/View.php';
+            include_once INC . 'core/inc/Plugin.php';
+            include_once INC . 'core/inc/Cloud.php';
 
             // 初始化类
-            self::$_db = new DB();
+            if (FrameWork::$_App['db']['Host']) {
+                $_db = FrameWork::$_App['db'];
+            }
+
+            self::$_db = Db::getInstance($dbHost = $_db['Host'], $dbUser = $_db['User'], $dbPasswd = $_db['Pwd'], $dbName = $_db['Name'], $dbCharset = '');
             self::$_user = new User();
             self::$_view = new View();
             self::$_http = new Http();
@@ -80,7 +86,11 @@ class FrameWork
                 //若方法不存在，则跳转到错误控制器
                 if ($method == '') {
                     if (FrameWork::getController() != 'admin') {
-                        self::Error(404);
+                        if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
+                            if (self::getAction() != 'index' && self::getAction() != 'index'){
+                            self::Error(404);
+
+                        }}
                     }
                 } else {
                     //执行方法

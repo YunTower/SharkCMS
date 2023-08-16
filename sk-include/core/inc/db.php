@@ -1,263 +1,464 @@
 <?php
-
 /**
- * --------------------------------------------------------------------------------
- * @ Author：fish（https://gitee.com/fish_nb）
- * @ Gitee：https://gitee.com/sharkcms/sharkcms
- * @ Link：https://sharkcms.cn
- * @ License：https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE
- * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
- * --------------------------------------------------------------------------------
+ * @author liaosp.top
+ * @Time: 2018/11/24 -9:19
+ * @Version 1.0
  */
 
-
-# --------------------------------## 数据库操作组件 ##--------------------------------#
-
-class DB
+class Db
 {
-    private $_db = null; //数据库连接句柄
-    private $_table = null; //表名
-    private $_where = null; //where条件
-    private $_order = null; //order排序
-    private $_limit = null; //limit限定查询
-    private $_group = null; //group分组
-    private $_configs = null; //数据库配置
-    private $_error;
+    protected static $_instance = null;
+    protected $dbName = '';
+    protected $dsn;
+    protected $dbh;
+    public $table = [];
+    protected $where;
+    protected $orderFiled;
+    protected $orderDesc;
 
-
-
-    // 构造数据库连接函数
-    public function __construct($config = null)
+    /**
+     * 构造
+     * @return PDO
+     */
+    private function __construct($dbHost, $dbUser, $dbPasswd, $dbName, $dbCharset)
     {
-        // 加载配置
-        if (FrameWork::$_App['db']['Host']) {
-            $this->_configs =  FrameWork::$_App['db'];
-        }
-
-        $this->_where = null;
-        $link = $this->_db;
-        if (!$link) {
-            $db = mysqli_connect($this->_configs['Host'], $this->_configs['User'], $this->_configs['Pwd'], $this->_configs['Name']);
-            mysqli_query($db, "set names utf8");
-            if (!$db) {
-                FrameWork::Error('数据库错误', mysqli_connect_error());
-            }
-            $this->_db = $db;
+        try {
+            $this->dsn = 'mysql:host=' . $dbHost . ';dbname=' . $dbName;
+            $this->dbh = new \PDO($this->dsn, $dbUser, $dbPasswd);
+//            $this->dbh->exec('SET character_set_connection=' . $dbCharset . ', character_set_results=' . $dbCharset . ', character_set_client=binary');
+        } catch (\PDOException $e) {
+            $this->outputError($e->getMessage());
         }
     }
 
     // 数据库导入
     public function import($file)
     {
-        $mysqli = $this->_db;
-
-        if ($mysqli->connect_error) {
-            FrameWork::Error('数据库连接失败', $mysqli->connect_error);
-        }
-
-        // 读取.sql文件内容
-        $sql = file_get_contents($file);
-        // 执行SQL语句
-        if (!$mysqli->multi_query($sql)) {
-            //若导入失败
-            $this->_error = mysqli_error_list($mysqli);
-            return false;
-        }
-        // 清空结果集
-        while ($mysqli->more_results() && $mysqli->next_result()) {
-            $discard = $mysqli->use_result();
-            if ($discard instanceof mysqli_result) {
-                $discard->free();
+        try {
+            $pdo=$this->dbh;
+            if (file_exists($file)) {//如果文件存在
+                $sql = file_get_contents($file);//读取整个文件内容
+                $pdo->exec($sql);
+                return true;
             }
+        } catch (PDOException $e) {
+            echo $e->getMessage(); //执行异常则抛出异常
+            exit;
         }
 
-        return true;
     }
 
-    // 获取所有数据
-    public function getAll($table = null)
-    {
-        $link = $this->_db;
-        if (!$link) return false;
-        $sql = "SELECT * FROM {$table}";
-        $data = mysqli_fetch_all($this->execute($sql), MYSQLI_ASSOC);
-        return $data;
-    }
-
-    // 获取结果集的行数
-    public function count()
-    {
-        $link = $this->_db;
-        if (!$link) return false;
-        $sql = "SELECT * FROM {$this->_table} {$this->_where}";
-        // echo $sql;
-        // echo $this->execute($sql);
-        $data = mysqli_num_rows($this->execute($sql));
-        return $data;
-    }
-
-    // 设置数据表
     public function table($table)
     {
-        $this->_table = $table;
+        $this->table = $table;
         return $this;
     }
 
-    // select查询
-    public function select($fields = "*")
+    public function where($where)
     {
-        $fieldsStr = '';
-        $link = $this->_db;
-        if (!$link) return false;
-        if (is_array($fields)) {
-            $fieldsStr = implode(',', $fields);
-        } elseif (is_string($fields) && !empty($fields)) {
-            $fieldsStr = $fields;
-        }
-        $sql = "SELECT {$fields} FROM {$this->_table} {$this->_where} {$this->_order} {$this->_limit}";
-        // echo $sql;
-        $data = mysqli_fetch_array($this->execute($sql), MYSQLI_ASSOC);
-        return $data;
-    }
-
-    // order排序查询
-    public function order($order = '')
-    {
-        $orderStr = '';
-        $link = $this->_db;
-        if (!$link) return false;
-        if (is_string($order) && !empty($order)) {
-            $orderStr = "ORDER BY " . $order;
-        }
-        $this->_order = $orderStr;
+        $this->where = $where;
         return $this;
     }
 
-    // where条件查询
-    public function where($where = '')
+    public function info()
     {
-        $whereStr = '';
-        $link = $this->_db;
-        if (!$link) return $link;
-        if (is_array($where)) {
-            foreach ($where as $key => $value) {
-                if ($value == end($where)) {
-                    $whereStr .= "`" . $key . "` = '" . $value . "'";
-                } else {
-                    $whereStr .= "`" . $key . "` = '" . $value . "' AND ";
-                }
+        return $this->dbh->query('select version()')->fetchColumn();
+    }
+
+    public function get()
+    {
+        $sql = $this->selectgetDataMatch();
+//        echo $sql;
+        $recordset = $this->dbh->query($sql);
+        if (!is_bool($recordset)) {
+            $result = $recordset->fetchAll(\PDO::FETCH_ASSOC);
+        }
+        return $result;
+    }
+
+    public function order($filed, $desc)
+    {
+        $this->orderFiled = $filed;
+        $this->orderDesc = $desc;
+        return $this;
+    }
+
+    public function find()
+    {
+        $sql = $this->selectgetDataMatch();
+        $recordset = $this->dbh->query($sql);
+        if (!is_bool($recordset)) {
+            $recordset = $recordset->fetch();
+        }
+        return $recordset;
+    }
+
+    public function selectgetDataMatch()
+    {
+
+        $sql = "select * from " . $this->table;
+        if (!empty($this->where)) {
+            $sql .= " where " . $this->where;
+        }
+
+        if (!empty($this->orderFiled)) {
+            $sql .= ' orderBy ' . $this->orderFiled . ' ' . $this->orderDesc;
+        }
+        return $sql;
+    }
+    /**
+     * 防止克隆
+     *
+     */
+//    private function __clone()
+//    {
+//    }
+
+    /**
+     * Singleton instance
+     *
+     * @return Object
+     */
+    public static function getInstance($dbHost = '', $dbUser = '', $dbPasswd = '', $dbName = '', $dbCharset = 'utf8')
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self($dbHost, $dbUser, $dbPasswd, $dbName, $dbCharset);
+        }
+        return self::$_instance;
+    }
+
+    /**
+     * Query 查询
+     *
+     * @param String $strSql SQL语句
+     * @param String $queryMode 查询方式(All or Row)
+     * @param Boolean $debug
+     * @return Array
+     */
+    public function query($strSql, $queryMode = 'All', $debug = false)
+    {
+        if ($debug === true) $this->debug($strSql);
+        $recordset = $this->dbh->query($strSql);
+        $this->getPDOError();
+        if ($recordset) {
+            $recordset->setFetchMode(\PDO::FETCH_ASSOC);
+            if ($queryMode == 'All') {
+                $result = $recordset->fetchAll();
+            } elseif ($queryMode == 'Row') {
+                $result = $recordset->fetch();
             }
-            $whereStr = "WHERE " . $whereStr;
-        } elseif (is_string($where) && !empty($where)) {
-            $whereStr = "WHERE " . $where;
-        }
-        $this->_where = $whereStr;
-        return $this;
-    }
-
-    // group分组查询
-    public function group($group = '')
-    {
-        $groupStr = '';
-        $link = $this->_db;
-        if (!$link) return false;
-        if (is_array($group)) {
-            $groupStr = "GROUP BY " . implode(',', $group);
-        } elseif (is_string($group) && !empty($group)) {
-            $groupStr = "GROUP BY " . $group;
-        }
-        $this->_group = $groupStr;
-        return $this;
-    }
-
-    // limit限定查询
-    public function limit($limit = '')
-    {
-        $limitStr = '';
-        $link = $this->_db;
-        if (!$link) return $link;
-        if (is_string($limit) || !empty($limit)) {
-            $limitStr = "LIMIT " . $limit;
-        } elseif (is_numeric($limit)) {
-            $limitStr = "LIMIT " . $limit;
-        }
-        $this->_limit = $limitStr;
-        return $this;
-    }
-
-    // 执行语句
-    public function execute($sql = null)
-    {
-        $link = $this->_db;
-        if (!$link) return false;
-        $res = mysqli_query($this->_db, $sql);
-        if (!$res) {
-            $this->_error = mysqli_error_list($this->_db);
-            $errors = $this->_error;
-            // echo $sql;
-            // exit();
-            $msg = "错误号：" . $errors[0]['errno'] . "<br/>SQL错误状态：" . $errors[0]['sqlstate'] . "<br/>错误信息：" . $errors[0]['error'];
-            FrameWork::Error('数据库错误', $msg);
-        }
-        return $res;
-        $this->_db = null;
-    }
-
-    // insert插入数据
-    public function insert($data)
-    {
-        $link = $this->_db;
-        if (!$link) return false;
-        if (is_array($data)) {
-            $keys = '';
-            $values = '';
-            foreach ($data as $key => $value) {
-                $keys .= "`" . $key . "`,";
-                $values .= "'" . $value . "',";
-            }
-            $keys = rtrim($keys, ',');
-            $values = rtrim($values, ',');
-        }
-        $sql = "INSERT INTO `{$this->_table}`({$keys}) VALUES({$values})";
-        if (mysqli_query($this->_db, $sql)) {
-            return true;
         } else {
-            $this->_error = mysqli_error_list($link);
-            return false;
+            $result = null;
         }
+        return $result;
     }
 
-    // update数据更新
-    public function update($data)
+    /**
+     * Update 更新
+     *
+     * @param String $table 表名
+     * @param Array $arrayDataValue 字段与值
+     * @param String $where 条件
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function update($arrayDataValue, $debug = false)
     {
-        $link = $this->_db;
-        if (!$link) return $link;
-        if (is_array($data)) {
-            $dataStr = '';
-            foreach ($data as $key => $value) {
-                $dataStr .= "`" . $key . "`='" . $value . "',";
+        $table = $this->table;
+        $where = $this->where;
+        $this->checkFields($table, $arrayDataValue);
+        if ($where) {
+            $strSql = '';
+            foreach ($arrayDataValue as $key => $value) {
+                $strSql .= ", `$key`='$value'";
             }
-            $dataStr = rtrim($dataStr, ',');
+            $strSql = substr($strSql, 1);
+            $strSql = "UPDATE `$table` SET $strSql WHERE $where";
+        } else {
+            $strSql = "REPLACE INTO `$table` (`" . implode('`,`', array_keys($arrayDataValue)) . "`) VALUES ('" . implode("','", $arrayDataValue) . "')";
         }
-        $sql = "UPDATE `{$this->_table}` SET {$dataStr} {$this->_where} {$this->_order} {$this->_limit}";
-        $res = $this->execute($sql);
-        return $res;
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->dbh->exec($strSql);
+        $this->getPDOError();
+        return $result;
     }
 
-    // delete数据删除
-    public function delete()
+    /**
+     * Insert 插入
+     *
+     * @param String $table 表名
+     * @param Array $arrayDataValue 字段与值
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function insert($arrayDataValue, $debug = false)
     {
-        $link = $this->_db;
-        if (!$link) return $link;
-        $sql = "DELETE FROM `{$this->_table}` {$this->_where}";
-        $res = $this->execute($sql);
-        return $res;
+        $table = $this->table;
+        $this->checkFields($table, $arrayDataValue);
+        $strSql = "INSERT INTO `$table` (`" . implode('`,`', array_keys($arrayDataValue)) . "`) VALUES ('" . implode("','", $arrayDataValue) . "')";
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->dbh->exec($strSql);
+        if ($result == 1) {
+            $result = $this->dbh->lastInsertId();
+        }
+        $this->getPDOError();
+        return $result;
     }
 
-
-    // 异常输出
-    public function error()
+    /**
+     * Replace 覆盖方式插入
+     *
+     * @param String $table 表名
+     * @param Array $arrayDataValue 字段与值
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function replace($table, $arrayDataValue, $debug = false)
     {
-        return $this->_error[0];
+        $this->checkFields($table, $arrayDataValue);
+        $strSql = "REPLACE INTO `$table`(`" . implode('`,`', array_keys($arrayDataValue)) . "`) VALUES ('" . implode("','", $arrayDataValue) . "')";
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->dbh->exec($strSql);
+        $this->getPDOError();
+        return $result;
+    }
+
+    /**
+     * Delete 删除
+     *
+     * @param String $table 表名
+     * @param String $where 条件
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function delete($table, $debug = false)
+    {
+        $where = $this->where;
+        $strSql = "DELETE FROM `$table` WHERE $where";
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->dbh->exec($strSql);
+        $this->getPDOError();
+        return $result;
+
+    }
+
+    /**
+     * execSql 执行SQL语句,debug=>true可打印sql调试
+     *
+     * @param String $strSql
+     * @param Boolean $debug
+     * @return Int
+     */
+    public function execSql($strSql, $debug = false)
+    {
+        if ($debug === true) $this->debug($strSql);
+        $result = $this->dbh->exec($strSql);
+        $this->getPDOError();
+        return $result;
+    }
+
+    /**
+     * 获取字段最大值
+     *
+     * @param string $table 表名
+     * @param string $field_name 字段名
+     * @param string $where 条件
+     */
+    public function getMaxValue($table, $field_name, $where = '', $debug = false)
+    {
+        $strSql = "SELECT MAX(" . $field_name . ") AS MAX_VALUE FROM $table";
+        if ($where != '') $strSql .= " WHERE $where";
+        if ($debug === true) $this->debug($strSql);
+        $arrTemp = $this->query($strSql, 'Row');
+        $maxValue = $arrTemp["MAX_VALUE"];
+        if ($maxValue == "" || $maxValue == null) {
+            $maxValue = 0;
+        }
+        return $maxValue;
+    }
+
+    /**
+     * 获取指定列的数量
+     *
+     * @param string $table
+     * @param string $field_name
+     * @param string $where
+     * @param bool $debug
+     * @return int
+     */
+    public function getCount($table, $field_name, $where = '', $debug = false)
+    {
+        $strSql = "SELECT COUNT($field_name) AS NUM FROM $table";
+        if ($where != '') $strSql .= " WHERE $where";
+        if ($debug === true) $this->debug($strSql);
+        $arrTemp = $this->query($strSql, 'Row');
+        return $arrTemp['NUM'];
+    }
+
+    /**
+     * 获取表引擎
+     *
+     * @param String $dbName 库名
+     * @param String $tableName 表名
+     * @param Boolean $debug
+     * @return String
+     */
+    public function getTableEngine($dbName, $tableName)
+    {
+        $strSql = "SHOW TABLE STATUS FROM $dbName WHERE Name='" . $tableName . "'";
+        $arrayTableInfo = $this->query($strSql);
+        $this->getPDOError();
+        return $arrayTableInfo[0]['Engine'];
+    }
+
+    //预处理执行
+    public function prepareSql($sql = '')
+    {
+        return $this->dbh->prepare($sql);
+    }
+
+    //执行预处理
+    public function execute($presql)
+    {
+        return $this->dbh->execute($presql);
+    }
+
+    /**
+     * pdo属性设置
+     */
+    public function setAttribute($p, $d)
+    {
+        $this->dbh->setAttribute($p, $d);
+    }
+
+    /**
+     * beginTransaction 事务开始
+     */
+    public function beginTransaction()
+    {
+        $this->dbh->beginTransaction();
+    }
+
+    /**
+     * commit 事务提交
+     */
+    public function commit()
+    {
+        $this->dbh->commit();
+    }
+
+    /**
+     * rollback 事务回滚
+     */
+    public function rollback()
+    {
+        $this->dbh->rollback();
+    }
+
+    /**
+     * transaction 通过事务处理多条SQL语句
+     * 调用前需通过getTableEngine判断表引擎是否支持事务
+     *
+     * @param array $arraySql
+     * @return Boolean
+     */
+    public function execTransaction($arraySql)
+    {
+        $retval = 1;
+        $this->beginTransaction();
+        foreach ($arraySql as $strSql) {
+            if ($this->execSql($strSql) == 0) $retval = 0;
+        }
+        if ($retval == 0) {
+            $this->rollback();
+            return false;
+        } else {
+            $this->commit();
+            return true;
+        }
+    }
+
+    /**
+     * checkFields 检查指定字段是否在指定数据表中存在
+     *
+     * @param String $table
+     * @param array $arrayField
+     */
+    private function checkFields($table, $arrayFields)
+    {
+        $fields = $this->getFields($table);
+        foreach ($arrayFields as $key => $value) {
+            if (!in_array($key, $fields)) {
+                $this->outputError("Unknown column `$key` in field list.");
+            }
+        }
+    }
+
+    /**
+     * getFields 获取指定数据表中的全部字段名
+     *
+     * @param String $table 表名
+     * @return array
+     */
+    private function getFields($table)
+    {
+        $fields = array();
+        $recordset = $this->dbh->query("SHOW COLUMNS FROM $table");
+        $this->getPDOError();
+        $recordset->setFetchMode(\PDO::FETCH_ASSOC);
+        $result = $recordset->fetchAll();
+        foreach ($result as $rows) {
+            $fields[] = $rows['Field'];
+        }
+        return $fields;
+    }
+
+    /**
+     * getPDOError 捕获PDO错误信息
+     */
+    private function getPDOError()
+    {
+        if ($this->dbh->errorCode() != '00000') {
+            $arrayError = $this->dbh->errorInfo();
+            $this->outputError($arrayError[2]);
+        }
+    }
+
+    /**
+     * debug
+     *
+     * @param mixed $debuginfo
+     */
+    private function debug($debuginfo)
+    {
+        var_dump($debuginfo);
+        exit();
+    }
+
+    /**
+     * 输出错误信息
+     *
+     * @param String $strErrMsg
+     */
+    private function outputError($strErrMsg)
+    {
+        throw new \Exception('MySQL Error: ' . $strErrMsg);
+    }
+
+    /**
+     * destruct 关闭数据库连接
+     */
+    public function destruct()
+    {
+        $this->dbh = null;
+    }
+
+    /**
+     *PDO执行sql语句,返回改变的条数
+     *如需调试可选用execSql($sql,true)
+     */
+    public function exec($sql = '')
+    {
+        return $this->dbh->exec($sql);
     }
 }

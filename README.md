@@ -22,7 +22,7 @@
 SharkCMS 是由<a href="https://www.xyfish.cn/">fish</a>开发的内容管理系统，可用于<code>搭建博客、官网等</code>SharkCMS
 可以安装任意适配 SharkCMS 的主题，也欢迎各位开发者为 SharkCMS 开发主题。
 
-`本主题采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
+`本项目采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
 
 Gitee：https://gitee.com/fish_nb/skcms  
 Github：https://github.com/fishnb/SharkCMS
@@ -40,7 +40,8 @@ Github：https://github.com/fishnb/SharkCMS
 
 - [Layui（MIT License）](https://gitee.com/layui/layui)
 - [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
-- [jQuery.js（MIT License）](https://jquery.com/)
+- [Axios.js（MIT License）](https://github.com/axios/axios)
+- [PDO](https://github.com/liaoshengping/PDO)
 - 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>
