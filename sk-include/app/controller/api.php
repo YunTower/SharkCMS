@@ -9,6 +9,43 @@ class Api extends FrameWork
     function __construct()
     {
         header('Content-Type: application/json; charset=utf-8');
+        // 请求频率控制
+        if (isset($_SESSION['ban']) && $_SESSION['ban'] == true) {
+            $ban_start = $_SESSION['ban_start'];
+            $now = time();
+            // 剩余封禁时间（秒）
+            $t = $now - $ban_start;
+            // 剩余时间大于600秒
+            if ($t <= 600) {
+                exit(json_encode(['code' => 403, 'msg' => "请求过于频繁，请在{$t}分钟后重试"]));
+            } else {
+                // 取消封禁
+                unset($_SESSION['count']);
+                unset($_SESSION['require_start']);
+                unset($_SESSION['ban']);
+                unset($_SESSION['ban_start']);
+            }
+        } else {
+            // 频率记录
+            if (isset($_SESSION['count'])) {
+                $start = $_SESSION['require_start'];
+                $now = time();
+                // 30秒内请求大于等于20次
+                if ($now - $start <= 30 && $_SESSION['count'] >= 20) {
+                    $_SESSION['ban'] = true;
+                    $_SESSION['ban_start'] = time();
+                    exit(json_encode(['code' => 403, 'msg' => '请求过于频繁，请在600秒后重试']));
+                }
+                // 次数+1
+                $_SESSION['count'] = $_SESSION['count'] + 1;
+            } else {
+                // 设置初始次数和开始时间
+                $_SESSION['count'] = 1;
+                $_SESSION['require_start'] = time();
+            }
+        }
+
+        // 初始化请求
         $data = file_get_contents("php://input");
         $data = base64_decode($data);
         $data = json_decode($data, true);
@@ -26,6 +63,9 @@ class Api extends FrameWork
     // 登陆接口
     function login()
     {
+        if (!isset($this->data)) {
+            exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
+        }
         $data = $this->data;
         $user = self::$_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->find();
 
@@ -137,12 +177,12 @@ class Api extends FrameWork
 
         switch ($this->action) {
             case 'post':
-                $arr=['cid' => $data['cid'], 'type' => $data['type'], 'content' => $data['content'], 'uid' => User::$userInfo['uid'], 'status' => null, 'parent' => 0];
+                $arr = ['cid' => $data['cid'], 'type' => $data['type'], 'content' => $data['content'], 'uid' => User::$userInfo['uid'], 'status' => null, 'parent' => 0];
                 $db = self::$_db->table('sk_comment')->insert($arr);
                 if ($db) {
                     exit(json_encode(['code' => 200, 'msg' => '评论成功', 'data' => ['status' => true, 'login' => true]]));
                 } else {
-                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true,'error'=>self::$_db->error()['error']]]));
+                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true, 'error' => self::$_db->error()['error']]]));
                 }
                 break;
             case'update':
@@ -231,10 +271,11 @@ class Api extends FrameWork
 
     public function update()
     {
+
         $a = $this->action;
         switch ($a) {
             case 'check':
-                var_dump(self::$_http->post('UpdateCheck', self::$_App, 'json'));
+                exit(json_encode(self::$_http->post('UpdateCheck', self::$_App, 'json')));
                 break;
             default:
                 exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));

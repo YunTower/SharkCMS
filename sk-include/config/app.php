@@ -7,6 +7,7 @@
     'Type' => 'dev',
     'Version' => '1.0.0',
     'Mode' => 'online',
+    'LogDir'=>'/sk-content/temp/log/',
     'Install' => true,
     'Time' => '2023-08-16 20:22:09',
   ),

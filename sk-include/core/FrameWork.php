@@ -87,10 +87,11 @@ class FrameWork
                 if ($method == '') {
                     if (FrameWork::getController() != 'admin') {
                         if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
-                            if (self::getAction() != 'index' && self::getAction() != 'index'){
-                            self::Error(404);
+                            if (self::getAction() != 'index' && self::getAction() != 'index') {
+                                self::Error(404);
 
-                        }}
+                            }
+                        }
                     }
                 } else {
                     //执行方法
@@ -194,10 +195,25 @@ class FrameWork
         }
     }
 
+    public static function getIp()
+    {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+        return $ip;
+    }
+
     // 错误处理
     public static function Error(int $code, array $info = null)
     {
         ob_clean();
+        if (self::getController() == 'api') {
+            exit(json_encode(['code' => 404, 'msg' => '页面不存在']));
+        }
+
         $file = CON . 'theme/' . View::$vName . '/page/error/' . $code . '.php';
         if (file_exists($file)) {
             include_once $file;
@@ -208,6 +224,12 @@ class FrameWork
         } else {
             include_once INC . 'view/error/' . $code . '.php';
         }
+        // 日志
+        $t = date('Y-m-d H:i:s');
+        $log = "【{$t}】[" . self::getURL() . "][" .self::getIp()."]{$code} {$info}".PHP_EOL;
+        $file = fopen(ROOT . self::$_App['app']['LogDir'] .'log_'. date('Y-m-d') . '.log', "a+");
+        fwrite($file, $log);
+        fclose($file);
         exit();
     }
 }
