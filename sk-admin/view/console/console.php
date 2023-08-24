@@ -184,8 +184,7 @@
         layui.use(['layer', 'echarts', 'element', 'table', 'popup'], function() {
             var $ = layui.jquery,
                 layer = layui.layer,
-                table = layui.table,
-                popup = layui.popup;
+                table = layui.table;
 
             let cols = [
                 [{
@@ -231,10 +230,7 @@
                 skin: 'line',
                 parseData: function(res) {
                     if (res.code != 0) {
-                        layer.alert(res.msg, {
-                            'title': '云端连接出错',
-                            icon: 0
-                        })
+                        layer.msg('云端错误：'+res.msg,{icon:2,time:2000});
                     }
                 }
             });

@@ -8021,7 +8021,7 @@ html #layuicss-layer {
     position: absolute;
     top: 18px;
     left: 16px;
-    color: #959595;
+    /* color: #959595; */
     font-size: 24px;
     _left: -40px
 }

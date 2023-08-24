@@ -309,7 +309,7 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
 	    className: 'notiflix-loading',
 	    zindex: 4000,
 	    backgroundColor: 'rgba(0,0,0,0.8)',
-	    rtl: false,
+	    rtl: false, 
 	    useGoogleFont: true,
 	    fontFamily: 'Quicksand',
 	    cssAnimation: true,
@@ -317,11 +317,11 @@ layui.define(['table', 'jquery', 'element'], function (exports) {
 	    clickToClose: false,
 	    customSvgUrl: null,
 	    svgSize: '80px',
-	    svgColor: '#32c682',
+	    svgColor: '#2d8cf0',
 	    messageID: 'NotiflixLoadingMessage',
 	    messageFontSize: '15px',
 	    messageMaxLength: 34,
-	    messageColor: '#dcdcdc',
+	    messageColor: '#aaaaaa',
 	};
 	// Notiflix: Loading Default Settings off
 

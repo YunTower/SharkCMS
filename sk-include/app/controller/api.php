@@ -202,7 +202,8 @@ class Api extends FrameWork
         switch ($this->action) {
             case 'save':
                 $data = $this->data;
-                $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $this->info['uid'], 'uname' => $this->info['name']));
+                $info=User::$userInfo;
+                $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
                 if ($sql) {
                     exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
                 } else {
@@ -276,6 +277,43 @@ class Api extends FrameWork
         switch ($a) {
             case 'check':
                 exit(json_encode(self::$_http->post('UpdateCheck', self::$_App, 'json')));
+                break;
+            case 'do':
+                $url = self::$_App['api']['Host'] . 'UpdateDo';
+                $save_path = CON . 'temp/download/';
+                if (!file_exists($save_path)) {
+                    mkdir($save_path, 0777, true); //创建目录
+                }
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //对于https的不验证ssl证书
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(self::$_App));
+                $resource = curl_exec($ch);
+                if ($resource === FALSE) {
+                    echo "CURL Error:" . curl_error($ch);
+                    return false;
+                }
+                curl_close($ch);
+                $filename = 'update.zip';
+                $file = fopen($save_path . $filename, 'w+');
+                fwrite($file, $resource);
+                fclose($file);
+
+                if (file_exists($save_path . 'update.zip')) {
+                    $zip=new ZipArchive;
+                    if ($zip->open(CON.'temp/download/update.zip') === true) {
+                        $zip->extractTo(ROOT);
+                        $zip->close();
+                        exit(json_encode(['code'=>200,'msg'=>'更新成功']));
+                    } else{
+                        exit(json_encode(['code'=>500,'msg'=>'更新失败，请重试']));
+                    }
+                } else {
+                    exit(json_encode(['code' => 500, 'msg' => '更新包下载失败']));
+                }
                 break;
             default:
                 exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));

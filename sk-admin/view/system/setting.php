@@ -23,7 +23,7 @@
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
-                            <form>
+                            <form method="POST">
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">站点标题:</label>
                                     <div class="layui-input-block">
