@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Database\Capsule\Manager as DB;
+
 
 class Page extends FrameWork
 {
@@ -15,7 +17,8 @@ class Page extends FrameWork
 
         $id = View::$vKey;
         if (is_numeric($id)) {
-            View::$vArticle = self::$_db->table('sk_content')->where('cid = ' . $id)->find();
+            View::$vArticle = toArray(Db::table('sk_content')->where('cid',$id)->get())[0];
+
             self::$_view::view('article');
         } else {
             FrameWork::Error(404);

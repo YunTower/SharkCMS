@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主机： localhost
--- 生成日期： 2023-07-07 17:39:48
+-- 生成日期： 2023-08-16 19:27:14
 -- 服务器版本： 5.7.26
 -- PHP 版本： 8.0.2
 
@@ -24,17 +24,32 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `sk_category`
+--
+
+CREATE TABLE `sk_category` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` text NOT NULL,
+  `cid` text NOT NULL,
+  `uid` text NOT NULL,
+  `uname` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `sk_comment`
 --
 
 CREATE TABLE `sk_comment` (
   `id` int(6) UNSIGNED NOT NULL,
   `cid` int(6) NOT NULL,
-  `type`text NOT NULL,
+  `type` text NOT NULL,
   `content` text NOT NULL,
   `uid` int(16) NOT NULL,
   `status` varchar(16) DEFAULT NULL,
-  `parent` int DEFAULT NULL,
+  `parent` int(11) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -80,36 +95,6 @@ CREATE TABLE `sk_menu` (
 -- --------------------------------------------------------
 
 --
--- 表的结构 `sk_tag`
---
-
-CREATE TABLE `sk_tag` (
-  `id` int(6) UNSIGNED NOT NULL,
-  `name` text NOT NULL,
-  `cid` text NOT NULL,
-  `uid` text NOT NULL,
-  `uname` text NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- 表的结构 `sk_category`
---
-
-CREATE TABLE `sk_category` (
-  `id` int(6) UNSIGNED NOT NULL,
-  `name` text NOT NULL,
-  `cid` text NOT NULL,
-  `uid` text NOT NULL,
-  `uname` text NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
 -- 表的结构 `sk_page`
 --
 
@@ -146,6 +131,21 @@ INSERT INTO `sk_setting` (`name`, `value`, `created`) VALUES
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `sk_tag`
+--
+
+CREATE TABLE `sk_tag` (
+  `id` int(6) UNSIGNED NOT NULL,
+  `name` text NOT NULL,
+  `cid` text NOT NULL,
+  `uid` text NOT NULL,
+  `uname` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `sk_theme`
 --
 
@@ -174,7 +174,7 @@ CREATE TABLE `sk_user` (
   `name` varchar(32) NOT NULL,
   `pwd` varchar(32) NOT NULL,
   `mail` varchar(150) NOT NULL,
-  `avatar` text DEFAULT NULL,
+  `avatar` text,
   `group` varchar(64) NOT NULL,
   `ban` varchar(32) DEFAULT NULL,
   `logintime` varchar(64) DEFAULT NULL,
@@ -185,6 +185,12 @@ CREATE TABLE `sk_user` (
 --
 -- 转储表的索引
 --
+
+--
+-- 表的索引 `sk_category`
+--
+ALTER TABLE `sk_category`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- 表的索引 `sk_comment`
@@ -205,22 +211,16 @@ ALTER TABLE `sk_menu`
   ADD PRIMARY KEY (`id`);
 
 --
--- 表的索引 `sk_tag`
---
-ALTER TABLE `sk_tag`
-  ADD PRIMARY KEY (`id`);
-
---
--- 表的索引 `sk_category`
---
-ALTER TABLE `sk_category`
-  ADD PRIMARY KEY (`id`);
-
---
 -- 表的索引 `sk_page`
 --
 ALTER TABLE `sk_page`
   ADD PRIMARY KEY (`pid`);
+
+--
+-- 表的索引 `sk_tag`
+--
+ALTER TABLE `sk_tag`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- 表的索引 `sk_theme`
@@ -237,6 +237,12 @@ ALTER TABLE `sk_user`
 --
 -- 在导出的表使用AUTO_INCREMENT
 --
+
+--
+-- 使用表AUTO_INCREMENT `sk_category`
+--
+ALTER TABLE `sk_category`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_comment`
@@ -257,22 +263,16 @@ ALTER TABLE `sk_menu`
   MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
--- 使用表AUTO_INCREMENT `sk_tag`
---
-ALTER TABLE `sk_tag`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
-
---
--- 使用表AUTO_INCREMENT `sk_category`
---
-ALTER TABLE `sk_category`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
-  
---
 -- 使用表AUTO_INCREMENT `sk_page`
 --
 ALTER TABLE `sk_page`
   MODIFY `pid` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- 使用表AUTO_INCREMENT `sk_tag`
+--
+ALTER TABLE `sk_tag`
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_theme`

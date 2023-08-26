@@ -1,5 +1,7 @@
 <?php
 
+use think\facade\Db;
+
 class Admin extends FrameWork
 {
     private $info;
@@ -10,11 +12,10 @@ class Admin extends FrameWork
         // 登陆状态检测
         if (User::$loginStatus) {
             // ==>登陆
-            $this->info =User::$userInfo;
-            if(FrameWork::getAction()!='view'){
-                include_once ADM.'index.php';
+            $this->info = User::$userInfo;
+            if (FrameWork::getAction() != 'view') {
+                include_once ADM . 'index.php';
             }
-
         } else {
             // ==>未登录
             if (self::getAction() != 'reg') {
@@ -38,15 +39,15 @@ class Admin extends FrameWork
         include ADM . 'reg.php';
     }
 
-    public function view(){
-        if (isset($_GET['page'])){
-            if (file_exists(ADM.$_GET['page'])){
-include_once ADM.$_GET['page'];
-
-            }else{
+    public function view()
+    {
+        if (isset($_GET['page'])) {
+            if (file_exists(ADM . $_GET['page'])) {
+                include_once ADM . $_GET['page'];
+            } else {
                 FrameWork::Error(404);
             }
-        }else{
+        } else {
             echo 1;
         }
     }

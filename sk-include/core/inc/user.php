@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 class User extends FrameWork
 {
     // 登陆状态
@@ -11,22 +13,21 @@ class User extends FrameWork
 
     public function __construct()
     {
-       if (FrameWork::inStatus()){
-           @$token = $_SESSION['token'];
-           // 验证登陆状态
-           if (isset($token)) {
-               $info = self::$_db->table('sk_user')->where("token = '$token'")->find();
-
-               // 验证token真实性
-               if($info){
-                   if (count($info) >= 1) {
-                       self::$loginStatus = true;
-                       self::$userInfo = $info;
-                       self::$userRole = $info['group'];
-                   }
-               }
-           }
-       }
+        if (FrameWork::inStatus()) {
+            @$token = $_SESSION['token'];
+            // 验证登陆状态
+            if (isset($token)) {
+                $info = toArray(Db::table('sk_user')->where('token', "$token")->first());
+                // 验证token真实性
+                if ($info) {
+                    if (count($info) >= 1) {
+                        self::$loginStatus = true;
+                        self::$userInfo = $info;
+                        self::$userRole = $info['group'];
+                    }
+                }
+            }
+        }
     }
 
     public static function CreateToken($id)
@@ -35,14 +36,14 @@ class User extends FrameWork
         // 生成Token
         $token = base64_encode(json_encode(array('uid' => $id, 'time' => $time)));
         // 保存Token
-        self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => $token));
+        Db::table('sk_user')->where('uid',$id)->update(array('token' => $token));
         $_SESSION['token'] = $token;
         return $token;
     }
 
     public static function info($id)
     {
-        return self::$_db->table('sk_user')->where('uid = "' . $id . '"')->find();
+        return toArray(Db::table('sk_user')->where('uid = "' . $id . '"')->first());
     }
 
     public function encode_pwd($pwd, $t)

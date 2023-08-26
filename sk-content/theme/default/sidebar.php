@@ -1,7 +1,7 @@
 <div class="sidebar animated fadeInDown">
     <div class="logo-title">
         <div class="title">
-            <img alt="Logo" class="inline-block" src="<?php View::vSet('name', 'd-home-avatar') ?>" style="width: 127px ;border-radius:50%" />
+            <img alt="Logo" class="inline-block" src="<?= View::vSet('name', 'd-home-avatar')?>" style="width: 127px ;border-radius:50%" />
             <h3 class="!mt-3 !mb-0">
                 <a href="<?= FrameWork::getDomain() ?>" title="Demo">Demo</a>
             </h3>

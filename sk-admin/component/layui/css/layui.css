@@ -1514,7 +1514,7 @@ a cite {
     .layui-col-md7,
     .layui-col-md8,
     .layui-col-md9 {
-        float: left
+        /* float: left */
     }
 
     .layui-col-md1 {

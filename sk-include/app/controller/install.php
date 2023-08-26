@@ -51,7 +51,7 @@ class Install extends FrameWork
                         ob_clean();
                         exit(json_encode(array('code' => 500, 'msg' => '数据库连接失败', 'error' => $conn->connect_error)));
                     } else {
-                        self::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf-8')]);
+                        self::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf8')]);
                         exit(json_encode(array('code' => 200, 'msg' => '数据库连接成功', 'error' => null)));
                     }
                     break;
@@ -68,7 +68,7 @@ class Install extends FrameWork
                     self::$_user = new User();
                     self::$_http = new Http();
 
-                    if (self::$_db->import(INC . 'config/test.sql')) {
+                    if (self::$_db->import(INC . 'config/db.sql')) {
                         // 写入初始数据
                         $t = time();
                         $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);

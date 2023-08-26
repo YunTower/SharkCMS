@@ -24,7 +24,7 @@ SharkCMS 是由<a href="https://www.xyfish.cn/">fish</a>开发的内容管理系
 
 `本项目采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
 
-Gitee：https://gitee.com/YunTower/SharkCMS
+Gitee：https://gitee.com/YunTower/SharkCMS  
 Github：https://github.com/YunTower/SharkCMS
 
 ## 🛠 安装要求
@@ -41,7 +41,7 @@ Github：https://github.com/YunTower/SharkCMS
 - [Layui（MIT License）](https://gitee.com/layui/layui)
 - [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
 - [Axios.js（MIT License）](https://github.com/axios/axios)
-- [PDO](https://github.com/liaoshengping/PDO)
+- [illuminate/database（MIT License）](https://github.com/illuminate/database)
 - 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>

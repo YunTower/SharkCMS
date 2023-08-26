@@ -83,7 +83,6 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
 
-
     <script>
         layui.use(['form', 'layer', 'popup', 'encrypt'], function() {
             var form = layui.form,
@@ -104,6 +103,8 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                     // 提交登陆
                     axios.post('/api/login/' + new Date().getTime(), encrypt.Base64Encode(JSON.stringify(data)))
                         .then(function(response) {
+                            console.log(response.data)
+
                             if (response.data.code == 200) {
                                 popup.success('登陆成功', function() {
                                     if (response.data.data.group == 'admin') {
@@ -111,7 +112,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                                             history.go(-1)
 
                                         } else {
-                                            window.location.href = '/admin/index';
+                                            window.location.href = '.';
                                         }
                                     } else {
                                         history.go(-1)
@@ -119,11 +120,13 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
 
                                 })
                             } else {
-                                console.log(response.data)
-                                if (response.data.code === 'undefind') {
-                                    layer.alert(response.data.msg)
-                                } else {
+                                if (response.data.code != 'undefind') {
                                     popup.failure(response.data.msg)
+                                } else {
+                                    layer.alert(response.data, {
+                                        title: '系统错误',
+                                        icon: 2
+                                    })
                                 }
                             }
                         })

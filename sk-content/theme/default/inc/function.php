@@ -1,25 +1,5 @@
 <?php
-global $db;
-
-$db = FrameWork::$_db;
-
-function QueryCount($a)
-{
-    global $db;
-
-    $key = FrameWork::getData();
-    switch ($a) {
-        case 'tag':
-            echo count($db->table('sk_tag')->where("name = '$key'")->get());
-            break;
-        case 'category':
-            echo count($db->table('sk_category')->where("name = '$key'")->get());
-            break;
-        default:
-            FrameWork::Error(0, ['title' => '系统提示', 'msg' => '在调用模板方法时产生错误【View::count】，没有方法【' . $a . '】']);
-            break;
-    }
-}
+use Illuminate\Database\Capsule\Manager as DB;
 
 function Pager($pid, $all)
 {

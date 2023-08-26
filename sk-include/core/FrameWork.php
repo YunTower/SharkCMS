@@ -1,22 +1,25 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 class FrameWork
 {
     // 配置信息
     public static $_App;
-    public static $_db;
     public static $_view;
     public static $_user;
     public static $_http;
     public static $_cloud;
-    // 数据传输变量
     public static $_data = null;
+    public static $getSetting = [];
+
 
     /**
      * 框架初始化方法
      */
     public static function init()
     {
+
         //加载配置文件
         $config_file = INC . 'config/app.php';
         if (file_exists($config_file)) {
@@ -25,15 +28,32 @@ class FrameWork
             exit('没有找到配置文件！');
         }
 
+        // 加载数据库组件
+        require_once INC . 'vendor/autoload.php';
+        $capsule = new Db;
+        $capsule->addConnection([
+            'driver' => 'mysql',
+            'host' => self::$_App['db']['Host'],
+            'database' => self::$_App['db']['Name'],
+            'username' => self::$_App['db']['User'],
+            'password' => self::$_App['db']['Pwd'],
+            'charset' => self::$_App['db']['Charset'],
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+        ]);
+        $capsule->setAsGlobal();
+        $capsule->bootEloquent();
+
+
         // 检查安装状态
         if (!self::inStatus()) {
-
             if (self::getController() != 'install') {
                 header('Location:/install/');
             }
         } else {
+
             // 加载模块文件
-            include_once INC . 'core/inc/Db.php';
+            include_once INC . 'core/inc/Function.php';
             include_once INC . 'core/inc/User.php';
             include_once INC . 'core/inc/Http.php';
             include_once INC . 'core/inc/Hook.php';
@@ -42,22 +62,25 @@ class FrameWork
             include_once INC . 'core/inc/Cloud.php';
 
             // 初始化类
-            if (FrameWork::$_App['db']['Host']) {
-                $_db = FrameWork::$_App['db'];
-            }
-
-            self::$_db = Db::getInstance($dbHost = $_db['Host'], $dbUser = $_db['User'], $dbPasswd = $_db['Pwd'], $dbName = $_db['Name'], $dbCharset = '');
             self::$_user = new User();
             self::$_view = new View();
             self::$_http = new Http();
             self::$_cloud = new Cloud();
+
+            $data = (DB::table('sk_setting')->get());
+            $data = json_decode(json_encode($data), true);
+            foreach ($data as $res => $v) {
+                self::$getSetting = self::$getSetting + [$v['name'] => $v['value']];
+            }
         }
+
     }
 
     /**
      * 启动框架并执行控制器方法
      */
-    public static function run()
+    public
+    static function run()
     {
         //调用框架类方法，获取URLk中的控制器和方法
         $controller_action = self::controller_action();
@@ -67,7 +90,7 @@ class FrameWork
         $class_file = INC . 'app/controller/' . $controller . '.php';
         if ($controller != 'sk-content') {
             if (file_exists($class_file)) {
-                //加载控制器类文件            
+                //加载控制器类文件
                 require_once $class_file;
                 //获取控制器类
                 $class = new ReflectionClass($controller);
@@ -103,27 +126,31 @@ class FrameWork
         }
     }
 
-    // 获取域名
-    public static function getDomain()
+// 获取域名
+    public
+    static function getDomain()
     {
         $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
         return $http_type . $_SERVER['HTTP_HOST'];
     }
 
-    // 获取url
-    public static function getURL()
+// 获取url
+    public
+    static function getURL()
     {
         return $_SERVER["REQUEST_URI"];
     }
 
-    // 获取入口文件
-    public static function getFile()
+// 获取入口文件
+    public
+    static function getFile()
     {
         return $_SERVER['SCRIPT_NAME'];
     }
 
-    // 获取uri
-    public static function getURI()
+// 获取uri
+    public
+    static function getURI()
     {
         $request = str_replace(self::getFile(), '', self::getURL());
         $request = ltrim($request, '/');
@@ -131,8 +158,9 @@ class FrameWork
         return explode('/', $module_action);
     }
 
-    // 获取控制器
-    public static function getController()
+// 获取控制器
+    public
+    static function getController()
     {
         if (isset(self::getURI()[0]) && !empty(self::getURI()[0])) {
             return self::getURI()[0];
@@ -141,8 +169,9 @@ class FrameWork
         }
     }
 
-    // 获取方法
-    public static function getAction()
+// 获取方法
+    public
+    static function getAction()
     {
         if (isset(self::getURI()[1]) && !empty(self::getURI()[1])) {
             return self::getURI()[1];
@@ -151,8 +180,9 @@ class FrameWork
         }
     }
 
-    // 获取参数
-    public static function getData()
+// 获取参数
+    public
+    static function getData()
     {
         if (isset(self::getURI()[2]) && !empty(self::getURI()[2])) {
             return self::getURI()[2];
@@ -162,8 +192,9 @@ class FrameWork
     }
 
 
-    // 整合参数
-    public static function controller_action()
+// 整合参数
+    public
+    static function controller_action()
     {
         return array(
             'controller' => self::getController(),
@@ -172,8 +203,9 @@ class FrameWork
         );
     }
 
-    // 配置修改
-    public static function setConfig(array $new)
+// 配置修改
+    public
+    static function setConfig(array $new)
     {
         $config = self::$_App;
         $file = INC . 'config/app.php';
@@ -181,21 +213,24 @@ class FrameWork
         file_put_contents($file, "<?php \n return $_new;\n");
     }
 
-    // 安装状态
-    public static function inStatus()
+// 安装状态
+    public
+    static function inStatus()
     {
         return self::$_App['app']['Install'];
     }
 
-    // 获取来源
-    public static function getOrigin()
+// 获取来源
+    public
+    static function getOrigin()
     {
         if (isset($_SERVER['HTTP_REFERER'])) {
             return $_SERVER['HTTP_REFERER'];
         }
     }
 
-    public static function getIp()
+    public
+    static function getIp()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -206,8 +241,13 @@ class FrameWork
         return $ip;
     }
 
-    // 错误处理
-    public static function Error(int $code, array $info = null)
+    public function getSetting(){
+        return self::$getSetting;
+    }
+
+// 错误处理
+    public
+    static function Error(int $code, array $info = null)
     {
         ob_clean();
         if (self::getController() == 'api') {
@@ -226,8 +266,8 @@ class FrameWork
         }
         // 日志
         $t = date('Y-m-d H:i:s');
-        $log = "【{$t}】[" . self::getURL() . "][" .self::getIp()."]{$code} {$info}".PHP_EOL;
-        $file = fopen(ROOT . self::$_App['app']['LogDir'] .'log_'. date('Y-m-d') . '.log', "a+");
+        $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} {$info}" . PHP_EOL;
+        $file = fopen(ROOT . self::$_App['app']['LogDir'] . 'log_' . date('Y-m-d') . '.log', "a+");
         fwrite($file, $log);
         fclose($file);
         exit();

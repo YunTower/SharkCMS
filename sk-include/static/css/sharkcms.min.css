@@ -6,6 +6,7 @@
 :root {
     --main-color-1: #2d8cf0;
     --main-color-2: #fff;
+    --next-color-disabled:rgb(250,250,250);
     --text-color-1: dimgray;
     --text-color-2: #000
 }
@@ -21,6 +22,10 @@ a[href]:hover {
 
 img[src$="break.svg"] {
     object-fit: contain;
+}
+
+input[disabled]{
+    background-color: var(--next-color-disabled);
 }
 
 .sk-bg-white {

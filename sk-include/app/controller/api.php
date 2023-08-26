@@ -1,10 +1,13 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 class Api extends FrameWork
 {
     private $data;
     private $action;
     private $eDate = array();
+    private $type;
 
     function __construct()
     {
@@ -67,7 +70,7 @@ class Api extends FrameWork
             exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
         }
         $data = $this->data;
-        $user = self::$_db->table('sk_user')->where('mail =  "' . $data['umail'] . '"')->find();
+        $user = toArray(Db::table('sk_user')->where('mail', $data['umail'])->get())[0];
 
         // 没有验证码
         if (isset($data['captcha'])) {
@@ -202,7 +205,7 @@ class Api extends FrameWork
         switch ($this->action) {
             case 'save':
                 $data = $this->data;
-                $info=User::$userInfo;
+                $info = User::$userInfo;
                 $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
                 if ($sql) {
                     exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
@@ -220,12 +223,11 @@ class Api extends FrameWork
     }
 
     // 文件上传
-    function upload()
+    public function upload()
     {
         switch ($this->action) {
             case 'cover':
                 $file = CON . "upload/cover/" . $_FILES["file"]["name"];
-                echo filesize($file);
                 if (file_exists($file)) {
                     exit(json_encode(array('code' => 400, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));
                 } else {
@@ -233,6 +235,31 @@ class Api extends FrameWork
                     exit(json_encode(array('code' => 200, 'msg' => '文件上传成功', 'error' => null, 'data' => $file)));
                 }
 
+                break;
+            case 'SiteIcon':
+                $type = [
+                    'image/png',
+                    'image/jpg',
+                    'image/webp',
+                    'image/jpeg'
+                ];
+                // 文件信息
+                $data = $_FILES['file'];
+                // 类型验证
+                for ($i = 0; $i < count($type); $i++) {
+                    $this->type = $this->type + 1;
+                }
+
+                if ($this->type == 4) {
+                    // 存储文件
+                    $file = CON . "upload/" . $_FILES["file"]["name"];
+                    move_uploaded_file($_FILES["file"]["tmp_name"], $file);
+                    // 更新设置
+                    DB::table('sk_setting')->where('name', 'Site-Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
+                    exit(json_encode(['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]]));
+                } else {
+                    exit(json_encode(['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"]));
+                }
                 break;
 
             case 'video':
@@ -270,6 +297,11 @@ class Api extends FrameWork
         var_dump($arr);
     }
 
+    public function SaveSetting()
+    {
+
+    }
+
     public function update()
     {
 
@@ -303,13 +335,13 @@ class Api extends FrameWork
                 fclose($file);
 
                 if (file_exists($save_path . 'update.zip')) {
-                    $zip=new ZipArchive;
-                    if ($zip->open(CON.'temp/download/update.zip') === true) {
+                    $zip = new ZipArchive;
+                    if ($zip->open(CON . 'temp/download/update.zip') === true) {
                         $zip->extractTo(ROOT);
                         $zip->close();
-                        exit(json_encode(['code'=>200,'msg'=>'更新成功']));
-                    } else{
-                        exit(json_encode(['code'=>500,'msg'=>'更新失败，请重试']));
+                        exit(json_encode(['code' => 200, 'msg' => '更新成功']));
+                    } else {
+                        exit(json_encode(['code' => 500, 'msg' => '更新失败，请重试']));
                     }
                 } else {
                     exit(json_encode(['code' => 500, 'msg' => '更新包下载失败']));

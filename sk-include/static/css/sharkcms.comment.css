@@ -3,6 +3,7 @@
     --main-color-2: #e5e7eb;
     --text-color-1: #24292f;
     --text-color-2: #57606A;
+    --text-color-3: #bbb;
 }
 
 .sk-comment {
@@ -81,7 +82,7 @@ textarea:focus {
     grid:
         'sk-avatar sk-avatar  sk-uname  sk-time'
         'sk-avatar sk-avatar  sk-comment sk-comment';
-        /* 'sk-avatar sk-avatar sk-comment-reply'; */
+    /* 'sk-avatar sk-avatar sk-comment-reply'; */
 
     grid-gap: 10px;
     padding: 10px;
@@ -104,33 +105,41 @@ textarea:focus {
 
 }
 
-.sk-comment-uname{
+.sk-comment-uname {
     grid-area: sk-uname;
     color: var(--text-color-1);
 }
 
-.sk-comment-uname:hover{
+.sk-comment-uname:hover {
     color: var(--main-color-1);
 }
 
-.sk-comment-time{
+.sk-comment-time {
     grid-area: sk-time;
     color: var(--text-color-2);
     font-size: .85rem;
     line-height: 1rem;
 }
 
-.sk-comment-ucomment{
+.sk-comment-ucomment {
     grid-area: sk-comment;
     color: var(--text-color-1);
     font-size: .975rem;
 }
 
-.sk-comment-reply{
+.sk-comment-reply {
     grid-area: sk-comment-reply;
     font-size: .875rem;
 }
 
-.sk-comment-reply:hover{
+.sk-comment-reply:hover {
     color: var(--main-color-1);
+}
+
+.sk-comment-null{
+    color: var(--text-color-3);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin: 20px;
 }

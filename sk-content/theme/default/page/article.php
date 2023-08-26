@@ -44,10 +44,12 @@ View::$sTitle=$a['title'] ;
             <div class="post-page">
                 <div class="post animated fadeInDown">
                     <div id="post-content" class="post-content markdown-body">
-                        <?= $a['content'] ?>
+                        <article>
+                            <?= $a['content'] ?>
+                        </article>
                     </div>
                     <div class="pagination flex items-center justify-between"></div>
-                    <?php View::get_comment(); ?>
+                    <?= View::get_comment(); ?>
                 </div>
 
             </div>

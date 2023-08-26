@@ -1,3 +1,6 @@
+<?php 
+use Illuminate\Database\Capsule\Manager as DB;
+?>
 <!DOCTYPE html>
 <html>
 
@@ -23,7 +26,7 @@
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="value1">
-                                <?= count(FrameWork::$_db->table('sk_content')->where('cid != 0')->get()) ?>
+                                <?= DB::table('sk_content')->count() ?>
                             </div>
                             <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 1024 1024" width="200" height="200" t="1591462258798" p-id="942" version="1.1">
@@ -47,7 +50,7 @@
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="value2">
-                                <?= count(FrameWork::$_db->table('sk_user')->where('uid != 0')->get()) ?>
+                                <?= DB::table('sk_user')->count() ?>
                             </div>
                             <div class="layui-col-xs4 layui-col-md4 top-panel-tips">
                                 <svg t="1591462430908" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3170" width="200" height="200">
@@ -74,7 +77,7 @@
                     <div class="layui-card-body">
                         <div class="layui-row layui-col-space5">
                             <div class="layui-col-xs8 layui-col-md8 top-panel-number" style="color: #28333E;" id="value3">
-                                <?= count(FrameWork::$_db->table('sk_comment')->where('id != 0')->get()) ?>
+                                <?= DB::table('sk_comment')->count() ?>
                             </div>
                             <div class="layui-col-xs4 layui-col-md4  top-panel-tips">
                                 <svg t="1591462464512" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3311" width="200" height="200">
@@ -158,7 +161,7 @@
                             </tr>
                             <tr>
                                 <td>Mysql版本</td>
-                                <td><?= FrameWork::$_db->info() ?></td>
+                                <td><?=toArray(DB::select('select version()'))[0]['version()']  ?></td>
                             </tr>
                             <tr>
                                 <td>运行环境</td>

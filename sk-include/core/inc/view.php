@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 /**
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
@@ -9,13 +11,15 @@
  * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
  * --------------------------------------------------------------------------------
  */
-
-
 # --------------------------------## 主题组件 ##--------------------------------#
+
+
 class View extends FrameWork
 {
     public static $sTitle;
     public static $sName = 'Demo';
+    public static $sSubtitle;
+    public static $sKeyword;
     public static $vName;
     public static $vUrl;
     public static $vKey;
@@ -24,14 +28,15 @@ class View extends FrameWork
 
     public static $vArticle;
     public static $vComment;
-    public static  $_Comment = [];
+    public static $_Comment = [];
 
 //    public static $/
 
     public function __construct()
     {
         // 主题名称
-        self::$vName = self::$_db->table('sk_setting')->where('name = "theme-name"')->find()['value'];
+        self::$vName = Db::table('sk_setting')->where('name', "theme-name")->first()->value;
+
 
         // 当前主题路径
         self::$vUrl = CON . 'theme/' . self::$vName . '/';
@@ -59,9 +64,12 @@ class View extends FrameWork
                 }
             }
         }
-        self::$vArticle=self::$_db->table('sk_content')->where('cid != 0')->get();
-        self::$vComment=self::$_db->table('sk_comment')->where('id != 0')->get();
-
+        self::$vArticle = toArray(Db::table('sk_content')->get());
+        self::$vComment = toArray(Db::table('sk_comment')->get());
+        var_dump(FrameWork::$getSetting);
+//        self::$sTitle=FrameWork::$getSetting['Site-Title'];
+//        self::$sSubtitle=FrameWork::$getSetting['Site-Subtitle'];
+//        self::$sKeyword=FrameWork::$getSetting['Seo-Keyword'];
 
     }
 
@@ -142,7 +150,7 @@ class View extends FrameWork
     // 查询主题设置
     public static function vSet(string $key, string $name)
     {
-        echo self::$_db->table('sk_theme')->where("$key = '$name'")->find()['value'];
+        return toArray(Db::table('sk_theme')->where("$key", "$name")->get())[0]['value'];
     }
 
     // 列表查询
@@ -150,22 +158,21 @@ class View extends FrameWork
     {
         switch ($a) {
             case 'article':
-                $data = array_reverse(self::$_db->table('sk_content')->where('cid != 0')->get());
+                $data = array_reverse(toArray(Db::table('sk_content')->get()));
 
-                // var_dump (array_reverse($data));
                 break;
             case 'tag':
                 $key = self::$vKey;
-                $cid = self::$_db->table('sk_tag')->where("name = '$key'")->get()['cid'];
-                $data = self::$_db->table('sk_content')->where('cid = ' . $cid)->get();
+                $cid = toArray(Db::table('sk_tag')->where('name', "$key")->get())[0]['cid'];
+                $data = toArray(Db::table('sk_content')->where('cid', $cid)->get());
                 break;
             case 'category':
                 $key = self::$vKey;
-                $cid = self::$_db->table('sk_ctegory')->where("name = '$key'")->get()['cid'];
-                $data = self::$_db->table('sk_content')->where('cid = ' . $cid)->get();
+                $cid = toArray(Db::table('sk_category')->where('name', "$key")->get())[0]['cid'];
+                $data = toArray(Db::table('sk_content')->where('cid', $cid)->get());
                 break;
             default:
-                self::Error('Error', '在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】');
+                self::Error(0, "在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】'");
                 break;
         }
         return $data;
@@ -175,15 +182,15 @@ class View extends FrameWork
     public static function getComment(int $cid, string $type = 'article')
     {
 
-        $comment = self::$_db->table('sk_comment')->where("cid = $cid and type = '$type'")->get();
+        $comment = toArray(Db::table('sk_comment')->where('cid', "$cid")->where('type', "$type")->get());
         foreach ($comment as $d) {
             $uid = $d['uid'];
-            $info = self::$_db->table('sk_user')->where("uid = $uid")->get()[0];
+            $info = Db::table('sk_user')->where("uid = $uid")->select()[0];
             $arr = $d + ['user' => ['uid' => $info['uid'], 'name' => $info['name'], 'avatar' => $info['avatar']]];
             self::$_Comment[] = $arr;
         }
 
-        return  array_reverse(self::$_Comment);
+        return array_reverse(self::$_Comment);
     }
 
 

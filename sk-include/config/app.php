@@ -17,7 +17,7 @@
     'User' => 'test',
     'Pwd' => 'testtest',
     'Name' => 'test',
-    'Charset' => 'utf-8',
+    'Charset' => 'utf8',
   ),
   'api' => 
   array (
