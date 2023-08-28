@@ -17,7 +17,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 class View extends FrameWork
 {
     public static $sTitle;
-    public static $sName = 'Demo';
+    public static $subTitle = 'Demo';
     public static $sSubtitle;
     public static $sKeyword;
     public static $vName;
@@ -66,12 +66,11 @@ class View extends FrameWork
         }
         self::$vArticle = toArray(Db::table('sk_content')->get());
         self::$vComment = toArray(Db::table('sk_comment')->get());
-        var_dump(FrameWork::$getSetting);
-//        self::$sTitle=FrameWork::$getSetting['Site-Title'];
-//        self::$sSubtitle=FrameWork::$getSetting['Site-Subtitle'];
-//        self::$sKeyword=FrameWork::$getSetting['Seo-Keyword'];
+
 
     }
+
+
 
     public static function allTheme()
     {

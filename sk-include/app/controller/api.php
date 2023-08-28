@@ -8,6 +8,7 @@ class Api extends FrameWork
     private $action;
     private $eDate = array();
     private $type;
+    private $SettingArr = [];
 
     function __construct()
     {
@@ -299,6 +300,18 @@ class Api extends FrameWork
 
     public function SaveSetting()
     {
+        if (isset($_POST['data'])) {
+            try {
+                foreach ($_POST['data'] as $key => $value) {
+                    DB::table('sk_setting')->where('name', "$key")->update(['name' => $key, 'value' => $value]);
+                }
+                exit(json_encode(['code' => 200, 'msg' => '设置保存成功']));
+            } catch (Exception $e) {
+                exit(json_encode(['code' => 500, 'msg' => '保存设置时发生错误：' . $e->getMessage()]));
+            }
+
+        }
+
 
     }
 

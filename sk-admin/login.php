@@ -9,7 +9,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>登陆账号</title>
+    <title>登陆 - <?= FrameWork::$getSetting['Site-Title'] ?></title>
     <link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
     <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
     <link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
@@ -20,6 +20,24 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
 
         button {
             border-radius: 5px
+        }
+
+        footer {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            line-height: 30px;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        footer a{
+            color: #3c3c3cb3;
+        }
+
+        footer a:hover{
+            color: var(--main-color-1);
         }
     </style>
 
@@ -77,6 +95,12 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
             </div>
         </form>
     </div>
+    <style>
+
+    </style>
+    <footer>
+        <a href="https://sharkcms.cn/" target="_blank">Copyright © 2023-<?= date('Y') ?> sharkcms.cn</a>
+    </footer>
 
     <script src="/sk-include/static/js/axios.min.js"></script>
     <script src="/sk-include/static/layui/layui.js"></script>

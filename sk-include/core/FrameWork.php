@@ -30,20 +30,6 @@ class FrameWork
 
         // 加载数据库组件
         require_once INC . 'vendor/autoload.php';
-        $capsule = new Db;
-        $capsule->addConnection([
-            'driver' => 'mysql',
-            'host' => self::$_App['db']['Host'],
-            'database' => self::$_App['db']['Name'],
-            'username' => self::$_App['db']['User'],
-            'password' => self::$_App['db']['Pwd'],
-            'charset' => self::$_App['db']['Charset'],
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => '',
-        ]);
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
-
 
         // 检查安装状态
         if (!self::inStatus()) {
@@ -51,6 +37,20 @@ class FrameWork
                 header('Location:/install/');
             }
         } else {
+            // 初始化数据库
+            $capsule = new Db;
+            $capsule->addConnection([
+                'driver' => 'mysql',
+                'host' => self::$_App['db']['Host'],
+                'database' => self::$_App['db']['Name'],
+                'username' => self::$_App['db']['User'],
+                'password' => self::$_App['db']['Pwd'],
+                'charset' => self::$_App['db']['Charset'],
+                'collation' => 'utf8_unicode_ci',
+                'prefix' => '',
+            ]);
+            $capsule->setAsGlobal();
+            $capsule->bootEloquent();
 
             // 加载模块文件
             include_once INC . 'core/inc/Function.php';
@@ -241,9 +241,31 @@ class FrameWork
         return $ip;
     }
 
-    public function getSetting(){
-        return self::$getSetting;
+    public function importSQL($file){
+        $mysqli = mysqli_connect(self::$_App['db']['Host'], self::$_App['db']['User'], self::$_App['db']['Pwd'], self::$_App['db']['Name']);
+// 检测连接
+        if (!$mysqli) {
+            die("连接失败: " . mysqli_connect_error());
+        }
+        // 读取.sql文件内容
+        $sql = file_get_contents($file);
+        // 执行SQL语句
+        if (!$mysqli->multi_query($sql)) {
+            //若导入失败
+           return mysqli_error_list($mysqli);
+        }
+        // 清空结果集
+        while ($mysqli->more_results() && $mysqli->next_result()) {
+            $discard = $mysqli->use_result();
+            if ($discard instanceof mysqli_result) {
+                $discard->free();
+            }
+        }
+
+        return true;
     }
+
+
 
 // 错误处理
     public

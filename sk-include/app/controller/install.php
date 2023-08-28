@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Database\Capsule\Manager as DB;
+
 class Install extends FrameWork
 {
     private $_step;
@@ -13,7 +15,7 @@ class Install extends FrameWork
 
     public function index()
     {
-        include_once  INC . 'view/install/index.php';
+        include_once INC . 'view/install/index.php';
     }
 
     public function step()
@@ -44,7 +46,7 @@ class Install extends FrameWork
             $data = json_decode($data, true);
 
             switch (FrameWork::getData()) {
-                    // 数据库连接
+                // 数据库连接
                 case 'connect';
                     $conn = new mysqli($data['db_host'], $data['db_user'], $data['db_pwd'], $data['db_name']);
                     if ($conn->connect_error) {
@@ -57,40 +59,64 @@ class Install extends FrameWork
                     break;
 
                 case 'install';
+                    require_once INC . 'vendor/autoload.php';
+                    $capsule = new Db;
+                    $capsule->addConnection([
+                        'driver' => 'mysql',
+                        'host' => self::$_App['db']['Host'],
+                        'database' => self::$_App['db']['Name'],
+                        'username' => self::$_App['db']['User'],
+                        'password' => self::$_App['db']['Pwd'],
+                        'charset' => self::$_App['db']['Charset'],
+                        'collation' => 'utf8_unicode_ci',
+                        'prefix' => '',
+                    ]);
+                    $capsule->setAsGlobal();
+                    $capsule->bootEloquent();
                     // 加载依赖
-                    include_once INC . 'core/inc/Db.php';
                     include_once INC . 'core/inc/User.php';
                     include_once INC . 'core/inc/Http.php';
 
                     // 初始化类
-                    $_db = FrameWork::$_App['db'];
-                    self::$_db = Db::getInstance($dbHost = $_db['Host'], $dbUser = $_db['User'], $dbPasswd = $_db['Pwd'], $dbName = $_db['Name'], $dbCharset = '');
                     self::$_user = new User();
                     self::$_http = new Http();
 
-                    if (self::$_db->import(INC . 'config/db.sql')) {
-                        // 写入初始数据
-                        $t = time();
-                        $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
-                        self::$_db->table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
-                        self::$_db->table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
-                        self::$_db->table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
-                        self::$_db->table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
-
-                        $arr = self::$_http->post('install', FrameWork::$_App, 'json');
-
-                        if ($arr['code'] == 200) {
-
-                            // 写入信息
-                            self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
-
-                            User::CreateToken(1);
-                            exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
+                    $arr = self::$_http->post('install', FrameWork::$_App, 'json');
+                    if ($arr['code'] == 200) {
+                        if (FrameWork::importSQL(INC . 'config/db.sql')) {
+                            // 写入初始数据
+                            $t = time();
+                            $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
+                            DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
+                            DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
+                            DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+                            DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+                            $data =
+                                [
+                                    ['name' => 'Site-Title', 'value' => 'SharkCMS'],
+                                    ['name' => 'Site-Subtitle', 'value' => '中国人自己的开源内容管理系统'],
+                                    ['name' => 'Site-Logo', 'value' => ''],
+                                    ['name' => 'Site-HeaderCode', 'value' => ''],
+                                    ['name' => 'Site-FooterCode', 'value' => ''],
+                                    ['name' => 'Article-PageSize', 'value' => 15],
+                                    ['name' => 'Article-AllowComment', 'value' => true],
+                                    ['name' => 'User-AllowReg', 'value' => false],
+                                    ['name' => 'Comment-Examined', 'value' => false],
+                                    ['name' => 'Comment-PostLoginComments', 'value' => true],
+                                    ['name' => 'Comment-PSize', 'value' => 15],
+                                    ['name' => 'Seo-Keyword', 'value' => 'SharkCMS',],
+                                    ['name' => 'Seo-Description', 'value' => '又一个SharkCMS站点']
+                                ];
+                            Db::table('sk_setting')->insert($data);
                         } else {
-                            exit($arr['msg']);
+                            exit(json_encode(['code' => 200, 'msg' => '数据库安装出错']));
                         }
+                        // 写入信息
+                        self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
+                        User::CreateToken(1);
+                        exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
                     } else {
-                        exit(self::$_db->getPDOError());
+                        exit(json_encode(['code'=>500,'msg'=>'云端连接出错：'.$arr['msg']]));
                     }
                     break;
 

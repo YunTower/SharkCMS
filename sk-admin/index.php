@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<link rel="icon" href="/sk-include/static/img/logo.png">
-	<title>后台管理 - <?= View::$sName ?></title>
+	<title>后台管理 - <?= FrameWork::$getSetting['Site-Title'] ?></title>
 	<!-- 依 赖 样 式 -->
 	<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 	<!-- 加 载 样 式 -->

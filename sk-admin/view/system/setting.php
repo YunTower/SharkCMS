@@ -7,7 +7,11 @@
     <title>设置</title>
     <link href="/sk-admin/component/pear/css/pear.css" rel="stylesheet">
     <link href="/sk-include/static/css/sharkcms.min.css" rel="stylesheet">
-
+    <style>
+        /* input[type="number"]{
+            text-align: center;
+        } */
+    </style>
 </head>
 
 <body class="pear-container">
@@ -199,6 +203,7 @@
     <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/axios.min.js"></script>
+    <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
         layui.use(['form', 'element', 'layer', 'encrypt', 'upload'], function() {
             var form = layui.form,
@@ -213,11 +218,15 @@
                 accept: 'image',
                 done: function(res) {
                     if (res.code == 200) {
-                        layer.msg(res.msg, {icon: 1});
-                        var value=document.getElementById('UploadICON');
-                        value.value=res.data.url;
-                    }else{
-                        layer.msg(res.msg, {icon: 2});
+                        layer.msg(res.msg, {
+                            icon: 1
+                        });
+                        var value = document.getElementById('UploadICON');
+                        value.value = res.data.url;
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 2
+                        });
                     }
                 }
             });
@@ -227,17 +236,32 @@
                 var data = JSON.parse(JSON.stringify(data.field));
                 console.log(data);
 
+                // 配置axios拦截器
+                axios.interceptors.request.use(config => {
+                    if (config.method === 'post') {
+                        config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    }
+                    return config;
+                });
 
                 // 提交登陆
-                axios.post('/api/SaveSetting', encrypt.Base64Encode(JSON.stringify(data)))
+                axios.post('/api/SaveSetting', {
+                        data: data
+                    })
                     .then(function(response) {
-                        console.log(response.data)
-
                         if (response.data.code == 200) {
+                            layer.msg(response.data.msg, {
+                                icon: 1
+                            });
 
+                            sk.sleep(1000).then(() => {
+                                parent.layui.admin.refreshThis()
+                            })
                         } else {
-                            console.log(response.data)
-
+                            layui.alert(response.data.msg, {
+                                title: '保存失败',
+                                icon: 2
+                            })
                         }
                     })
 
