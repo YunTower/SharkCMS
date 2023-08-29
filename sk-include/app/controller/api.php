@@ -15,13 +15,15 @@ class Api extends FrameWork
         header('Content-Type: application/json; charset=utf-8');
         // 请求频率控制
         if (isset($_SESSION['ban']) && $_SESSION['ban'] == true) {
+            // 获取起始时间
             $ban_start = $_SESSION['ban_start'];
+            // 获取当前时间戳
             $now = time();
             // 剩余封禁时间（秒）
-            $t = $now - $ban_start;
+            $t = 600 - ($now - $ban_start);
             // 剩余时间大于600秒
-            if ($t <= 600) {
-                exit(json_encode(['code' => 403, 'msg' => "请求过于频繁，请在{$t}分钟后重试"]));
+            if ($t >= 0) {
+                exit(json_encode(['code' => 403, 'msg' => "请求过于频繁，请在【{$t}秒】后重试"]));
             } else {
                 // 取消封禁
                 unset($_SESSION['count']);
@@ -55,7 +57,6 @@ class Api extends FrameWork
         $data = json_decode($data, true);
         $this->data = $data;
         $this->action = FrameWork::getData();
-
         // 接口权限验证
         if (FrameWork::getAction() != 'login') {
             if (!User::$loginStatus) {
@@ -300,9 +301,26 @@ class Api extends FrameWork
 
     public function SaveSetting()
     {
+
         if (isset($_POST['data'])) {
             try {
-                foreach ($_POST['data'] as $key => $value) {
+                $res = $_POST['data'];
+                $data = [
+                    'Site-Title' => $res['Site-Title'],
+                    'Site-Subtitle' => $res['Site-Subtitle'],
+                    'Site-Logo' => $res['Site-Logo'],
+                    'Site-HeaderCode' => $res['Site-HeaderCode'],
+                    'Site-FooterCode' => $res['Site-FooterCode'],
+                    'Article-PageSize' => $res['Article-PageSize'],
+                    'Article-AllowComment' => !empty($res['Article-AllowComment']) ? $res['Article-AllowComment'] : null,
+                    'User-AllowReg' => !empty($res['User-AllowReg']) ? $res['User-AllowReg'] : null,
+                    'Comment-Examined' => !empty($res['Comment-Examined']) ? $res['Comment-Examined'] : null,
+                    'Comment-PostLoginComments' => !empty($res['Comment-PostLoginComments']) ? $res['Comment-PostLoginComments'] : null,
+                    'Comment-PSize' => $res['Comment-PSize'],
+                    'Seo-Keyword' => $res['Seo-Keyword'],
+                    'Seo-Description' => $res['Seo-Description']
+                ];
+                foreach ($data as $key => $value) {
                     DB::table('sk_setting')->where('name', "$key")->update(['name' => $key, 'value' => $value]);
                 }
                 exit(json_encode(['code' => 200, 'msg' => '设置保存成功']));
@@ -311,8 +329,6 @@ class Api extends FrameWork
             }
 
         }
-
-
     }
 
     public function update()

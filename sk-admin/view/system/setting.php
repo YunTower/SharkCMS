@@ -188,7 +188,7 @@
                                 </div>
                                 <div class="layui-col-md6">
                                     <div class="sk-center">
-                                        <button plain class="pear-btn pear-btn-primary" style="width:30%" lay-submit lay-filter="setting">保存设置</button>
+                                        <button plain class="pear-btn pear-btn-primary" style="width:30%" lay-submit lay-filter="setting" load>保存设置</button>
                                     </div>
                                 </div>
 
@@ -205,12 +205,13 @@
     <script src="/sk-include/static/js/axios.min.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
-        layui.use(['form', 'element', 'layer', 'encrypt', 'upload'], function() {
+        layui.use(['form', 'element', 'layer', 'encrypt', 'upload', 'button'], function() {
             var form = layui.form,
                 layer = layui.layer,
                 element = layui.element,
                 encrypt = layui.encrypt,
-                upload = layui.upload;
+                upload = layui.upload,
+                button = layui.button;
 
             upload.render({
                 elem: '#UploadICON',
@@ -234,8 +235,10 @@
             // 提交事件
             form.on('submit(setting)', function(data) {
                 var data = JSON.parse(JSON.stringify(data.field));
-                console.log(data);
-
+                // 按钮动画开始
+                var load = button.load({
+                    elem: '[load]',
+                })
                 // 配置axios拦截器
                 axios.interceptors.request.use(config => {
                     if (config.method === 'post') {
@@ -253,12 +256,13 @@
                             layer.msg(response.data.msg, {
                                 icon: 1
                             });
-
+                            // 按钮动画停止
+                            load.stop()
                             sk.sleep(1000).then(() => {
                                 parent.layui.admin.refreshThis()
                             })
                         } else {
-                            layui.alert(response.data.msg, {
+                            layer.alert(response.data.msg, {
                                 title: '保存失败',
                                 icon: 2
                             })

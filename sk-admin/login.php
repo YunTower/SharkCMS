@@ -32,11 +32,12 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
             text-align: center;
             box-sizing: border-box;
         }
-        footer a{
+
+        footer a {
             color: #3c3c3cb3;
         }
 
-        footer a:hover{
+        footer a:hover {
             color: var(--main-color-1);
         }
     </style>
@@ -106,13 +107,13 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <script src="/sk-include/static/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
-
     <script>
-        layui.use(['form', 'layer', 'popup', 'encrypt'], function() {
+        layui.use(['form', 'layer', 'encrypt', 'popup', 'jquery'], function() {
             var form = layui.form,
                 layer = layui.layer,
+                encrypt = layui.encrypt,
                 popup = layui.popup,
-                encrypt = layui.encrypt;
+                $ = layui.jquery;
 
             // 提交事件
             form.on('submit(login)', function(data) {
@@ -134,18 +135,19 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                                     if (response.data.data.group == 'admin') {
                                         if (sk.getData()['from'] != undefined) {
                                             history.go(-1)
-
                                         } else {
                                             window.location.href = '.';
                                         }
                                     } else {
                                         history.go(-1)
                                     }
-
                                 })
                             } else {
                                 if (response.data.code != 'undefind') {
-                                    popup.failure(response.data.msg)
+                                    layer.msg(response.data.msg, {
+                                        icon: 2
+                                    })
+                                    $('#captcha').attr('src', '/captcha/create/' + new Date().getTime())
                                 } else {
                                     layer.alert(response.data, {
                                         title: '系统错误',
