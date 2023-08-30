@@ -202,7 +202,7 @@ class Api extends FrameWork
 
 
     // 文章操作
-    function post()
+    function article()
     {
         switch ($this->action) {
             case 'save':
@@ -216,8 +216,8 @@ class Api extends FrameWork
                 }
 
                 break;
-            case 'list':
-                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => self::$_db->table('sk_content')->get()]));
+            case 'get':
+                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => View::$vArticle, 'count' => count(View::$vArticle)]));
             default:
                 exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
@@ -228,7 +228,7 @@ class Api extends FrameWork
     public function upload()
     {
         switch ($this->action) {
-            case 'cover':
+            case 'Cover':
                 $file = CON . "upload/cover/" . $_FILES["file"]["name"];
                 if (file_exists($file)) {
                     exit(json_encode(array('code' => 400, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));
@@ -270,33 +270,6 @@ class Api extends FrameWork
                 exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
                 break;
         }
-    }
-
-    public function info()
-    {
-        $db = self::$_db;
-        $arr =
-            [
-                'site' =>
-                    [
-                        'count' =>
-                            [
-                                'page' => $db->table('sk_page')->where('pid')->count(),
-                                'post' => $db->table('sk_content')->where('cid')->count(),
-                                'user' => $db->table('sk_user')->where('uid')->count(),
-                                // 'menu' => $db->table('sk_menu')->where('mid')->count(),
-                                // 'comment'=>$db->table('sk_comment')->where('id')->count(),
-                                'category' => $db->table('sk_category')->where('id')->count(),
-                                'tag' => $db->table('sk_tag')->where('id')->count()
-                            ],
-
-                        'system' =>
-                            [
-                                'version' => self::$_App
-                            ],
-                    ],
-            ];
-        var_dump($arr);
     }
 
     public function SaveSetting()

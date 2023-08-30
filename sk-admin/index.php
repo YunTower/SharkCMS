@@ -41,7 +41,6 @@
 				<li class="layui-nav-item layui-hide-xs"><a href="#" class="menuSearch layui-icon layui-icon-search"></a></li>
 				<li class="layui-nav-item layui-hide-xs"><a href="#" class="fullScreen layui-icon layui-icon-screen-full"></a></li>
 				<li class="layui-nav-item layui-hide-xs"><a href="https://sharkcms.cn" target="_blank" class="layui-icon layui-icon-website"></a></li>
-				<!--					<li class="layui-nav-item layui-hide-xs message"></li>-->
 				<li class="layui-nav-item user">
 					<!-- 头 像 -->
 					<a class="layui-icon layui-icon-username" href="javascript:;"></a>
@@ -113,9 +112,7 @@
 
 			admin.render();
 
-			console.log(pm(function(res) {
-				console.log(res)
-			}))
+		
 
 			// 消息点击回调
 			// admin.message(function(id, title, context, form) {});

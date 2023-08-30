@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>用户管理</title>
+		<title>文章</title>
 		<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 	</head>
 	<body class="pear-container">
@@ -60,7 +60,7 @@
 		</script>
 
 		<script type="text/html" id="user-enable">
-			<input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="启用|禁用" lay-filter="user-enable" {{ d.enable== true ? 'checked' : '' }} />
+			<input type="checkbox" name="enable" value="{{d.id}}" lay-skin="switch" lay-text="公开|私密" lay-filter="user-enable" {{ d.enable== true ? 'checked' : '' }} />
 		</script>
 
 		<script type="text/html" id="user-sex">
@@ -71,7 +71,7 @@
 		    {{# } }}
 		</script>
 
-		<script type="text/html" id="user-login">
+		<script type="text/html" id="author">
 			{{#if (d.login == 0) { }}
 		    <span>在线</span>
 		    {{# }else if(d.sex == 1){ }}
@@ -99,43 +99,49 @@
 							type: 'checkbox'
 						},
 						{
-							title: '账号',
-							field: 'username',
+							title: 'ID',
+							field: 'cid',
 							align: 'center',
 							width: 100
 						},
 						{
-							title: '姓名',
-							field: 'realName',
+							title: '标题',
+							field: 'title',
 							align: 'center'
 						},
 						{
-							title: '性别',
-							field: 'sex',
+							title: '分类',
+							field: 'category',
 							align: 'center',
 							width: 80,
 							templet: '#user-sex'
 						},
 						{
-							title: '电话',
-							field: 'phone',
+							title: '标签',
+							field: 'tag',
 							align: 'center'
 						},
 						{
-							title: '启用',
-							field: 'enable',
+							title: '状态',
+							field: 'status',
 							align: 'center',
 							templet: '#user-enable'
 						},
 						{
-							title: '登录',
-							field: 'login',
+							title: '作者',
+							field: 'uid',
 							align: 'center',
 							templet: '#user-login'
 						},
 						{
-							title: '注册',
-							field: 'createTime',
+							title: '评论',
+							field: 'allowComment',
+							align: 'center',
+							templet: '#author'
+						},
+						{
+							title: '时间',
+							field: 'created',
 							align: 'center',
 							templet: '#user-createTime'
 						},
@@ -150,7 +156,7 @@
 
 				table.render({
 					elem: '#user-table',
-					url: '/sk-admin/admin/data/user.json',
+					url: '/api/article/get',
 					page: true,
 					cols: cols,
 					skin: 'line',
@@ -192,13 +198,7 @@
 				});
 
 				window.add = function() {
-					layer.open({
-						type: 2,
-						title: '新增',
-						shade: 0.1,
-						area: [common.isModile()?'100%':'500px', common.isModile()?'100%':'400px'],
-						content: MODULE_PATH + 'add.html'
-					});
+					parent.layui.admin.addTab(0,"撰写文章","/admin/view?page=view/content/editor.php")
 				}
 
 				window.edit = function(obj) {

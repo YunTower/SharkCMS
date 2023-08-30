@@ -7,7 +7,7 @@ logo:
 ## 菜单配置
 menu: 
   ## 菜单数据来源
-  data: "/sk-admin/admin/data/menu.json"
+  data: "/sk-admin/config/menu.json"
   ## 菜单接口的请求方式 GET / POST
   method: "GET" 
   ## 是否同时只打开一个菜单目录
@@ -79,4 +79,4 @@ other:
 ## 头部配置
 header:
   ## 站内消息，通过 false 设置关闭
-  message: "/sk-admin/admin/data/message.json"
+  message: false
