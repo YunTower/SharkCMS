@@ -1,5 +1,5 @@
 <?php
-class Plugin extends FrameWork {
+class Plugin {
 
     public function __construct()
     {

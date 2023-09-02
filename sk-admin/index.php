@@ -47,7 +47,7 @@
 					<!-- 功 能 菜 单 -->
 					<dl class="layui-nav-child">
 						<dd><a user-menu-url="view/system/person.html" user-menu-id="5555" user-menu-title="基本资料">基本资料</a></dd>
-						<dd><a onclick="" class="logout">注销登录</a></dd>
+						<dd><a lay-on="loginOut" class="logout">注销登录</a></dd>
 					</dl>
 				</li>
 				<!-- 主 题 配 置 -->
@@ -98,24 +98,41 @@
 	<!-- 依 赖 脚 本 -->
 	<script src="/sk-admin/component/layui/layui.js"></script>
 	<script src="/sk-admin/component/pear/pear.js"></script>
+	<script src="/sk-include/static/js/axios.min.js"></script>
 	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 
 	<!-- 框 架 初 始 化 -->
 	<script>
-		layui.use(['admin', 'jquery', 'popup', 'drawer'], function() {
+		layui.use(['admin', 'jquery', 'layer', 'util'], function() {
 			var $ = layui.jquery,
 				admin = layui.admin,
-				popup = layui.popup;
+				layer = layui.layer,
+				util = layui.util;
 
 			admin.setConfigType("yml");
 			admin.setConfigPath("/sk-admin/config/pear.config.yml");
 
 			admin.render();
 
-		
-
-			// 消息点击回调
-			// admin.message(function(id, title, context, form) {});
+			util.on('lay-on', {
+				// 退出编辑
+				'loginOut': function() {
+					axios('/api/loginOut')
+						.then(function(res) {
+							if (res.data.code == 200) {
+								layer.msg('退出成功', {
+									icon: 1
+								})
+								sk.sleep(1000)
+									.then(function() {
+										window.location.href = '/admin/login'
+									})
+							} else {
+								layer.msg(res.data.msg)
+							}
+						})
+				}
+			})
 		})
 	</script>
 </body>

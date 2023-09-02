@@ -1,6 +1,9 @@
 <?php
 
-class Index extends FrameWork
+use FrameWork\Main as FrameWork;
+use FrameWork\View\View as View;
+
+class index
 {
     private $data;
     private $theme;
@@ -11,7 +14,7 @@ class Index extends FrameWork
     {
 
         // 获取页码
-        $pid = self::getAction();
+        $pid = FrameWork::getAction();
 
         // 默认第一页
         if (!isset($pid) || $pid == 'index') {
@@ -35,7 +38,7 @@ class Index extends FrameWork
 
         // 加载页面模板
         View::$vArticle = $data;
-        self::$_view::view('home');
+        View::view('home');
     }
 
 

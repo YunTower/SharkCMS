@@ -1,5 +1,5 @@
 <?php
-class Cloud extends FrameWork
+class Cloud
 {
     public static $host;
 

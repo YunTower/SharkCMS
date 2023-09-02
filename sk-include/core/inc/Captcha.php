@@ -1,15 +1,19 @@
 <?php
-class Captcha extends FrameWork
+
+class Captcha
 {
-    public function __construct()
+    public static function get()
     {
-        $code = $this->Code();
+        $code = self::Code();
+        if (isset($_SESSION['captcha'])) {
+            unset($_SESSION['captcha']);
+        }
         $_SESSION['captcha'] = $code;
         ob_clean();
-        $this->create($code);
+        self::create($code);
     }
 
-    public function Code($count = 5)
+    public static function Code($count = 5)
     {
         $code = '';
         $charset = 'ABCDEFGHJKLMNPQRSTUVWXY23456789';
@@ -19,11 +23,12 @@ class Captcha extends FrameWork
         }
         return $code;
     }
+
     /**
      * 显示图形验证码
      * @param string $code
      */
-    public function create($code)
+    public static function create($code)
     {
         $width = 120; //验证码图片宽度
         $height = 35; //验证码图片高度

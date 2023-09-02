@@ -1,6 +1,9 @@
 <?php
 
+namespace FrameWork\View;
+
 use Illuminate\Database\Capsule\Manager as DB;
+use FrameWork\Main as FrameWork;
 
 /**
  * --------------------------------------------------------------------------------
@@ -14,14 +17,14 @@ use Illuminate\Database\Capsule\Manager as DB;
 # --------------------------------## 主题组件 ##--------------------------------#
 
 
-class View extends FrameWork
+class View
 {
     public static $sTitle;
     public static $subTitle = 'Demo';
     public static $sSubtitle;
     public static $sKeyword;
     public static $vName;
-    public static $vUrl;
+    public static $vPath;
     public static $vKey;
     public static $vTheme = array();
     public static $vConfig = array();
@@ -35,11 +38,11 @@ class View extends FrameWork
     public function __construct()
     {
         // 主题名称
-        self::$vName = Db::table('sk_setting')->where('name', "theme-name")->first()->value;
+        self::$vPath = Db::table('sk_setting')->where('name', "theme-name")->first()->value;
 
-
+        var_dump(View::$vName);
         // 当前主题路径
-        self::$vUrl = CON . 'theme/' . self::$vName . '/';
+        View::$vPath = CON . 'theme/' . View::$vName . '/';
 
         // 扫描目录
         $dir = scandir(CON . 'theme/');
@@ -71,7 +74,6 @@ class View extends FrameWork
     }
 
 
-
     public static function allTheme()
     {
         return self::$vTheme;
@@ -84,13 +86,14 @@ class View extends FrameWork
 
     public static function view($page)
     {
-        echo '<!-- Powered by SharkCMS v' . self::$_App['app']['Version'] . ' -->' . PHP_EOL;
+        echo '<!-- Powered by SharkCMS v' . FrameWork::$_App['app']['Version'] . ' -->' . PHP_EOL;
+         var_dump(self::$vPath);
         // 主题自定义函数
-        include_once self::$vUrl . 'inc/function.php';
+        include_once View::$vPath . 'inc/function.php';
         // 主题自定义路由
-        include_once self::$vUrl . 'inc/route.php';
+        include_once View::$vPath . 'inc/route.php';
         // 主题页面文件
-        include_once self::$vUrl . 'page/' . $page . '.php';
+        include_once View::$vPath . 'view/' . $page . '.php';
     }
 
     // pjax

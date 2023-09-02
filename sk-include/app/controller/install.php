@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Capsule\Manager as DB;
 
-class Install extends FrameWork
+class Install
 {
     private $_step;
 

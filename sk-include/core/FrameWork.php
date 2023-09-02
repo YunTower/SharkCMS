@@ -1,13 +1,14 @@
 <?php
+namespace FrameWork;
 
 use Illuminate\Database\Capsule\Manager as DB;
+use ReflectionClass;
 
-class FrameWork
+class Main
 {
     // 配置信息
     public static $_App;
     public static $_view;
-    public static $_user;
     public static $_http;
     public static $_cloud;
     public static $_data = null;
@@ -52,20 +53,13 @@ class FrameWork
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
 
-            // 加载模块文件
             include_once INC . 'core/inc/Function.php';
             include_once INC . 'core/inc/User.php';
             include_once INC . 'core/inc/Http.php';
-            include_once INC . 'core/inc/Hook.php';
+            include_once INC . 'core/inc/Captcha.php';
             include_once INC . 'core/inc/View.php';
             include_once INC . 'core/inc/Plugin.php';
             include_once INC . 'core/inc/Cloud.php';
-
-            // 初始化类
-            self::$_user = new User();
-            self::$_view = new View();
-            self::$_http = new Http();
-            self::$_cloud = new Cloud();
 
             $data = (DB::table('sk_setting')->get());
             $data = json_decode(json_encode($data), true);
@@ -88,6 +82,7 @@ class FrameWork
         $action = $controller_action['action'];
         //拼接控制器类文件名称
         $class_file = INC . 'app/controller/' . $controller . '.php';
+
         if ($controller != 'sk-content') {
             if (file_exists($class_file)) {
                 //加载控制器类文件
@@ -108,7 +103,7 @@ class FrameWork
                 }
                 //若方法不存在，则跳转到错误控制器
                 if ($method == '') {
-                    if (FrameWork::getController() != 'admin') {
+                    if (self::getController() != 'admin') {
                         if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
                             if (self::getAction() != 'index' && self::getAction() != 'index') {
                                 self::Error(404);
@@ -276,7 +271,7 @@ class FrameWork
             exit(json_encode(['code' => 404, 'msg' => '页面不存在']));
         }
 
-        $file = CON . 'theme/' . View::$vName . '/page/error/' . $code . '.php';
+        $file = CON . 'theme/' . View::$vName . '/view/error/' . $code . '.php';
         if (file_exists($file)) {
             include_once $file;
         } else if ($code == 0) {

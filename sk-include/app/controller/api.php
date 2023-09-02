@@ -58,11 +58,16 @@ class Api extends FrameWork
         $this->data = $data;
         $this->action = FrameWork::getData();
         // 接口权限验证
-        if (FrameWork::getAction() != 'login') {
+        if (FrameWork::getAction() != 'login' && FrameWork::getAction() != 'captcha') {
             if (!User::$loginStatus) {
                 exit(json_encode(['code' => 403, 'msg' => '权限不足！', 'data' => ['login' => false]]));
             }
         }
+    }
+
+    function captcha()
+    {
+        Captcha::get();
     }
 
     // 登陆接口
@@ -89,7 +94,7 @@ class Api extends FrameWork
                             // 生成Token
                             User::CreateToken($user['uid']);
                             // 返回成功信息
-                            echo json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group']]));
+                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group'],User::$loginStatus])));
                             // } else {
                             //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
                             // }
@@ -111,15 +116,17 @@ class Api extends FrameWork
         unset($_SESSION['captcha']);
     }
 
+
     function loginOut()
     {
         if (User::$loginStatus) {
-            unset($_SESSION['token']);
-            $id = User::$userInfo['uid'];
-            self::$_db->table('sk_user')->where("uid = $id")->update(array('token' => null));
-            exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
+            if (User::LoginOut()) {
+                exit(json_encode(array('code' => 200, 'msg' => '操作成功')));
+            } else {
+                exit(json_encode(['code' => 500, 'msg' => '系统异常，操作失败']));
+            }
         } else {
-            exit(json_encode(['code' => 403, 'msg' => '未登录', 'data' => []]));
+            exit(json_encode(['code' => 403, 'msg' => '未登录']));
         }
     }
 

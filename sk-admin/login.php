@@ -78,7 +78,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                     </div>
                     <div class="layui-col-xs5">
                         <div style="margin-left: 10px;">
-                            <img src="/captcha/create" id="captcha" onclick="this.src='/captcha/create/'+ new Date().getTime();">
+                            <img src="/api/captcha" id="captcha" onclick="this.src='/api/captcha/'+ new Date().getTime();">
                         </div>
                     </div>
                 </div>
@@ -124,30 +124,28 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                         icon: 2
                     })
                 } else {
-
-                    // 提交登陆
                     axios.post('/api/login/' + new Date().getTime(), encrypt.Base64Encode(JSON.stringify(data)))
                         .then(function(response) {
-                            console.log(response.data)
-
                             if (response.data.code == 200) {
                                 popup.success('登陆成功', function() {
                                     if (response.data.data.group == 'admin') {
                                         if (sk.getData()['from'] != undefined) {
                                             history.go(-1)
+
                                         } else {
-                                            window.location.href = '.';
+                                            window.location.href = '/admin/index';
                                         }
                                     } else {
                                         history.go(-1)
                                     }
+
                                 })
                             } else {
                                 if (response.data.code != 'undefind') {
                                     layer.msg(response.data.msg, {
                                         icon: 2
                                     })
-                                    $('#captcha').attr('src', '/captcha/create/' + new Date().getTime())
+                                    $('#captcha').attr('src', '/api/captcha/' + new Date().getTime())
                                 } else {
                                     layer.alert(response.data, {
                                         title: '系统错误',
@@ -156,6 +154,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                                 }
                             }
                         })
+                  
                 }
                 return false;
             });

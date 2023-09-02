@@ -1,6 +1,6 @@
 <?php
-
-class Http extends FrameWork
+namespace FrameWork\Http;
+class Http
 {
     private $ch = null; // curl handle
     private $headers = array(); // request header
