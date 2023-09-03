@@ -1,5 +1,5 @@
 <?php
-class Route extends FrameWork
+class Route
 {
     public function article(){
         

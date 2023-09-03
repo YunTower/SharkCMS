@@ -1,2 +1,6 @@
-<?php //View::get_footer_code() ?>
-<script src="<?php  View::static('static/js/main.js')?>"></script>
+<?php
+
+use FrameWork\View\View;
+
+?>
+<script src="<?= View::static('static/js/main.js') ?>"></script>

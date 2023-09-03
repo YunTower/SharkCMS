@@ -1,4 +1,5 @@
 <?php
+
 namespace FrameWork;
 
 use Illuminate\Database\Capsule\Manager as DB;
@@ -67,7 +68,6 @@ class Main
                 self::$getSetting = self::$getSetting + [$v['name'] => $v['value']];
             }
         }
-
     }
 
     /**
@@ -107,7 +107,6 @@ class Main
                         if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
                             if (self::getAction() != 'index' && self::getAction() != 'index') {
                                 self::Error(404);
-
                             }
                         }
                     }
@@ -121,7 +120,7 @@ class Main
         }
     }
 
-// 获取域名
+    // 获取域名
     public
     static function getDomain()
     {
@@ -129,21 +128,21 @@ class Main
         return $http_type . $_SERVER['HTTP_HOST'];
     }
 
-// 获取url
+    // 获取url
     public
     static function getURL()
     {
         return $_SERVER["REQUEST_URI"];
     }
 
-// 获取入口文件
+    // 获取入口文件
     public
     static function getFile()
     {
         return $_SERVER['SCRIPT_NAME'];
     }
 
-// 获取uri
+    // 获取uri
     public
     static function getURI()
     {
@@ -153,7 +152,7 @@ class Main
         return explode('/', $module_action);
     }
 
-// 获取控制器
+    // 获取控制器
     public
     static function getController()
     {
@@ -164,7 +163,7 @@ class Main
         }
     }
 
-// 获取方法
+    // 获取方法
     public
     static function getAction()
     {
@@ -175,7 +174,7 @@ class Main
         }
     }
 
-// 获取参数
+    // 获取参数
     public
     static function getData()
     {
@@ -187,7 +186,7 @@ class Main
     }
 
 
-// 整合参数
+    // 整合参数
     public
     static function controller_action()
     {
@@ -198,7 +197,7 @@ class Main
         );
     }
 
-// 配置修改
+    // 配置修改
     public
     static function setConfig(array $new)
     {
@@ -208,14 +207,14 @@ class Main
         file_put_contents($file, "<?php \n return $_new;\n");
     }
 
-// 安装状态
+    // 安装状态
     public
     static function inStatus()
     {
         return self::$_App['app']['Install'];
     }
 
-// 获取来源
+    // 获取来源
     public
     static function getOrigin()
     {
@@ -236,9 +235,10 @@ class Main
         return $ip;
     }
 
-    public function importSQL($file){
+    public function importSQL($file)
+    {
         $mysqli = mysqli_connect(self::$_App['db']['Host'], self::$_App['db']['User'], self::$_App['db']['Pwd'], self::$_App['db']['Name']);
-// 检测连接
+        // 检测连接
         if (!$mysqli) {
             die("连接失败: " . mysqli_connect_error());
         }
@@ -247,7 +247,7 @@ class Main
         // 执行SQL语句
         if (!$mysqli->multi_query($sql)) {
             //若导入失败
-           return mysqli_error_list($mysqli);
+            return mysqli_error_list($mysqli);
         }
         // 清空结果集
         while ($mysqli->more_results() && $mysqli->next_result()) {
@@ -262,7 +262,7 @@ class Main
 
 
 
-// 错误处理
+    // 错误处理
     public
     static function Error(int $code, array $info = null)
     {
@@ -271,7 +271,7 @@ class Main
             exit(json_encode(['code' => 404, 'msg' => '页面不存在']));
         }
 
-        $file = CON . 'theme/' . View::$vName . '/view/error/' . $code . '.php';
+        $file = CON . 'theme/' . vName . '/view/error/' . $code . '.php';
         if (file_exists($file)) {
             include_once $file;
         } else if ($code == 0) {

@@ -1,3 +1,8 @@
+<?php
+
+use FrameWork\View\View;
+
+?>
 <!DOCTYPE html>
 <html lang="zh">
 

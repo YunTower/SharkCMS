@@ -1,14 +1,15 @@
 <?php
+
 use Illuminate\Database\Capsule\Manager as DB;
+use FrameWork\Main as FrameWork;
+use FrameWork\View\View;
 
-
-class Page extends FrameWork
+class Page
 {
 
     public function __construct()
     {
-        View::$vKey = htmlspecialchars(self::getData());
-
+        View::$vKey = htmlentities(htmlspecialchars(FrameWork::getData()));
     }
 
 
@@ -16,10 +17,9 @@ class Page extends FrameWork
     {
 
         $id = View::$vKey;
-        if (is_numeric($id)) {
-            View::$vArticle = toArray(Db::table('sk_content')->where('cid',$id)->get())[0];
-
-            self::$_view::view('article');
+        if (is_numeric(htmlentities($id))) {
+            View::$vArticle = toArray(Db::table('sk_content')->where('cid', $id)->get())[0];
+            View::view('article');
         } else {
             FrameWork::Error(404);
         }
@@ -28,16 +28,17 @@ class Page extends FrameWork
     public function category()
     {
         $id = View::$vKey;
-        self::$_view::view('category');
+        View::view('category');
     }
 
     public function tag()
     {
         $id = View::$vKey;
-        self::$_view::view('tag');
+        View::view('tag');
     }
 
-    public function  info(){
+    public function info()
+    {
         echo $_SERVER['upload_max_filesize'];
 
         echo phpinfo();

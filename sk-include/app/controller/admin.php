@@ -1,5 +1,5 @@
 <?php
-
+use FrameWork\Main as FrameWork;
 use FrameWork\User\User;
 use Illuminate\Database\Capsule\Manager as DB;
 
@@ -20,8 +20,8 @@ class Admin
             }
         } else {
             // ==>未登录
-            if (self::getAction() != 'reg') {
-                if (isset(explode('/', self::getOrigin())[4]) && explode('/', self::getOrigin())[4] == 'article') {
+            if (FrameWork::getAction() != 'reg') {
+                if (isset(explode('/', FrameWork::getOrigin())[4]) && explode('/', FrameWork::getOrigin())[4] == 'article') {
                     FrameWork::$_data = json_encode(['from' => 'article']);
                 }
                 if (User::$loginStatus) {

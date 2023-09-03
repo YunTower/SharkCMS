@@ -1,4 +1,5 @@
 <?php
+use FrameWork\View\View;
 $a = View::$vArticle;
 View::$sTitle=$a['title'] ;
 ?>

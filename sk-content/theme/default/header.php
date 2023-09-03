@@ -1,4 +1,9 @@
-<link rel="stylesheet" href="<?php View::static('static/css/style.css?v=2.1.0') ?>" />
+<?php
+
+use FrameWork\View\View as View;
+
+?>
+<link rel="stylesheet" href="<?php View::static('static/css/style.css?v=2.1.0') ?>"/>
 <style>
     .sidebar {
         width: 40%;

@@ -16,15 +16,20 @@ use FrameWork\Main as FrameWork;
  */
 # --------------------------------## 主题组件 ##--------------------------------#
 
+// 主题名称
+define('vName',Db::table('sk_setting')->where('name', "theme-name")->first()->value);
+
+// 当前主题路径
+define('vPath',CON . 'theme/' . vName . '/');
 
 class View
 {
+
     public static $sTitle;
     public static $subTitle = 'Demo';
     public static $sSubtitle;
     public static $sKeyword;
-    public static $vName;
-    public static $vPath;
+
     public static $vKey;
     public static $vTheme = array();
     public static $vConfig = array();
@@ -37,12 +42,7 @@ class View
 
     public function __construct()
     {
-        // 主题名称
-        self::$vPath = Db::table('sk_setting')->where('name', "theme-name")->first()->value;
 
-        var_dump(View::$vName);
-        // 当前主题路径
-        View::$vPath = CON . 'theme/' . View::$vName . '/';
 
         // 扫描目录
         $dir = scandir(CON . 'theme/');
@@ -69,10 +69,7 @@ class View
         }
         self::$vArticle = toArray(Db::table('sk_content')->get());
         self::$vComment = toArray(Db::table('sk_comment')->get());
-
-
     }
-
 
     public static function allTheme()
     {
@@ -87,13 +84,13 @@ class View
     public static function view($page)
     {
         echo '<!-- Powered by SharkCMS v' . FrameWork::$_App['app']['Version'] . ' -->' . PHP_EOL;
-         var_dump(self::$vPath);
+
         // 主题自定义函数
-        include_once View::$vPath . 'inc/function.php';
+        include_once vPath . 'inc/function.php';
         // 主题自定义路由
-        include_once View::$vPath . 'inc/route.php';
+        include_once vPath . 'inc/route.php';
         // 主题页面文件
-        include_once View::$vPath . 'view/' . $page . '.php';
+        include_once vPath . 'view/' . $page . '.php';
     }
 
     // pjax
@@ -109,26 +106,26 @@ class View
 
     public static function static($file)
     {
-        echo self::getDomain() . '/sk-content/theme/' . self::$vName . '/' . $file;
+        echo FrameWork::getDomain() . '/sk-content/theme/' .vName . '/' . $file;
     }
 
     // 文件加载
     public static function include(string $file)
     {
-        include_once self::$vUrl . $file;
+        include_once vPath . $file;
     }
 
     // 加载头部文件
     public static function get_header()
     {
         include_once INC . 'view/theme/header.php';
-        include_once self::$vUrl . 'header.php';
+        include_once vPath . 'header.php';
     }
 
     // 加载边栏
     public static function get_sidebar()
     {
-        $f = self::$vUrl . 'sidebar.php';
+        $f = vPath . 'sidebar.php';
         if (file_exists($f)) {
             include_once $f;
         } else {
@@ -146,7 +143,7 @@ class View
     public static function get_footer()
     {
         include_once INC . 'view/theme/footer.php';
-        include_once self::$vUrl . 'footer.php';
+        include_once vPath. 'footer.php';
     }
 
     // 查询主题设置

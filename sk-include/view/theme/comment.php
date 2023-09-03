@@ -1,3 +1,10 @@
+<?php
+
+use FrameWork\Main as FrameWork;
+use FrameWork\View\View;
+use FrameWork\User\User;
+
+?>
 <div class="sk-comment">
     <div class="sk-input">
         <textarea id="sk-comment" placeholder="攥写评论"></textarea>
@@ -19,7 +26,6 @@
     if ($comment == null) {
         print <<<EOT
 
-   
     <div class="sk-comment-list sk-comment-null">
         <ul>
                <span class="sk-comment-null">评论区空空如也，快来抢沙发吧！</span>
@@ -29,10 +35,10 @@
     } else {
         echo '<div class="sk-comment-list sk-comment-null"><ul>';
         foreach (View::getComment(FrameWork::getData()) as $d) :
-    ?>
+            ?>
 
             <li id="#comment-<?= $d['id'] ?>">
-                <img class="sk-comment-avatar" src="<?= $d['user']['avatar'] ?>" />
+                <img class="sk-comment-avatar" src="<?= $d['user']['avatar'] ?>"/>
                 <div class="sk-comment-details">
                     <div class="sk-comment-info">
                         <span class="sk-comment-uname">
@@ -46,7 +52,7 @@
                 </div>
 
             </li>
-    <?php
+        <?php
         endforeach;
         print <<<EOT
             </ul>

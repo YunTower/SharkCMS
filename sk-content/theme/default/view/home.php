@@ -1,12 +1,17 @@
+<?php
+
+use FrameWork\View\View as View;
+
+?>
 <!DOCTYPE html>
 <html lang="zh">
 
 <head>
-    <?php View::get_header() ?>
+    <?= View::get_header() ?>
 </head>
 
 <body>
-<?php View::get_sidebar() ?>
+<?= View::get_sidebar() ?>
 
 <div class="main">
     <?php View::include('menu.php') ?>
@@ -18,7 +23,7 @@
             <div class="post animated fadeInDown">
                 <div class="post-title">
                     <h3 class="font-medium">
-                        <a href="/page/article/<?= $a['cid'] ?>"><?=  $a['title'] ?></a>
+                        <a href="/page/article/<?= $a['cid'] ?>"><?= $a['title'] ?></a>
                     </h3>
                 </div>
                 <div class="post-content text-sm text-black/50">
@@ -46,9 +51,9 @@
         <?php endforeach; ?>
 
 
-            <?php
-                Pager($data['page_count'],$data['total_page']);
-            ?>
+        <?php
+        Pager($data['page_count'], $data['total_page']);
+        ?>
     </div>
 </div>
 
