@@ -90,13 +90,19 @@ CREATE TABLE `sk_menu`
 (
     `id`      int(6) UNSIGNED NOT NULL,
     `name`    varchar(60) NOT NULL,
+    `sort`    int(6) NOT NULL,
     `url`     text        NOT NULL,
-    `status`  varchar(10)          DEFAULT NULL,
-    `uid`     varchar(10) NOT NULL,
-    `uname`   varchar(32) NOT NULL,
-    `parent`  char(1)              DEFAULT NULL,
+    `status`  boolean              DEFAULT NULL,
+    `father`  int(6) DEFAULT NULL,
     `created` timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- 转存表中的数据 `sk_menu`
+--
+
+INSERT INTO `sk_menu` (`id`, `name`, `sort`, `url`, `status`, `father`, `created`)
+VALUES (1, '关于', '1', '/page/about', null, null, '2023-07-07 09:00:32');
 
 -- --------------------------------------------------------
 

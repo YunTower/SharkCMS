@@ -1,15 +1,16 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
-
+use FrameWork\Main as FrameWork;
+use FrameWork\Http\Http;
 class Install
 {
     private $_step;
 
     public function __construct()
     {
-        if (self::$_App['app']['Install'] && self::getData() != 3) {
-            self::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
+        if (FrameWork::$_App['app']['Install'] && FrameWork::getData() != 3) {
+            FrameWork::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
         }
     }
 
@@ -53,7 +54,7 @@ class Install
                         ob_clean();
                         exit(json_encode(array('code' => 500, 'msg' => '数据库连接失败', 'error' => $conn->connect_error)));
                     } else {
-                        self::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf8')]);
+                        FrameWork::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf8')]);
                         exit(json_encode(array('code' => 200, 'msg' => '数据库连接成功', 'error' => null)));
                     }
                     break;
@@ -63,11 +64,11 @@ class Install
                     $capsule = new Db;
                     $capsule->addConnection([
                         'driver' => 'mysql',
-                        'host' => self::$_App['db']['Host'],
-                        'database' => self::$_App['db']['Name'],
-                        'username' => self::$_App['db']['User'],
-                        'password' => self::$_App['db']['Pwd'],
-                        'charset' => self::$_App['db']['Charset'],
+                        'host' => FrameWork::$_App['db']['Host'],
+                        'database' => FrameWork::$_App['db']['Name'],
+                        'username' => FrameWork::$_App['db']['User'],
+                        'password' => FrameWork::$_App['db']['Pwd'],
+                        'charset' => FrameWork::$_App['db']['Charset'],
                         'collation' => 'utf8_unicode_ci',
                         'prefix' => '',
                     ]);
@@ -78,10 +79,10 @@ class Install
                     include_once INC . 'core/inc/Http.php';
 
                     // 初始化类
-                    self::$_user = new User();
-                    self::$_http = new Http();
+                    Http::$_user = new User();
+                    Http::$_http = new Http();
 
-                    $arr = self::$_http->post('install', FrameWork::$_App, 'json');
+                    $arr = Http::$_http->post('install', FrameWork::$_App, 'json');
                     if ($arr['code'] == 200) {
                         if (FrameWork::importSQL(INC . 'config/db.sql')) {
                             // 写入初始数据

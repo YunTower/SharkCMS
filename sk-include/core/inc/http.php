@@ -1,8 +1,13 @@
 <?php
+
 namespace FrameWork\Http;
+
+use FrameWork\Main as FrameWork;
+
 class Http
 {
-    private $ch = null; // curl handle
+    public static $ch = null; // curl handle
+    public static $url;
     private $headers = array(); // request header
     private $proxy = null; // http proxy
     private $timeout = null;    // connnect timeout
@@ -11,8 +16,13 @@ class Http
 
     public function __construct()
     {
-        $this->host = self::$_App['api']['Host'];
-        $this->ch = curl_init();
+        self::$host = FrameWork::$_App['api']['Host'];
+        self::$ch = curl_init();
+    }
+
+    public static function url($url)
+    {
+        return self::$url = FrameWork::$_App['api']['Host'] . $url;
     }
 
     /**
@@ -23,9 +33,9 @@ class Http
     public function setHeader($header)
     {
         if (is_array($header)) {
-            curl_setopt($this->ch, CURLOPT_HTTPHEADER, $header);
+            curl_setopt(self::$ch, CURLOPT_HTTPHEADER, $header);
         }
-        return $this;
+        return self;
     }
 
     /**
@@ -40,7 +50,7 @@ class Http
             $time = 5;
         }
         //只需要设置一个秒的数量就可以
-        curl_setopt($this->ch, CURLOPT_TIMEOUT, $time);
+        curl_setopt(curl_init(), CURLOPT_TIMEOUT, $time);
         return $this;
     }
 
@@ -53,7 +63,7 @@ class Http
     public function setProxy($proxy)
     {
         if ($proxy) {
-            curl_setopt($this->ch, CURLOPT_PROXY, $proxy);
+            curl_setopt(self::$ch, CURLOPT_PROXY, $proxy);
         }
         return $this;
     }
@@ -66,7 +76,7 @@ class Http
     public function setProxyPort($port)
     {
         if (is_int($port)) {
-            curl_setopt($this->ch, CURLOPT_PROXYPORT, $port);
+            curl_setopt(self::$ch, CURLOPT_PROXYPORT, $port);
         }
         return $this;
     }
@@ -79,7 +89,7 @@ class Http
     public function setReferer($referer = "")
     {
         if (!empty($referer))
-            curl_setopt($this->ch, CURLOPT_REFERER, $referer);
+            curl_setopt(self::$ch, CURLOPT_REFERER, $referer);
         return $this;
     }
 
@@ -92,7 +102,7 @@ class Http
     {
         if ($agent) {
             // 模拟用户使用的浏览器
-            curl_setopt($this->ch, CURLOPT_USERAGENT, $agent);
+            curl_setopt(self::$ch, CURLOPT_USERAGENT, $agent);
         }
         return $this;
     }
@@ -104,7 +114,7 @@ class Http
      */
     public function showResponseHeader($show)
     {
-        curl_setopt($this->ch, CURLOPT_HEADER, $show);
+        curl_setopt(self::$ch, CURLOPT_HEADER, $show);
         return $this;
     }
 
@@ -126,7 +136,7 @@ class Http
      */
     public function setCainfo($file)
     {
-        curl_setopt($this->ch, CURLOPT_CAINFO, $file);
+        curl_setopt(self::$ch, CURLOPT_CAINFO, $file);
     }
 
 
@@ -136,27 +146,27 @@ class Http
      * @param string $dataType
      * @return bool|mixed
      */
-    public function get($url, $dataType = 'text')
+    public function get($dataType = 'text')
     {
-        if (stripos($url, 'https://') !== FALSE) {
-            curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_setopt($this->ch, CURLOPT_SSLVERSION, 1);
+        if (stripos(self::$url, 'https://') !== FALSE) {
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt(self::$ch, CURLOPT_SSLVERSION, 1);
         }
         // 设置get参数
         if (!empty($this->httpParams) && is_array($this->httpParams)) {
-            if (strpos($url, '?') !== false) {
-                $url .= http_build_query($this->httpParams);
+            if (strpos(self::$url, '?') !== false) {
+                self::$url .= http_build_query($this->httpParams);
             } else {
-                $url .= '?' . http_build_query($this->httpParams);
+                self::$url .= '?' . http_build_query($this->httpParams);
             }
         }
         // end 设置get参数
-        curl_setopt($this->ch, CURLOPT_URL, $this->host . $url);
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-        $content = curl_exec($this->ch);
-        $status = curl_getinfo($this->ch);
-        curl_close($this->ch);
+        curl_setopt(self::$ch, CURLOPT_URL, self::$url);
+        curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, 1);
+        $content = curl_exec(self::$ch);
+        $status = curl_getinfo(self::$ch);
+        curl_close(self::$ch);
 
 
         if (isset($status['http_code'])) {
@@ -166,8 +176,6 @@ class Http
             return $content;
         }
     }
-
-
 
 
     /**
@@ -183,29 +191,29 @@ class Http
      * 文件post上传
      * HttpCurl::post('http://api.example.com/', array('abc'=>'123', 'file1'=>'@/data/1.jpg'), 'json');
      */
-    public function post($url, $data = null, $dataType = 'text')
+    public function post($data = null, $dataType = 'text')
     {
-        if (stripos($url, 'https://') !== FALSE) {
-            curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, FALSE);
-            curl_setopt($this->ch, CURLOPT_SSLVERSION, 1);
+        if (stripos(self::$url, 'https://') !== FALSE) {
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+            curl_setopt(self::$ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt(self::$ch, CURLOPT_SSLVERSION, 1);
         }
-        curl_setopt($this->ch, CURLOPT_URL, $this->host . $url);
+        curl_setopt(self::$ch, CURLOPT_URL, self::$url);
         // 设置post body
         if (!empty($this->httpParams)) {
             if (is_array($this->httpParams)) {
-                curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($this->httpParams));
+                curl_setopt(self::$ch, CURLOPT_POSTFIELDS, http_build_query($this->httpParams));
             } else if (is_string($this->httpParams)) {
-                curl_setopt($this->ch, CURLOPT_POSTFIELDS, $this->httpParams);
+                curl_setopt(self::$ch, CURLOPT_POSTFIELDS, $this->httpParams);
             }
         }
         // end 设置post body
-        curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($this->ch, CURLOPT_POST, 1);
-        curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        $content = curl_exec($this->ch);
-        $status = curl_getinfo($this->ch);
-        curl_close($this->ch);
+        curl_setopt(self::$ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt(self::$ch, CURLOPT_POST, 1);
+        curl_setopt(self::$ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        $content = curl_exec(self::$ch);
+        $status = curl_getinfo(self::$ch);
+        curl_close(self::$ch);
 
         if (isset($status['http_code']) && @$status['http_code'] != 0) {
             if ($dataType == 'json') {

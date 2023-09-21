@@ -4,6 +4,8 @@ namespace FrameWork;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use ReflectionClass;
+use FrameWork\User\User;
+use FrameWork\View\View;
 
 class Main
 {
@@ -40,7 +42,7 @@ class Main
             }
         } else {
             // 初始化数据库
-            $capsule = new Db;
+            $capsule = new DB;
             $capsule->addConnection([
                 'driver' => 'mysql',
                 'host' => self::$_App['db']['Host'],
@@ -51,9 +53,11 @@ class Main
                 'collation' => 'utf8_unicode_ci',
                 'prefix' => '',
             ]);
+
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
 
+            // 加载模块文件
             include_once INC . 'core/inc/Function.php';
             include_once INC . 'core/inc/User.php';
             include_once INC . 'core/inc/Http.php';
@@ -62,6 +66,11 @@ class Main
             include_once INC . 'core/inc/Plugin.php';
             include_once INC . 'core/inc/Cloud.php';
 
+            // 初始化试图模块
+            View::init();
+            // 初始化用户模块
+            User::init();
+            // 加载后台设置
             $data = (DB::table('sk_setting')->get());
             $data = json_decode(json_encode($data), true);
             foreach ($data as $res => $v) {
@@ -275,8 +284,8 @@ class Main
         if (file_exists($file)) {
             include_once $file;
         } else if ($code == 0) {
-            $title = $info['title'];
-            $msg = $info['msg'];
+            $title = $info[0];
+            $msg = $info[1];
             include_once INC . 'view/error/error.php';
         } else {
             include_once INC . 'view/error/' . $code . '.php';

@@ -3,6 +3,7 @@
 namespace FrameWork\User;
 
 use Illuminate\Database\Capsule\Manager as DB;
+use FrameWork\Main as FrameWork;
 
 class User
 {
@@ -13,23 +14,25 @@ class User
     // 用户信息
     public static $userInfo;
 
-    public function __construct()
+    public static function init()
     {
         if (FrameWork::inStatus()) {
             @$token = $_SESSION['token'];
             // 验证登陆状态
             if (isset($token)) {
                 $info = toArray(DB::table('sk_user')->where('token', "$token")->get());
-                var_dump($info);
                 // 验证token真实性
-                if ($info) {
-                    if (count($info) >= 1) {
+                if (isset($info)) {
+                    if (count($info) == 1) {
                         User::$loginStatus = true;
                         User::$userInfo = $info[0];
                         User::$userRole = $info[0]['group'];
+                    } else {
+                        FrameWork::Error(0, ['系统错误', '账号数据异常']);
                     }
                 }
             }
+
         }
     }
 

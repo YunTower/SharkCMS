@@ -1,7 +1,9 @@
 <?php
+
+use Illuminate\Database\Capsule\Manager as DB;
 use FrameWork\Main as FrameWork;
 use FrameWork\User\User;
-use Illuminate\Database\Capsule\Manager as DB;
+use FrameWork\View\View;
 
 class Admin
 {
@@ -11,7 +13,7 @@ class Admin
     public function __construct()
     {
         // 登陆状态检测
-//        User::$loginStatus = true;
+
         if (User::$loginStatus) {
             // ==>登陆
             $this->info = User::$userInfo;
@@ -24,13 +26,6 @@ class Admin
                 if (isset(explode('/', FrameWork::getOrigin())[4]) && explode('/', FrameWork::getOrigin())[4] == 'article') {
                     FrameWork::$_data = json_encode(['from' => 'article']);
                 }
-                if (User::$loginStatus) {
-                    echo 1;
-
-                } else {
-                    echo 2;
-                }
-                var_dump(User::$loginStatus);
 
                 include ADM . 'login.php';
                 exit();
@@ -55,7 +50,7 @@ class Admin
             if (file_exists(ADM . $_GET['page'])) {
                 if (explode('/', $_GET['page'])[0] == 'view') {
                     include_once ADM . htmlentities($_GET['page']);
-                }else{
+                } else {
                     FrameWork::Error(404);
                 }
             } else {
@@ -65,4 +60,5 @@ class Admin
             echo 1;
         }
     }
+
 }

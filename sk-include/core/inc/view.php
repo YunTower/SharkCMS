@@ -17,10 +17,10 @@ use FrameWork\Main as FrameWork;
 # --------------------------------## 主题组件 ##--------------------------------#
 
 // 主题名称
-define('vName',Db::table('sk_setting')->where('name', "theme-name")->first()->value);
+define('vName', Db::table('sk_setting')->where('name', "theme-name")->first()->value);
 
 // 当前主题路径
-define('vPath',CON . 'theme/' . vName . '/');
+define('vPath', CON . 'theme/' . vName . '/');
 
 class View
 {
@@ -40,7 +40,7 @@ class View
 
 //    public static $/
 
-    public function __construct()
+    public static function init()
     {
 
 
@@ -52,17 +52,19 @@ class View
 
         // 生成路径
         foreach ($dir as $d) {
-            $url = CON . 'theme/' . $d;
-            $url = array($d => $url);
+            $_dir = $url = CON . 'theme/' . $d;
+            $url = FrameWork::getDomain() . '/sk-content/theme/' . $d . '/';
+            $url = array($d => ['url' => $url, 'dir' => $_dir]);
             self::$vTheme = self::$vTheme + $url;
         }
 
         // 读取配置
         foreach (self::$vTheme as $k => $v) {
-            if (is_dir($v)) {
-                $c = $v . '/theme.php';
+            if (is_dir($v['dir'])) {
+                $c = $v['dir'] . '/theme.php';
                 if (file_exists($c)) {
-                    $b = include_once $v . '/theme.php';
+                    $b = include_once $v['dir'] . '/theme.php';
+                    $b = $b + ['dir' => $v['dir'], 'url' => $v['url']];
                     self::$vConfig = self::$vConfig + array($k => $b);
                 }
             }
@@ -106,7 +108,7 @@ class View
 
     public static function static($file)
     {
-        echo FrameWork::getDomain() . '/sk-content/theme/' .vName . '/' . $file;
+        echo FrameWork::getDomain() . '/sk-content/theme/' . vName . '/' . $file;
     }
 
     // 文件加载
@@ -143,7 +145,7 @@ class View
     public static function get_footer()
     {
         include_once INC . 'view/theme/footer.php';
-        include_once vPath. 'footer.php';
+        include_once vPath . 'footer.php';
     }
 
     // 查询主题设置
@@ -192,6 +194,10 @@ class View
         return array_reverse(self::$_Comment);
     }
 
+    public static function getMenu()
+    {
+        return toArray(DB::table('sk_menu')->get());
+    }
 
     /**
      * 数据库分页
@@ -217,7 +223,7 @@ class View
 
     public static function getRunTime()
     {
-        $sitestart = strtotime(self::$_App['app']['Time']);
+        $sitestart = strtotime(FrameWork::$_App['app']['Time']);
         $sitenow = time();
         $sitetime = $sitenow - $sitestart;
         $sitedays = (int)($sitetime / 86400);

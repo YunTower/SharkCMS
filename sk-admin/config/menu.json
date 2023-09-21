@@ -73,7 +73,7 @@
         "icon": "layui-icon layui-icon-face-smile",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/result/success.html"
+        "href": "/admin/view?page=view/style/menu.php"
       },
       {
         "id": 302,
@@ -81,7 +81,7 @@
         "icon": "layui-icon layui-icon-face-smile",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/result/success.html"
+        "href": "/admin/view?page=view/style/page.php"
       },
       {
         "id": 303,
@@ -89,7 +89,7 @@
         "icon": "layui-icon layui-icon-face-cry",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/result/error.html"
+        "href": "/admin/view?page=view/style/theme.php"
       }
     ]
   },

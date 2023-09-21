@@ -1,3 +1,6 @@
+<?php
+use FrameWork\Main as FrameWork;
+?>
 <!DOCTYPE html>
 <html>
 
@@ -18,7 +21,7 @@
     <form class="layui-form" action="">
         <div class="layui-row layui-col-space10">
             <div class="layui-col-md12">
-                <div class="layui-card">
+                <div class="layui-card" style="height: 100vh">
                     <div class="layui-card-body">
                         <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
                             <ul class="layui-tab-title">

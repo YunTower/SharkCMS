@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
+use FrameWork\Main as FrameWork;
+use FrameWork\User\User;
+use FrameWork\View\View;
+use FrameWork\Http\Http;
 
 class Api extends FrameWork
 {
@@ -9,6 +13,7 @@ class Api extends FrameWork
     private $eDate = array();
     private $type;
     private $SettingArr = [];
+    private $theme_array = [];
 
     function __construct()
     {
@@ -94,7 +99,8 @@ class Api extends FrameWork
                             // 生成Token
                             User::CreateToken($user['uid']);
                             // 返回成功信息
-                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group'],User::$loginStatus])));
+                            User::$loginStatus = true;
+                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group'], User::$loginStatus])));
                             // } else {
                             //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
                             // }
@@ -279,6 +285,19 @@ class Api extends FrameWork
         }
     }
 
+    public function getTheme()
+    {
+
+        $data = array_values(View::$vConfig);
+
+        foreach ($data as $_data) {
+            $_data = array_values($_data);
+             $this->theme_array[] =['id' => $_data[0]['Name'], 'image' => $_data[3] . 'cover.png', 'title' => $_data[0]['Name'], 'remark' => $_data[0]['Description'], 'time' => $_data[0]['Time']];
+        }
+
+        echo json_encode(['code' => 0, 'msg' => '获取成功', 'count' => count($data), 'data' => $this->theme_array]);
+    }
+
     public function SaveSetting()
     {
 
@@ -364,6 +383,6 @@ class Api extends FrameWork
 
     public function getNews()
     {
-        echo json_encode(self::$_http->setTimeout(5)->post('getNews', self::$_App, 'json'));
+        echo json_encode(Http::url('getNews')->setTimeout(5)->post(self::$_App, 'json'));
     }
 }

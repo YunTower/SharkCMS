@@ -36,9 +36,7 @@ layui.define(['table', 'laypage','jquery', 'element'], function(exports) {
 			, dataName: 'data' //规定数据列表的字段名称，默认：data
 		},
 		clickItem: function(data){},
-		done: function () {
-
-		}
+		done: function (data ) {}
 	};
 	
 	var card = function(opt) {
@@ -135,7 +133,7 @@ layui.define(['table', 'laypage','jquery', 'element'], function(exports) {
 				html += "<div id='cardpage'></div>";
 			}
 			else {
-				html = "<p>没有数据</p>";
+				html = "<p>你还没有安装主题（提示：删除所有主题可能会导致系统出错）</p>";
 			}
 			$(option.elem).html(html);
 			if (option.page) {
