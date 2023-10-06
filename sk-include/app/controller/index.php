@@ -22,11 +22,9 @@ class index
         }
 
         // 设置标题
-        if ($pid == 1) {
-            View::$sTitle = "首页";
-        } else {
-            View::$sTitle = "第{$pid}页";
-        }
+        if ($pid != 1) {
+            FrameWork::$getSetting['Site-Title']="第{$pid}页";
+        } 
 
         // 404
         if (!is_numeric($pid)) {

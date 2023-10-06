@@ -42,6 +42,7 @@ Github：https://github.com/YunTower/SharkCMS
 - [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
 - [Axios.js（MIT License）](https://github.com/axios/axios)
 - [illuminate/database（MIT License）](https://github.com/illuminate/database)
+- [Requests]
 - 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>

@@ -99,7 +99,7 @@
     "icon": "icon pear-icon pear-icon-modular",
     "type": 1,
     "openType": "_iframe",
-    "href": ""
+    "href": "/admin/view?page=view/plugin.php"
   },
   {
     "id": "system",

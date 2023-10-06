@@ -26,7 +26,7 @@ class User
                     if (count($info) == 1) {
                         User::$loginStatus = true;
                         User::$userInfo = $info[0];
-                        User::$userRole = $info[0]['group'];
+                        User::$userRole = $info[0]['role'];
                     } else {
                         FrameWork::Error(0, ['系统错误', '账号数据异常']);
                     }
@@ -68,7 +68,7 @@ class User
         }
     }
 
-    public function encode_pwd($pwd, $t)
+    public static function encode_pwd($pwd, $t)
     {
         return md5(md5($pwd) . $t);
     }

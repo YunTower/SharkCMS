@@ -4,6 +4,8 @@ namespace FrameWork\View;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use FrameWork\Main as FrameWork;
+use FrameWork\Hook\Hook;
+use FrameWork\User\User;
 
 /**
  * --------------------------------------------------------------------------------
@@ -25,20 +27,16 @@ define('vPath', CON . 'theme/' . vName . '/');
 class View
 {
 
-    public static $sTitle;
-    public static $subTitle = 'Demo';
-    public static $sSubtitle;
-    public static $sKeyword;
 
     public static $vKey;
     public static $vTheme = array();
     public static $vConfig = array();
-
+    public static $vTitle;
     public static $vArticle;
     public static $vComment;
     public static $_Comment = [];
 
-//    public static $/
+    //    public static $/
 
     public static function init()
     {
@@ -61,9 +59,9 @@ class View
         // 读取配置
         foreach (self::$vTheme as $k => $v) {
             if (is_dir($v['dir'])) {
-                $c = $v['dir'] . '/theme.php';
+                $c = $v['dir'] . '/theme.config.php';
                 if (file_exists($c)) {
-                    $b = include_once $v['dir'] . '/theme.php';
+                    $b = include_once $v['dir'] . '/theme.config.php';
                     $b = $b + ['dir' => $v['dir'], 'url' => $v['url']];
                     self::$vConfig = self::$vConfig + array($k => $b);
                 }
@@ -71,6 +69,7 @@ class View
         }
         self::$vArticle = toArray(Db::table('sk_content')->get());
         self::$vComment = toArray(Db::table('sk_comment')->get());
+
     }
 
     public static function allTheme()
@@ -121,7 +120,6 @@ class View
     public static function get_header()
     {
         include_once INC . 'view/theme/header.php';
-        include_once vPath . 'header.php';
     }
 
     // 加载边栏
@@ -131,21 +129,24 @@ class View
         if (file_exists($f)) {
             include_once $f;
         } else {
-            self::Error(404, '主题文件【sidebar.php】不存在');
+            FrameWork::Error(404, '主题文件【sidebar.php】不存在');
         }
     }
 
     // 加载评论功能
     public static function get_comment()
     {
-        include_once INC . 'view/theme/comment.php';
+        if (!FrameWork::$getSetting['Comment-PostLoginComments']) {
+            Hook::add('theme-comment');
+        } else {
+            echo '<div class="sk-comment-list sk-comment-null"><ul><span class="sk-comment-null">站长已开启登陆后评论，<a href="/admin/login?from=article">请先登陆</a></span></ul></div>';
+        }
     }
 
     // 加载底部文件
     public static function get_footer()
     {
         include_once INC . 'view/theme/footer.php';
-        include_once vPath . 'footer.php';
     }
 
     // 查询主题设置
@@ -186,7 +187,7 @@ class View
         $comment = toArray(Db::table('sk_comment')->where('cid', "$cid")->where('type', "$type")->get());
         foreach ($comment as $d) {
             $uid = $d['uid'];
-            $info = Db::table('sk_user')->where("uid = $uid")->select()[0];
+            $info = toArray(Db::table('sk_user')->where('uid', $uid)->get())[0];
             $arr = $d + ['user' => ['uid' => $info['uid'], 'name' => $info['name'], 'avatar' => $info['avatar']]];
             self::$_Comment[] = $arr;
         }
@@ -230,11 +231,11 @@ class View
         return $sitedays;
     }
 
-//    public static function getStatus(){
-//        return [
-//            'count'=>[
-//                'article'=>
-//            ]
-//        ];
-//    }
+    //    public static function getStatus(){
+    //        return [
+    //            'count'=>[
+    //                'article'=>
+    //            ]
+    //        ];
+    //    }
 }

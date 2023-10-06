@@ -64,7 +64,7 @@ use FrameWork\Main as FrameWork;
                                         <label class="layui-form-label">自定义页头:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md6">
-                                                <textarea name="Site-HeaderCode" placeholder="将应用于所有页面【/head】标签前" value="<?= FrameWork::$getSetting['Site-HeaderCode'] ?>" class="layui-textarea"></textarea>
+                                                <textarea name="Site-HeaderCode" placeholder="将应用于所有页面【/head】标签前" class="layui-textarea"><?= FrameWork::$getSetting['Site-HeaderCode'] ?></textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -72,7 +72,7 @@ use FrameWork\Main as FrameWork;
                                         <label class="layui-form-label">自定义页脚:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md6">
-                                                <textarea name="Site-FooterCode" placeholder="将应用于所有页面【/body】标签前" value="<?= FrameWork::$getSetting['Site-FooterCode'] ?>" class="layui-textarea"></textarea>
+                                                <textarea name="Site-FooterCode" placeholder="将应用于所有页面【/body】标签前" class="layui-textarea"><?= FrameWork::$getSetting['Site-FooterCode'] ?></textarea>
                                             </div>
                                         </div>
                                     </div>

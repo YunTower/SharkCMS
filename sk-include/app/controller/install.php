@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
+use WpOrg\Requests\Requests;
 use FrameWork\Main as FrameWork;
+use FrameWork\User\User;
 use FrameWork\Http\Http;
+
 class Install
 {
     private $_step;
@@ -12,6 +15,7 @@ class Install
         if (FrameWork::$_App['app']['Install'] && FrameWork::getData() != 3) {
             FrameWork::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
         }
+        include_once INC . 'core/inc/Http.php';
     }
 
     public function index()
@@ -76,19 +80,19 @@ class Install
                     $capsule->bootEloquent();
                     // 加载依赖
                     include_once INC . 'core/inc/User.php';
-                    include_once INC . 'core/inc/Http.php';
 
                     // 初始化类
-                    Http::$_user = new User();
-                    Http::$_http = new Http();
+                    User::init();
 
-                    $arr = Http::$_http->post('install', FrameWork::$_App, 'json');
+                    $headers = array('Content-Type' => 'application/json');
+                    $arr = Requests::post(FrameWork::$_App['api']['Host'] . 'install', $headers, json_encode(FrameWork::$_App));
+                    $arr = json_decode($arr->body, true);
                     if ($arr['code'] == 200) {
                         if (FrameWork::importSQL(INC . 'config/db.sql')) {
                             // 写入初始数据
                             $t = time();
-                            $pwd = self::$_user->encode_pwd($data['ad_pwd'], $t);
-                            DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'group' => 'admin', 'created' => $t));
+                            $pwd = User::encode_pwd($data['ad_pwd'], $t);
+                            DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'role' => 'admin', 'created' => $t));
                             DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
@@ -113,11 +117,11 @@ class Install
                             exit(json_encode(['code' => 200, 'msg' => '数据库安装出错']));
                         }
                         // 写入信息
-                        self::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
+                        FrameWork::setConfig(['app' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
                         User::CreateToken(1);
                         exit(json_encode(array('code' => 200, 'msg' => '安装成功', 'error' => null)));
                     } else {
-                        exit(json_encode(['code'=>500,'msg'=>'云端连接出错：'.$arr['msg']]));
+                        exit(json_encode(['code' => 500, 'msg' => '云端连接出错：' . $arr['msg']]));
                     }
                     break;
 

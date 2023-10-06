@@ -5,7 +5,9 @@ namespace FrameWork;
 use Illuminate\Database\Capsule\Manager as DB;
 use ReflectionClass;
 use FrameWork\User\User;
+use FrameWork\Hook\Hook;
 use FrameWork\View\View;
+use FrameWork\Plugin\Plugin;
 
 class Main
 {
@@ -27,7 +29,7 @@ class Main
         //加载配置文件
         $config_file = INC . 'config/app.php';
         if (file_exists($config_file)) {
-            self::$_App = include $config_file;
+            self::$_App = include_once $config_file;
         } else {
             exit('没有找到配置文件！');
         }
@@ -65,11 +67,15 @@ class Main
             include_once INC . 'core/inc/View.php';
             include_once INC . 'core/inc/Plugin.php';
             include_once INC . 'core/inc/Cloud.php';
+            include_once INC . 'core/inc/Hook.php';
 
-            // 初始化试图模块
-            View::init();
             // 初始化用户模块
             User::init();
+            // 初始化试图模块
+            View::init();
+            // 初始化插件模块
+            Plugin::init();
+
             // 加载后台设置
             $data = (DB::table('sk_setting')->get());
             $data = json_decode(json_encode($data), true);
@@ -206,6 +212,11 @@ class Main
         );
     }
 
+    public static function return_json(array $arr)
+    {
+        exit(json_encode($arr));
+    }
+
     // 配置修改
     public
     static function setConfig(array $new)
@@ -244,7 +255,7 @@ class Main
         return $ip;
     }
 
-    public function importSQL($file)
+    public static function importSQL($file)
     {
         $mysqli = mysqli_connect(self::$_App['db']['Host'], self::$_App['db']['User'], self::$_App['db']['Pwd'], self::$_App['db']['Name']);
         // 检测连接
@@ -268,7 +279,6 @@ class Main
 
         return true;
     }
-
 
 
     // 错误处理

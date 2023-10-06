@@ -8,8 +8,8 @@
     'Version' => '1.0.0',
     'Mode' => 'online',
     'LogDir' => '/sk-content/temp/log/',
-    'Install' => false,
-    'Time' => '',
+    'Install' => true,
+    'Time' => '2023-10-02 16:30:46',
   ),
   'db' => 
   array (
@@ -23,7 +23,7 @@
   array (
     'Host' => 'http://127.0.0.1:8787/api/',
     'Version' => 'v1',
-    'Key' => '',
-    'Token' => '',
+    'Key' => 'YmNkZWprbHB2d0JDRUZISU1PUVZYWjAyNThAJCYqLSs=',
+    'Token' => '1cd481057393e132f8ecb234989949d3',
   ),
 );

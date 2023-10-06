@@ -193,7 +193,7 @@ CREATE TABLE `sk_user`
     `pwd`       varchar(32)  NOT NULL,
     `mail`      varchar(150) NOT NULL,
     `avatar`    text,
-    `group`     varchar(64)  NOT NULL,
+    `role`     varchar(64)  NOT NULL,
     `ban`       varchar(32)  DEFAULT NULL,
     `logintime` varchar(64)  DEFAULT NULL,
     `token`     varchar(150) DEFAULT NULL,

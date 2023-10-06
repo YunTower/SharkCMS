@@ -1,7 +1,10 @@
 <?php
+
+use FrameWork\Main as FrameWork;
 use FrameWork\View\View;
+
 $a = View::$vArticle;
-View::$sTitle=$a['title'] ;
+View::$vTitle = $a['title'] . ' - ' . FrameWork::$getSetting['Site-Title'];
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +60,7 @@ View::$sTitle=$a['title'] ;
 
         </div>
     </div>
-    
+
     <?php View::get_footer() ?>
 </body>
 

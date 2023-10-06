@@ -14,14 +14,11 @@ class Http
     private $httpParams = null;
 
 
-    public function __construct()
-    {
-        self::$host = FrameWork::$_App['api']['Host'];
-        self::$ch = curl_init();
-    }
+
 
     public static function url($url)
     {
+        self::$ch = curl_init();
         return self::$url = FrameWork::$_App['api']['Host'] . $url;
     }
 

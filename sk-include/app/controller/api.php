@@ -5,6 +5,7 @@ use FrameWork\Main as FrameWork;
 use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Http\Http;
+use FrameWork\Plugin\Plugin;
 
 class Api extends FrameWork
 {
@@ -95,12 +96,12 @@ class Api extends FrameWork
                         // 密码错误
                         if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
                             // 权限组 != admin
-                            // if ($user['group'] == 'admin') {
+                            // if ($user['role'] == 'admin') {
                             // 生成Token
                             User::CreateToken($user['uid']);
                             // 返回成功信息
                             User::$loginStatus = true;
-                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['group' => $user['group'], User::$loginStatus])));
+                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['role' => $user['role'], User::$loginStatus])));
                             // } else {
                             //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
                             // }
@@ -196,11 +197,11 @@ class Api extends FrameWork
         switch ($this->action) {
             case 'post':
                 $arr = ['cid' => $data['cid'], 'type' => $data['type'], 'content' => $data['content'], 'uid' => User::$userInfo['uid'], 'status' => null, 'parent' => 0];
-                $db = self::$_db->table('sk_comment')->insert($arr);
+                $db = DB::table('sk_comment')->insert($arr);
                 if ($db) {
                     exit(json_encode(['code' => 200, 'msg' => '评论成功', 'data' => ['status' => true, 'login' => true]]));
                 } else {
-                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true, 'error' => self::$_db->error()['error']]]));
+                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true]]));
                 }
                 break;
             case'update':
@@ -292,10 +293,36 @@ class Api extends FrameWork
 
         foreach ($data as $_data) {
             $_data = array_values($_data);
-             $this->theme_array[] =['id' => $_data[0]['Name'], 'image' => $_data[3] . 'cover.png', 'title' => $_data[0]['Name'], 'remark' => $_data[0]['Description'], 'time' => $_data[0]['Time']];
+            $this->theme_array[] = ['id' => $_data[0]['Name'], 'image' => $_data[3] . 'cover.png', 'title' => $_data[0]['Name'], 'remark' => $_data[0]['Description'], 'time' => $_data[0]['Time']];
         }
 
         echo json_encode(['code' => 0, 'msg' => '获取成功', 'count' => count($data), 'data' => $this->theme_array]);
+    }
+
+    public function plugin()
+    {
+        if (isset($_POST['action']) && isset($_POST['name'])) {
+            $action = $_POST['action'];
+            $name = $_POST['name'];
+            if ($action == 'active') {
+                if (Plugin::setConfig($name, ['use' => true])) {
+                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                }
+            } else if ($action == 'interdict') {
+                if (Plugin::setConfig($name, ['use' => false])) {
+                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                }
+            } else if ($action == 'del') {
+                if (Plugin::del_plugin(Plugin::$plugin_config[$name]['path'])) {
+                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                }
+            } else {
+                FrameWork::return_json(['code' => 400, 'msg' => '操作不存在/操作失败']);
+            }
+        } else {
+            FrameWork::return_json(['code' => 403, 'msg' => '参数缺失']);
+        }
+
     }
 
     public function SaveSetting()

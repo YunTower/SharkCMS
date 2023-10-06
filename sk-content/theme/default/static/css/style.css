@@ -53,6 +53,10 @@ a {
     text-decoration: inherit
 }
 
+a[href]{
+    color: #2d8cf0;
+}
+
 b,
 strong {
     font-weight: bolder
@@ -2070,6 +2074,14 @@ svg {
     background-color: #fff;
     height: 60px;
     border-bottom: 1px solid #f2f2f2
+}
+
+.nav a{
+    color: #000000b3;
+}
+
+.nav a:hover{
+    color: #2d8cf0;
 }
 
 .page-top .nav .nav-item.current {
