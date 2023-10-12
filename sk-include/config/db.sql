@@ -73,7 +73,6 @@ CREATE TABLE `sk_content`
     `category`     varchar(20)          DEFAULT NULL,
     `tag`          varchar(20)          DEFAULT NULL,
     `status`       varchar(10)          DEFAULT NULL,
-    `pwd`          varchar(32)          DEFAULT NULL,
     `uid`          varchar(10) NOT NULL,
     `uname`        varchar(32) NOT NULL,
     `allowComment` char(1)              DEFAULT NULL,
@@ -117,7 +116,6 @@ CREATE TABLE `sk_page`
     `title`        varchar(150) NOT NULL,
     `content`      text         NOT NULL,
     `status`       varchar(64)           DEFAULT NULL,
-    `pwd`          varchar(32)           DEFAULT NULL,
     `allowComment` char(1)      NOT NULL,
     `created`      timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -193,7 +191,7 @@ CREATE TABLE `sk_user`
     `pwd`       varchar(32)  NOT NULL,
     `mail`      varchar(150) NOT NULL,
     `avatar`    text,
-    `role`     varchar(64)  NOT NULL,
+    `role`      varchar(64)  NOT NULL,
     `ban`       varchar(32)  DEFAULT NULL,
     `logintime` varchar(64)  DEFAULT NULL,
     `token`     varchar(150) DEFAULT NULL,

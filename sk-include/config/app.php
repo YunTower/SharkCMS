@@ -9,7 +9,7 @@
     'Mode' => 'online',
     'LogDir' => '/sk-content/temp/log/',
     'Install' => true,
-    'Time' => '2023-10-02 16:30:46',
+    'Time' => '2023-10-12 21:52:17',
   ),
   'db' => 
   array (
@@ -21,9 +21,9 @@
   ),
   'api' => 
   array (
-    'Host' => 'http://127.0.0.1:8787/api/',
+    'Host' => 'https://api.sharkcms.cn/api/',
     'Version' => 'v1',
-    'Key' => 'YmNkZWprbHB2d0JDRUZISU1PUVZYWjAyNThAJCYqLSs=',
-    'Token' => '1cd481057393e132f8ecb234989949d3',
+    'Key' => 'YWNkZmprbG9xcnRBREZISU9SU1VWV1gyNjghQCUmXz0=',
+    'Token' => 'cbb9dae2b4a5c4a82304c735bd5bb754',
   ),
 );

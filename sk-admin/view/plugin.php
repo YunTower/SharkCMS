@@ -16,6 +16,15 @@ use FrameWork\View\View;
 </head>
 
 <body class="pear-container">
+    <?php
+    if (Plugin::$plugin_error_msg) {
+        echo '<div class="layui-card"><div class="layui-card-body">';
+        foreach (Plugin::$plugin_error_msg as $msg) {
+            echo "<blockquote class='layui-elem-quote'>{$msg}</blockquote>";
+        }
+        echo '</div></div>';
+    }
+    ?>
     <div class="layui-card">
         <div class="layui-card-body">
             <form class="layui-form layui-form-pane">

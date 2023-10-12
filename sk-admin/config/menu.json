@@ -26,21 +26,21 @@
         "title": "标签",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/document/button.html"
+        "href": "/admin/view?page=view/error/404.html"
       },
       {
         "id": 203,
         "title": "分类",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/document/button.html"
+        "href": "/admin/view?page=view/error/404.html"
       },
       {
         "id": 204,
         "title": "资源",
         "type": 1,
         "openType": "_iframe",
-        "href": "/sk-admin/view/document/button.html"
+        "href": "/admin/view?page=view/error/404.html"
       }
     ]
   },
@@ -50,7 +50,7 @@
     "icon": "icon pear-icon pear-icon-user",
     "type": 1,
     "openType": "_iframe",
-    "href": "/sk-admin/view/console/console.php"
+    "href": "/admin/view?page=view/error/404.html"
   },
   {
     "id": "comment",
@@ -58,7 +58,7 @@
     "icon": "icon pear-icon pear-icon-comment",
     "type": 1,
     "openType": "_iframe",
-    "href": "/sk-admin/view/console/console.php"
+    "href": "/admin/view?page=view/error/404.html"
   },
   {
     "id": "result",

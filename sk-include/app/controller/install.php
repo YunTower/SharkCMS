@@ -4,7 +4,6 @@ use Illuminate\Database\Capsule\Manager as DB;
 use WpOrg\Requests\Requests;
 use FrameWork\Main as FrameWork;
 use FrameWork\User\User;
-use FrameWork\Http\Http;
 
 class Install
 {
@@ -15,7 +14,6 @@ class Install
         if (FrameWork::$_App['app']['Install'] && FrameWork::getData() != 3) {
             FrameWork::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
         }
-        include_once INC . 'core/inc/Http.php';
     }
 
     public function index()
@@ -51,7 +49,7 @@ class Install
             $data = json_decode($data, true);
 
             switch (FrameWork::getData()) {
-                // 数据库连接
+                    // 数据库连接
                 case 'connect';
                     $conn = new mysqli($data['db_host'], $data['db_user'], $data['db_pwd'], $data['db_name']);
                     if ($conn->connect_error) {
@@ -100,7 +98,7 @@ class Install
                                 [
                                     ['name' => 'Site-Title', 'value' => 'SharkCMS'],
                                     ['name' => 'Site-Subtitle', 'value' => '中国人自己的开源内容管理系统'],
-                                    ['name' => 'Site-Logo', 'value' => ''],
+                                    ['name' => 'Site-Logo', 'value' => '/sk-include/static/img/logo.png'],
                                     ['name' => 'Site-HeaderCode', 'value' => ''],
                                     ['name' => 'Site-FooterCode', 'value' => ''],
                                     ['name' => 'Article-PageSize', 'value' => 15],

@@ -9,6 +9,7 @@ class Plugin
 
     public static $plugin_list = [];
     public static $plugin_config = [];
+    public static $plugin_error_msg = [];
 
     public static function init()
     {
@@ -27,6 +28,7 @@ class Plugin
         }
 
         // 读取配置
+        self::$plugin_config = [];
         foreach (self::$plugin_list as $k => $v) {
             if (is_dir($v['dir'])) {
                 $c = $v['dir'] . '/plugin.config.php';
@@ -35,7 +37,7 @@ class Plugin
                     $b = $b + ['dir' => $k, 'path' => $v['dir'], 'url' => $v['url']];
                     self::$plugin_config = self::$plugin_config + array($b['app']['Name'] => $b);
                 } else {
-                    echo "文件【{$c}】不存在";
+                    self::$plugin_error_msg = ["位于【{$v['dir']}】内的插件由于缺少配置文件，因此无法加载"];
                 }
             }
         }

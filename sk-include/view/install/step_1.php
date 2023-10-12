@@ -6,6 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
+	<link rel="icon" href="/sk-include/static/img/logo.png">
 	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
 	<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />

@@ -62,11 +62,9 @@ class Main
             // 加载模块文件
             include_once INC . 'core/inc/Function.php';
             include_once INC . 'core/inc/User.php';
-            include_once INC . 'core/inc/Http.php';
             include_once INC . 'core/inc/Captcha.php';
             include_once INC . 'core/inc/View.php';
             include_once INC . 'core/inc/Plugin.php';
-            include_once INC . 'core/inc/Cloud.php';
             include_once INC . 'core/inc/Hook.php';
 
             // 初始化用户模块
@@ -307,5 +305,15 @@ class Main
         fwrite($file, $log);
         fclose($file);
         exit();
+    }
+}
+
+// 页面类
+class Page
+{
+
+    public static function getPageList()
+    {
+        return toArray(DB::table('sk_page')->get());
     }
 }

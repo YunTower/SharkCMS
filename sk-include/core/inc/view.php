@@ -2,10 +2,10 @@
 
 namespace FrameWork\View;
 
+use FrameWork\Plugin\Plugin;
 use Illuminate\Database\Capsule\Manager as DB;
 use FrameWork\Main as FrameWork;
 use FrameWork\Hook\Hook;
-use FrameWork\User\User;
 
 /**
  * --------------------------------------------------------------------------------
@@ -84,8 +84,7 @@ class View
 
     public static function view($page)
     {
-        echo '<!-- Powered by SharkCMS v' . FrameWork::$_App['app']['Version'] . ' -->' . PHP_EOL;
-
+        echo '<!-- Powered by SharkCMS https://sharkcms.cn/ -->' . PHP_EOL;
         // 主题自定义函数
         include_once vPath . 'inc/function.php';
         // 主题自定义路由
@@ -94,16 +93,6 @@ class View
         include_once vPath . 'view/' . $page . '.php';
     }
 
-    // pjax
-    public static function pjax($file)
-    {
-        $file = ADM . $file;
-        if (file_exists($file)) {
-            echo file_get_contents($file);
-        } else {
-            self::Error('404', '糟了糟了，页面没找到啊<br>可能还在开发');
-        }
-    }
 
     public static function static($file)
     {
@@ -136,10 +125,14 @@ class View
     // 加载评论功能
     public static function get_comment()
     {
-        if (!FrameWork::$getSetting['Comment-PostLoginComments']) {
-            Hook::add('theme-comment');
-        } else {
-            echo '<div class="sk-comment-list sk-comment-null"><ul><span class="sk-comment-null">站长已开启登陆后评论，<a href="/admin/login?from=article">请先登陆</a></span></ul></div>';
+        // 如果已安装评论插件且开启评论插件
+        if (isset(Plugin::$plugin_config['SharkCMS Comment Plugin']) && Plugin::$plugin_config['SharkCMS Comment Plugin']['use']) {
+            // 如果未开启登陆后评论
+            if (!FrameWork::$getSetting['Comment-PostLoginComments']) {
+                Hook::add('theme-comment');
+            } else {
+                echo '<div class="sk-comment-list sk-comment-null"><ul><span class="sk-comment-null">站长已开启登陆后评论，<a href="/admin/login?from=article">请先登陆</a></span></ul></div>';
+            }
         }
     }
 

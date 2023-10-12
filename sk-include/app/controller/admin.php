@@ -51,10 +51,10 @@ class Admin
                 if (explode('/', $_GET['page'])[0] == 'view') {
                     include_once ADM . htmlentities($_GET['page']);
                 } else {
-                    FrameWork::Error(404);
+                    include_once ADM .'view/error/404.php';
                 }
             } else {
-                FrameWork::Error(404);
+                include_once ADM .'view/error/404.html';
             }
         } else {
             echo 1;

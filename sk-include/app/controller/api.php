@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
+use WpOrg\Requests\Requests;
 use FrameWork\Main as FrameWork;
 use FrameWork\User\User;
 use FrameWork\View\View;
-use FrameWork\Http\Http;
 use FrameWork\Plugin\Plugin;
 
 class Api extends FrameWork
@@ -204,7 +204,7 @@ class Api extends FrameWork
                     exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true]]));
                 }
                 break;
-            case'update':
+            case 'update':
                 break;
             case 'get':
                 break;
@@ -322,7 +322,6 @@ class Api extends FrameWork
         } else {
             FrameWork::return_json(['code' => 403, 'msg' => '参数缺失']);
         }
-
     }
 
     public function SaveSetting()
@@ -353,7 +352,6 @@ class Api extends FrameWork
             } catch (Exception $e) {
                 exit(json_encode(['code' => 500, 'msg' => '保存设置时发生错误：' . $e->getMessage()]));
             }
-
         }
     }
 
@@ -410,6 +408,8 @@ class Api extends FrameWork
 
     public function getNews()
     {
-        echo json_encode(Http::url('getNews')->setTimeout(5)->post(self::$_App, 'json'));
+        $headers = array('Content-Type' => 'application/json');
+        $arr = Requests::post(FrameWork::$_App['api']['Host'] . 'getNews', $headers, json_encode(FrameWork::$_App));
+        echo json_encode(json_decode($arr->body, true));
     }
 }

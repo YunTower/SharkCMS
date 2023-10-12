@@ -21,7 +21,6 @@ use FrameWork\Hook\Hook;
 <meta name="renderer" content="webkit" />
 <meta name="keywords" content="<?= FrameWork::$getSetting['Seo-Keyword'] ?>" />
 <meta name="description" content="<?= FrameWork::$getSetting['Seo-Description'] ?>" />
-<link rel="alternate" type="application/rss+xml" title="atom 1.0" href="/rss.xml" />
 <?php include_once vPath . 'header.php'; ?>
 <?= Hook::add('theme-header', ''); ?>
 <?= FrameWork::$getSetting['Site-HeaderCode'] ?>
