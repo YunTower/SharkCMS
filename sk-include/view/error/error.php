@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>系统错误</title>
+    <link rel="icon" href="/sk-include/static/img/logo.png">
     <link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
     <style>
         body {
@@ -28,4 +29,10 @@
 
 
 </html>
-<?php exit(); ?>
+<?php
+use FrameWork\FrameWork;
+if (FrameWork::getController()=='api'){
+    ob_clean();
+    exit(json_encode(['code'=>500,'msg'=>$msg]));
+}
+exit(); ?>

@@ -1,9 +1,18 @@
 <?php
+/**
+ * --------------------------------------------------------------------------------
+ * @ Author：fish（https://gitee.com/fish_nb）
+ * @ Gitee：https://gitee.com/YunTower/SharkCMS
+ * @ Link：https://sharkcms.cn
+ * @ License：https://gitee.com/YunTower/SharkCMS/blob/master/LICENSE
+ * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
+ * --------------------------------------------------------------------------------
+ */
 
 namespace FrameWork\User;
 
 use Illuminate\Database\Capsule\Manager as DB;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 
 class User
 {
@@ -17,10 +26,9 @@ class User
     public static function init()
     {
         if (FrameWork::inStatus()) {
-            @$token = $_SESSION['token'];
             // 验证登陆状态
-            if (isset($token)) {
-                $info = toArray(DB::table('sk_user')->where('token', "$token")->get());
+            if (isset($_SESSION['token'])) {
+                $info = toArray(DB::table('sk_user')->where('token', $_SESSION['token'])->get());
                 // 验证token真实性
                 if (isset($info)) {
                     if (count($info) == 1) {

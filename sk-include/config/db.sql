@@ -112,12 +112,12 @@ VALUES (1, '关于', '1', '/page/about', null, null, '2023-07-07 09:00:32');
 CREATE TABLE `sk_page`
 (
     `pid`          int(6) UNSIGNED NOT NULL,
-    `name`         varchar(50)  NOT NULL,
-    `title`        varchar(150) NOT NULL,
-    `content`      text         NOT NULL,
-    `status`       varchar(64)           DEFAULT NULL,
-    `allowComment` char(1)      NOT NULL,
-    `created`      timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `name`         varchar(50) NOT NULL,
+    `title`        text(64) NOT NULL,
+    `content`      text                 DEFAULT NULL,
+    `status`       BOOLEAN              DEFAULT NULL,
+    `allowComment` BOOLEAN              DEFAULT NULL,
+    `created`      timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------

@@ -9,7 +9,8 @@
  * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
  * --------------------------------------------------------------------------------
  */
-use FrameWork\Main as FrameWork;
+
+use FrameWork\FrameWork;
 
 header('Content-Type: text/html; charset=utf-8');
 // 系统根目录
@@ -20,12 +21,12 @@ define('INC', ROOT . 'sk-include/');
 define('CON', ROOT . 'sk-content/');
 // 系统后台目录
 define('ADM', ROOT . 'sk-admin/');
+// 错误日志目录
+define('ERROR_LOG', CON . 'temp/log/error/');
 
 // PHP版本检查
-if (PHP_VERSION < '7.0') {
-    echo ("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于7.0</a> 的版本！<br>");
-} else if (PHP_VERSION > '8.1') {
-    echo ("版本检查：你的PHP版本过高，目前暂不支持8.x，使用过高的版本可能会出现语法不兼容的情况。<br>");
+if (PHP_VERSION < '8.0.2') {
+    exit ("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于8.0.2</a> 的版本！<br>");
 }
 
 // 读写权限检查
@@ -37,6 +38,9 @@ session_save_path(CON . 'temp/session');
 
 // 开启session缓存
 session_start();
+
+// 自动加载
+require_once INC . 'vendor/autoload.php';
 
 // 框架文件
 include_once INC . 'core/FrameWork.php';

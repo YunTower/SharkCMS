@@ -1,8 +1,6 @@
 <?php
 
-use FrameWork\Main as FrameWork;
 use FrameWork\Plugin\Plugin;
-use FrameWork\View\View;
 
 ?>
 

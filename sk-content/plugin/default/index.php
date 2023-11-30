@@ -10,12 +10,12 @@ class DefaultPlugin
 {
     function __construct()
     {
-        Hook::do('theme-comment', $this, 'hello');
+        Hook::do('admin-top-left', $this, 'hello');
     }
 
     function hello()
     {
-        echo 'Hello World';
+        echo '<li class="layui-nav-item"><a>Hello World</a></li>';
     }
 
 

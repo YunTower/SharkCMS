@@ -72,3 +72,18 @@ textarea::-webkit-input-placeholder {
   background-color: #F6F6F6;
 	font-weight: 700;
 }
+
+/* fish 2023/11/30 修复layui与pear输入组的样式冲突 */
+.layui-input-group input{
+	border-radius: unset;
+}
+
+.layui-input-group .layui-input-split-left{
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+
+.layui-input-group .layui-input-split-right{
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+}

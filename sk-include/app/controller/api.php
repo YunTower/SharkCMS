@@ -2,10 +2,11 @@
 
 use Illuminate\Database\Capsule\Manager as DB;
 use WpOrg\Requests\Requests;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
+use FrameWork\Captcha\Captcha;
 
 class Api extends FrameWork
 {
@@ -76,66 +77,7 @@ class Api extends FrameWork
         Captcha::get();
     }
 
-    // 登陆接口
-    function login()
-    {
-        if (!isset($this->data)) {
-            exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
-        }
-        $data = $this->data;
-        $user = toArray(Db::table('sk_user')->where('mail', $data['umail'])->get())[0];
-
-        // 没有验证码
-        if (isset($data['captcha'])) {
-            // 验证码错误
-            if ($data['captcha'] == @$_SESSION['captcha']) {
-                // 账号不存在
-                if ($user != null) {
-                    // 账号已封禁
-                    if ($user['ban'] == false) {
-                        // 密码错误
-                        if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
-                            // 权限组 != admin
-                            // if ($user['role'] == 'admin') {
-                            // 生成Token
-                            User::CreateToken($user['uid']);
-                            // 返回成功信息
-                            User::$loginStatus = true;
-                            exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['role' => $user['role'], User::$loginStatus])));
-                            // } else {
-                            //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
-                            // }
-                        } else {
-                            echo json_encode(array('code' => 500, 'msg' => '【密码】错误'));
-                        }
-                    } else {
-                        echo json_encode(array('code' => 500, 'msg' => '【账号】已封禁'));
-                    }
-                } else {
-                    echo json_encode(array('code' => 404, 'msg' => '【账号】不存在'));
-                }
-            } else {
-                echo json_encode(array('code' => 500, 'msg' => '【验证码】错误'));
-            }
-        } else {
-            echo json_encode(array('code' => 500, 'msg' => '请填写【验证码】'));
-        }
-        unset($_SESSION['captcha']);
-    }
-
-
-    function loginOut()
-    {
-        if (User::$loginStatus) {
-            if (User::LoginOut()) {
-                exit(json_encode(array('code' => 200, 'msg' => '操作成功')));
-            } else {
-                exit(json_encode(['code' => 500, 'msg' => '系统异常，操作失败']));
-            }
-        } else {
-            exit(json_encode(['code' => 403, 'msg' => '未登录']));
-        }
-    }
+  
 
     function user()
     {
@@ -220,13 +162,18 @@ class Api extends FrameWork
     {
         switch ($this->action) {
             case 'save':
-                $data = $this->data;
-                $info = User::$userInfo;
-                $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['post'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
-                if ($sql) {
-                    exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
-                } else {
-                    exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
+                $data =$_POST['data'];
+                if (is_array($data) && !empty($data['title']) && !empty($data['slug']) && !empty($data['content'])){
+
+                    $info = User::$userInfo;
+                    $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['content'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
+                    if ($sql) {
+                        exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
+                    } else {
+                        exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
+                    }
+                }else{
+
                 }
 
                 break;
@@ -236,6 +183,7 @@ class Api extends FrameWork
                 exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
                 break;
         }
+        return exit(json_encode($res));
     }
 
     // 文件上传

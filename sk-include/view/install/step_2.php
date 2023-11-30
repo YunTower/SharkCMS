@@ -93,8 +93,9 @@
 							} else {
 								load.stop()
 								loading.blockRemove(".card", 0);
-								layer.alert(response.data, {
-									'title': '安装错误'
+								layer.alert(response.data.msg, {
+									title: '安装错误',
+									icon: 2
 								});
 
 							}

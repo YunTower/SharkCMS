@@ -1,6 +1,6 @@
 <?php
 
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\Hook\Hook;
 
 ?>

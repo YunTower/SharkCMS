@@ -1,21 +1,21 @@
 <?php
+/**
+ * --------------------------------------------------------------------------------
+ * @ Author：fish（https://gitee.com/fish_nb）
+ * @ Gitee：https://gitee.com/YunTower/SharkCMS
+ * @ Link：https://sharkcms.cn
+ * @ License：https://gitee.com/YunTower/SharkCMS/blob/master/LICENSE
+ * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
+ * --------------------------------------------------------------------------------
+ */
 
 namespace FrameWork\View;
 
 use FrameWork\Plugin\Plugin;
 use Illuminate\Database\Capsule\Manager as DB;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\Hook\Hook;
 
-/**
- * --------------------------------------------------------------------------------
- * @ Author：fish（https://gitee.com/fish_nb）
- * @ Gitee：https://gitee.com/sharkcms/sharkcms
- * @ Link：https://sharkcms.cn
- * @ License：https://gitee.com/sharkcms/sharkcms/blob/master/LICENSE
- * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
- * --------------------------------------------------------------------------------
- */
 # --------------------------------## 主题组件 ##--------------------------------#
 
 // 主题名称

@@ -1,11 +1,3 @@
-<?php
-
-use FrameWork\Main as FrameWork;
-use FrameWork\View\View;
-
-?>
-
-
 <!DOCTYPE html>
 <html>
 <head>

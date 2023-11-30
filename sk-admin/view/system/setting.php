@@ -1,5 +1,5 @@
 <?php
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 ?>
 <!DOCTYPE html>
 <html>

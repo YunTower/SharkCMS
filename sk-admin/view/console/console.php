@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\View\View;
 
 ?>
@@ -230,7 +230,7 @@ use FrameWork\View\View;
 </div>
 <!--</div>-->
 <script src="/sk-include/static/js/axios.min.js"></script>
-<script src="/sk-include/static/layui/layui.js"></script>
+<script src="/sk-admin/component/layui/layui.js"></script>
 <script src="/sk-admin/component/pear/pear.js"></script>
 <script src="/sk-include/static/js/sharkcms.min.js"></script>
 <script>

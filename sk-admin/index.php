@@ -1,6 +1,7 @@
 <?php
 
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
+use FrameWork\Hook\Hook;
 
 ?>
 <!DOCTYPE html>
@@ -38,6 +39,7 @@ use FrameWork\Main as FrameWork;
         <ul class="layui-nav layui-layout-left">
             <li class="collapse layui-nav-item"><a href="#" class="layui-icon layui-icon-shrink-right"></a></li>
             <li class="refresh layui-nav-item"><a href="#" class="layui-icon layui-icon-refresh-1" loading=600></a></li>
+            <?php Hook::add('admin-top-left','');?>
         </ul>
         <!-- 多 系 统 菜 单 -->
         <div id="control" class="layui-layout-control"></div>
@@ -126,7 +128,7 @@ use FrameWork\Main as FrameWork;
         util.on('lay-on', {
             // 退出编辑
             'loginOut': function () {
-                axios('/api/loginOut')
+                axios('/admin/loginOut')
                     .then(function (res) {
                         if (res.data.code == 200) {
                             layer.msg('退出成功', {

@@ -1,5 +1,6 @@
 {
     "require": {
+        "php": ">=8.0.2",
         "illuminate/database": "^9.52",
         "illuminate/pagination": "^9.52",
         "illuminate/events": "^9.52",

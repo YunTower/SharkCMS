@@ -39,7 +39,7 @@ Github：https://github.com/YunTower/SharkCMS
 ## 😋 致谢
 
 - [Layui（MIT License）](https://gitee.com/layui/layui)
-- [wangEditor（MIT License）](https://github.com/wangeditor-team/wangEditor/)
+- [Editor.md License）](http://editor.md.ipandao.com/)
 - [Axios.js（MIT License）](https://github.com/axios/axios)
 - [illuminate/database（MIT License）](https://github.com/illuminate/database)
 - [Requests]

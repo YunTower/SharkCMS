@@ -1,15 +1,23 @@
 <?php
+/**
+ * --------------------------------------------------------------------------------
+ * @ Author：fish（https://gitee.com/fish_nb）
+ * @ Gitee：https://gitee.com/YunTower/SharkCMS
+ * @ Link：https://sharkcms.cn
+ * @ License：https://gitee.com/YunTower/SharkCMS/blob/master/LICENSE
+ * @ 版权所有，请勿侵权。因将此项目用于非法用途导致的一切结果，作者将不承担任何责任，请自负！
+ * --------------------------------------------------------------------------------
+ */
 
 namespace FrameWork;
 
 use Illuminate\Database\Capsule\Manager as DB;
 use ReflectionClass;
 use FrameWork\User\User;
-use FrameWork\Hook\Hook;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
 
-class Main
+class FrameWork
 {
     // 配置信息
     public static $_App;
@@ -25,6 +33,15 @@ class Main
      */
     public static function init()
     {
+        $log_file = ERROR_LOG . 'error_' . date('Y-m-d') . '.log';
+        fopen($log_file, "w");
+
+
+        include_once INC . 'core/Function.php';
+
+        error_reporting(E_ALL);
+        set_exception_handler('exception_handler');
+        set_error_handler('custom_error_handler');
 
         //加载配置文件
         $config_file = INC . 'config/app.php';
@@ -34,8 +51,6 @@ class Main
             exit('没有找到配置文件！');
         }
 
-        // 加载数据库组件
-        require_once INC . 'vendor/autoload.php';
 
         // 检查安装状态
         if (!self::inStatus()) {
@@ -55,17 +70,23 @@ class Main
                 'collation' => 'utf8_unicode_ci',
                 'prefix' => '',
             ]);
-
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
 
             // 加载模块文件
-            include_once INC . 'core/inc/Function.php';
-            include_once INC . 'core/inc/User.php';
-            include_once INC . 'core/inc/Captcha.php';
-            include_once INC . 'core/inc/View.php';
-            include_once INC . 'core/inc/Plugin.php';
-            include_once INC . 'core/inc/Hook.php';
+            spl_autoload_register(function ($name) {
+                $core_file = explode('\\', $name)[1];
+                if (!empty($core_file) && $core_file != 'DBAL') {
+
+                    $class_file = INC . 'core/inc/' . explode('\\', $name)[1] . '.php';
+                    if (file_exists($class_file)) {
+                        include_once INC . 'core/inc/' . explode('\\', $name)[1] . '.php';
+
+                    }
+
+                }
+            });
+
 
             // 初始化用户模块
             User::init();
@@ -278,8 +299,25 @@ class Main
         return true;
     }
 
+    /***
+     * @name 日志记录
+     * @data
+     * $type int 日志类型 (0 默认 1 错误)
+     * $statusCode int 状态码 |
+     * $msg string 日志内容
+     * @return false|true
+     */
+    public static function log(int $statusCode, string $msg, int $type = 0)
+    {
+        switch ($type) {
+            case 0:
 
-    // 错误处理
+                break;
+        }
+    }
+
+
+// 错误处理
     public
     static function Error(int $code, array $info = null)
     {
@@ -292,8 +330,8 @@ class Main
         if (file_exists($file)) {
             include_once $file;
         } else if ($code == 0) {
-            $title = $info[0];
-            $msg = $info[1];
+            $title = $info['title'];
+            $msg = $info['msg'];
             include_once INC . 'view/error/error.php';
         } else {
             include_once INC . 'view/error/' . $code . '.php';
@@ -308,12 +346,83 @@ class Main
     }
 }
 
-// 页面类
-class Page
+// 工具类
+class Utils
 {
-
-    public static function getPageList()
+    /***
+     * @name 解码数据
+     * @data $method 请求方式(GET/POST)
+     * @return false|json
+     */
+    public static function DecodeRequestData($method, $key)
     {
-        return toArray(DB::table('sk_page')->get());
+
+        if (isset($method) && isset($key)) {
+            switch ($method) {
+                case 'GET':
+                    if (isset($_GET[$key])) {
+                        return json_decode(base64_decode($_GET[$key]), true);
+                    } else {
+                        return false;
+                    }
+                    break;
+                case 'POST':
+                    if (isset($_POST[$key])) {
+                        return json_decode(base64_decode($_POST[$key]), true);
+                    } else {
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public static function CreateCode($length = 8)
+    {
+        // 密码字符集，可任意添加你需要的字符
+        $chars = array(
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+            'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+            't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
+            'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+            'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
+        );
+        // 在 $chars 中随机取 $length 个数组元素键名
+        $keys = array_rand($chars, $length);
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            // 将 $length 个数组元素连接成字符串
+            $password .= $chars[$keys[$i]];
+        }
+        return $password;
+    }
+
+    /**
+     * 数据库分页
+     * [$data](数据)
+     * [pSize](每页显示数量)
+     * [$pCount](页码)
+     */
+    public static function Pager(array $data, int $pSize = 15, int $pCount = 1)
+    {
+
+        $total = count($data); // 计算数组总数
+        $total_page = ceil($total / $pSize); // 计算总页数
+        $offset = ($pCount - 1) * $pSize;     // 计算当前数据起始位置
+        $page_arr = array_slice($data, $offset, $pSize); // 截取数据作为当前页数据
+        return array(
+            'data' => $page_arr,   // 分页数据
+            'total_page' => $total_page, // 总页数
+            'total_count' => $total,   // 总记录数
+            'page_count' => $pCount,     // 当前页码
+            'page_size' => $pSize   // 每页数据条目数
+        );
     }
 }
+

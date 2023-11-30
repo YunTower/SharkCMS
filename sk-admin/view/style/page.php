@@ -19,53 +19,60 @@ use FrameWork\View\View;
     <div class="layui-card">
         <div class="layui-card-body">
             <form class="layui-form layui-form-pane">
-                <?php  var_dump(Page::getPageList()); ?>
+                <?php var_dump(Page::getPageList()); ?>
                 <table class="layui-table" lay-even>
                     <colgroup>
-                        <col width="200">
+                        <col width="50">
                         <col width="100">
                         <col width="100">
-                        <col>
+                        <col width="50">
+                        <col width="50">
+                        
                         <col width="150">
 
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>版本</th>
-                            <th>作者</th>
-                            <th>描述</th>
+                            <th>PID</th>
+                            <th>路径</th>
+                            <th>标题</th>
+                            <th>状态</th>
+                            <th>评论</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        if (Plugin::$plugin_config) {
-                            foreach (Plugin::$plugin_config as $data) : ?>
+                        if (Page::getPageList()) {
+                            foreach (Page::getPageList() as $data) : ?>
                                 <tr>
-                                    <td><a <?php if (!empty($data['app']['Plugin Url'])) {
-                                                echo 'href="' . $data['app']['Plugin Url'] . '"';
-                                            } ?> target="_blank"><?= $data['app']['Name'] ?></a></td>
-                                    <td><?= $data['app']['Version'] ?></td>
-                                    <td><a <?php if (!empty($data['app']['Author Url'])) {
-                                                echo 'href="' . $data['app']['Author Url'] . '"';
-                                            } ?> target="_blank"><?= $data['app']['Author'] ?></a></td>
-                                    <td><?= $data['app']['Description'] ?></td>
+                                    <td><?= $data['pid'] ?></td>
+                                    <td><?= $data['name'] ?></td>
+                                    <td><?= $data['title'] ?></td>
+                                    <td>
+                                        <?php if ($data['status']==1) {
+                                            echo '启用';
+                                        } else {
+                                            echo '禁用';
+                                        } ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($data['allowComment']==1) {
+                                            echo '启用';
+                                        } else {
+                                            echo '禁用';
+                                        } ?>
+                                    </td>
+
                                     <td>
                                         <?php
-                                        if ($data['use']) {
-                                            echo '<button type="button" class="layui-btn layui-btn-primary layui-btn-sm"  data-interdict="';
-                                            echo $data['app']['Name'];
-                                            echo '">禁用</button>' . PHP_EOL;
+                                        if ($data['status']) {
+                                            echo '<button type="button" class="layui-btn layui-btn-primary layui-btn-sm">禁用</button>' . PHP_EOL;
                                         } else {
-                                            echo "<button type='button' class='layui-btn layui-bg-blue layui-btn-sm' data-active='";
-                                            echo $data['app']['Name'];
-                                            echo "'>启用</button>" . PHP_EOL;
+                                            echo "<button type='button' class='layui-btn layui-bg-blue layui-btn-sm'>启用</button>" . PHP_EOL;
                                         }
 
-                                        echo '<button type="button" class="layui-btn layui-bg-red layui-btn-sm"  data-del="';
-                                        echo $data['app']['Name'];
-                                        echo '">删除</button>';
+                                        echo '<button type="button" class="layui-btn layui-bg-red layui-btn-sm">编辑</button>';
                                         ?>
                                     </td>
                                 </tr>

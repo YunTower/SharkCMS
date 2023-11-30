@@ -9,21 +9,21 @@
     'Mode' => 'online',
     'LogDir' => '/sk-content/temp/log/',
     'Install' => true,
-    'Time' => '2023-10-12 21:52:17',
+    'Time' => '2023-11-30 08:47:21',
   ),
   'db' => 
   array (
     'Host' => '127.0.0.1',
-    'User' => 'test',
-    'Pwd' => 'testtest',
-    'Name' => 'test',
+    'User' => 'cms',
+    'Pwd' => 'cmscms',
+    'Name' => 'cms',
     'Charset' => 'utf8',
   ),
   'api' => 
   array (
     'Host' => 'https://api.sharkcms.cn/api/',
     'Version' => 'v1',
-    'Key' => 'YWNkZmprbG9xcnRBREZISU9SU1VWV1gyNjghQCUmXz0=',
-    'Token' => 'cbb9dae2b4a5c4a82304c735bd5bb754',
+    'Key' => 'YmNlZ2lrbnFydHZ3eEJDREdNT1NUVlcwNDU3OCEkLV8=',
+    'Token' => '47da0a4eeb7f77e13750f146cfd83a45',
   ),
 );

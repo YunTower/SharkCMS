@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Capsule\Manager as DB;
 use WpOrg\Requests\Requests;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\User\User;
 
 class Install

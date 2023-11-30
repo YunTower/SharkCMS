@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Database\Capsule\Manager as DB;
-use FrameWork\Main as FrameWork;
+use FrameWork\FrameWork;
 use FrameWork\View\View;
+use FrameWork\File\File;
 
 class Page
 {
@@ -42,5 +43,10 @@ class Page
         echo $_SERVER['upload_max_filesize'];
 
         echo phpinfo();
+    }
+
+    public function test(){
+
+        var_dump(File::fileName(CON.'test.txt')->create('w'));
     }
 }

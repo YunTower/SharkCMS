@@ -25,10 +25,10 @@
 <body class="pear-container">
 <div class="layui-card">
     <div class="layui-card-header">
-        <span>关于SharkCMS</span>
+        <span>关于</span>
     </div>
     <div class="layui-card-body">
-        <img style="width: 200px" src="/sk-include/static/img/text.svg"/>
+        <img style="width: 200px" src="https://cdn.sharkcms.cn/img/text.svg"/>
         <p><a href="https://www.sharkcms.cn" target="_blank">Powered by SharkCMS</a></p>
         <p class="info">
             <a href="https://sharkcms.cn/" target="_blank">官网</a>|
