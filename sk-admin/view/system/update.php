@@ -73,7 +73,7 @@
     </div>
     <!--</div>-->
     <script src="/sk-include/static/js/axios.min.js"></script>
-    <script src="/sk-include/static/layui/layui.js"></script>
+    <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
@@ -93,7 +93,6 @@
                 })
 
                 update.check(function(res) {
-
                     if (res == null) {
                         layer.msg('云端错误：' + res, {
                             icon: 2,

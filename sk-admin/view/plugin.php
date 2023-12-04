@@ -97,7 +97,6 @@ use FrameWork\Plugin\Plugin;
             var layer = layui.layer;
 
             document.addEventListener('click', function(event) {
-
                 if (event.srcElement.attributes[2] != null) {
                     axios.interceptors.request.use(config => {
                         if (config.method === 'post') {

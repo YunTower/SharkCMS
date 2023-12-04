@@ -26,8 +26,8 @@ class File
             } catch (Exception $e) {
                 return ['code' => 500, 'msg' => $e->getMessage()];
             }
-
         }
+
     }
 
     public static function fileName($file)

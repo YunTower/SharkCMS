@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Capsule\Manager as DB;
 use FrameWork\FrameWork;
+use FrameWork\Utils;
 use FrameWork\User\User;
 
 class Admin
@@ -43,9 +44,7 @@ class Admin
         } else {
             // 登陆接口
             ob_clean();
-            $data = file_get_contents("php://input");
-            $data = base64_decode($data);
-            $data = json_decode($data, true);
+            $data = Utils::DecodeRequestData('POST','data');
             if (!isset($data)) {
                 exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
             }

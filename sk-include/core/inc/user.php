@@ -25,7 +25,7 @@ class User
 
     public static function init()
     {
-        if (FrameWork::inStatus()) {
+        if (APP_INSTALL) {
             // 验证登陆状态
             if (isset($_SESSION['token'])) {
                 $info = toArray(DB::table('sk_user')->where('token', $_SESSION['token'])->get());

@@ -107,7 +107,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     </footer>
 
     <script src="/sk-include/static/js/axios.min.js"></script>
-    <script src="/sk-include/static/layui/layui.js"></script>
+    <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
@@ -127,7 +127,16 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                         icon: 2
                     })
                 } else {
-                    axios.post('/admin/login/' + new Date().getTime(), encrypt.Base64Encode(JSON.stringify(data)))
+                    // 配置axios拦截器
+                    axios.interceptors.request.use(config => {
+                        if (config.method === 'post') {
+                            config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                        }
+                        return config;
+                    });
+                    axios.post('/admin/login/' + new Date().getTime(), {
+                            data: encrypt.Base64Encode(JSON.stringify(data))
+                        })
                         .then(function(response) {
                             if (response.data.code == 200) {
                                 popup.success('登陆成功', function() {

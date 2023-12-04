@@ -77,7 +77,6 @@ class Api extends FrameWork
         Captcha::get();
     }
 
-  
 
     function user()
     {
@@ -162,8 +161,8 @@ class Api extends FrameWork
     {
         switch ($this->action) {
             case 'save':
-                $data =$_POST['data'];
-                if (is_array($data) && !empty($data['title']) && !empty($data['slug']) && !empty($data['content'])){
+                $data = $_POST['data'];
+                if (is_array($data) && !empty($data['title']) && !empty($data['slug']) && !empty($data['content'])) {
 
                     $info = User::$userInfo;
                     $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['content'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
@@ -172,7 +171,7 @@ class Api extends FrameWork
                     } else {
                         exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
                     }
-                }else{
+                } else {
 
                 }
 
@@ -189,49 +188,69 @@ class Api extends FrameWork
     // 文件上传
     public function upload()
     {
-        switch ($this->action) {
-            case 'Cover':
-                $file = CON . "upload/cover/" . $_FILES["file"]["name"];
-                if (file_exists($file)) {
-                    exit(json_encode(array('code' => 400, 'msg' => '文件已存在', 'error' => null, 'data' => $file)));
-                } else {
-                    move_uploaded_file($_FILES["file"]["tmp_name"], $file);
-                    exit(json_encode(array('code' => 200, 'msg' => '文件上传成功', 'error' => null, 'data' => $file)));
-                }
+        $type_img = [
+            'image/png',
+            'image/jpg',
+            'image/webp',
+            'image/jpeg'
+        ];
+        if (isset($_FILES['file'])) {
+            switch ($this->action) {
+                case 'Cover':
+                    try {
+                        $data = $_FILES['file'];
+                        // 类型验证
+                        for ($i = 0; $i < count($type_img); $i++) {
+                            $this->type = $this->type + 1;
+                        }
+                        if ($this->type == 4) {
+                            // 存储文件
+                            $dir = CON . "upload/avatar/" . $_FILES["file"]["name"];
+                            $data = File::Upload($_FILES["file"]["tmp_name"], $dir);
 
-                break;
-            case 'SiteIcon':
-                $type = [
-                    'image/png',
-                    'image/jpg',
-                    'image/webp',
-                    'image/jpeg'
-                ];
-                // 文件信息
-                $data = $_FILES['file'];
-                // 类型验证
-                for ($i = 0; $i < count($type); $i++) {
-                    $this->type = $this->type + 1;
-                }
+                        } else {
+                            $data = ['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"];
+                        }
+                    } catch (Exception $e) {
+                        $data = ['code' => 500, 'msg' => $e->getMessage()];
+                    }
+                    break;
+                case 'SiteIcon':
+                    $type = [
+                        'image/png',
+                        'image/jpg',
+                        'image/webp',
+                        'image/jpeg'
+                    ];
+                    // 文件信息
+                    $data = $_FILES['file'];
+                    // 类型验证
+                    for ($i = 0; $i < count($type); $i++) {
+                        $this->type = $this->type + 1;
+                    }
 
-                if ($this->type == 4) {
-                    // 存储文件
-                    $file = CON . "upload/" . $_FILES["file"]["name"];
-                    move_uploaded_file($_FILES["file"]["tmp_name"], $file);
-                    // 更新设置
-                    DB::table('sk_setting')->where('name', 'Site-Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
-                    exit(json_encode(['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]]));
-                } else {
-                    exit(json_encode(['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"]));
-                }
-                break;
+                    if ($this->type == 4) {
+                        // 存储文件
+                        $file = CON . "upload/" . $_FILES["file"]["name"];
+                        move_uploaded_file($_FILES["file"]["tmp_name"], $file);
+                        // 更新设置
+                        DB::table('sk_setting')->where('name', 'Site-Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
+                        exit(json_encode(['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]]));
+                    } else {
+                        exit(json_encode(['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"]));
+                    }
+                    break;
 
-            case 'video':
+                case 'video':
 
-            default:
-                exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
-                break;
+                default:
+                    exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
+                    break;
+            }
+        } else {
+            $data = ['code' => 400, 'msg' => '文件上传失败，无效的操作'];
         }
+        exit(json_encode($data));
     }
 
     public function getTheme()
@@ -309,10 +328,10 @@ class Api extends FrameWork
         $a = $this->action;
         switch ($a) {
             case 'check':
-                exit(json_encode(self::$_http->post('UpdateCheck', self::$_App, 'json')));
+                exit(json_encode(self::$_http->post('UpdateCheck', include_once ConfigFile, 'json')));
                 break;
             case 'do':
-                $url = self::$_App['api']['Host'] . 'UpdateDo';
+                $url = API_HOST . 'UpdateDo';
                 $save_path = CON . 'temp/download/';
                 if (!file_exists($save_path)) {
                     mkdir($save_path, 0777, true); //创建目录
@@ -323,7 +342,7 @@ class Api extends FrameWork
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);
                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //对于https的不验证ssl证书
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(self::$_App));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(include_once ConfigFile));
                 $resource = curl_exec($ch);
                 if ($resource === FALSE) {
                     echo "CURL Error:" . curl_error($ch);

@@ -26,7 +26,7 @@
 		}
 	},
 	"theme": {
-		"defaultColor": "2",
+		"defaultColor": "1",
 		"defaultMenu": "dark-theme",
 		"defaultHeader": "light-theme",
 		"allowCustom": true,

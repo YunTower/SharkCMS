@@ -16,6 +16,7 @@ use ReflectionClass;
 use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
+use PhpMyAdmin\Config\ConfigFile;
 
 class FrameWork
 {
@@ -43,17 +44,11 @@ class FrameWork
         set_exception_handler('exception_handler');
         set_error_handler('custom_error_handler');
 
-        //加载配置文件
-        $config_file = INC . 'config/app.php';
-        if (file_exists($config_file)) {
-            self::$_App = include_once $config_file;
-        } else {
-            exit('没有找到配置文件！');
-        }
+
 
 
         // 检查安装状态
-        if (!self::inStatus()) {
+        if (!APP_INSTALL) {
             if (self::getController() != 'install') {
                 header('Location:/install/');
             }
@@ -62,11 +57,11 @@ class FrameWork
             $capsule = new DB;
             $capsule->addConnection([
                 'driver' => 'mysql',
-                'host' => self::$_App['db']['Host'],
-                'database' => self::$_App['db']['Name'],
-                'username' => self::$_App['db']['User'],
-                'password' => self::$_App['db']['Pwd'],
-                'charset' => self::$_App['db']['Charset'],
+                'host' => DB_HOST,
+                'database' => DB_NAME,
+                'username' =>DB_USER,
+                'password' => DB_PWD,
+                'charset' => DB_CHARSET,
                 'collation' => 'utf8_unicode_ci',
                 'prefix' => '',
             ]);
@@ -231,7 +226,8 @@ class FrameWork
         );
     }
 
-    public static function return_json(array $arr)
+    public
+    static function return_json(array $arr)
     {
         exit(json_encode($arr));
     }
@@ -240,18 +236,12 @@ class FrameWork
     public
     static function setConfig(array $new)
     {
-        $config = self::$_App;
+        $config = include_once ConfigFile;
         $file = INC . 'config/app.php';
         $_new = var_export(array_replace_recursive($config, $new), true);
         file_put_contents($file, "<?php \n return $_new;\n");
     }
 
-    // 安装状态
-    public
-    static function inStatus()
-    {
-        return self::$_App['app']['Install'];
-    }
 
     // 获取来源
     public
@@ -274,9 +264,10 @@ class FrameWork
         return $ip;
     }
 
-    public static function importSQL($file)
+    public
+    static function importSQL($file)
     {
-        $mysqli = mysqli_connect(self::$_App['db']['Host'], self::$_App['db']['User'], self::$_App['db']['Pwd'], self::$_App['db']['Name']);
+        $mysqli = mysqli_connect(DB_HOST, DB_USER, DB_PWD, DB_NAME);
         // 检测连接
         if (!$mysqli) {
             die("连接失败: " . mysqli_connect_error());
@@ -307,7 +298,8 @@ class FrameWork
      * $msg string 日志内容
      * @return false|true
      */
-    public static function log(int $statusCode, string $msg, int $type = 0)
+    public
+    static function log(int $statusCode, string $msg, int $type = 0)
     {
         switch ($type) {
             case 0:
@@ -339,8 +331,8 @@ class FrameWork
         // 日志
         $t = date('Y-m-d H:i:s');
         $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} {$info}" . PHP_EOL;
-        $file = fopen(ROOT . self::$_App['app']['LogDir'] . 'log_' . date('Y-m-d') . '.log', "a+");
-        fwrite($file, $log);
+        $file = fopen(ROOT . APP_LOGDIR . 'log_' . date('Y-m-d') . '.log', "a+");
+        fwrite($file, $log);,0k,
         fclose($file);
         exit();
     }

@@ -24,66 +24,74 @@
         #editor-text-area {
             height: 400px;
         }
+
+        .right {
+            padding: 10px 0
+        }
+
+        .right input {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .right #upload {
+            border-radius: 4px;
+        }
     </style>
 </head>
 
 <body class="pear-container">
-    <form action="" class="layui-form">
-        <div class="layui-row layui-col-space10">
+    <form action="" class="layui-form" onsubmit="return false;">
+        <div class="layui-col-space10">
             <!-- 基础设置 -->
-            <div class="layui-col-md6">
+            <div class="layui-col-md9">
                 <div class="layui-card">
                     <div class="layui-card-header">基础设置</div>
                     <div class="layui-card-body layui-row layui-col-space10">
-                        <div class="layui-col-md6">
+                        <div class="layui-col-md12">
                             <input type="text" name="title" placeholder="文章标题" autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-col-md6">
-                            <input type="text" name="slug" hover placeholder="文章摘要" autocomplete="off" class="layui-input">
-                        </div>
-
                         <div class="layui-col-md12">
-                            <div class="layui-form-item">
-                                <div class="layui-input-group">
-                                    <div class="layui-input-split layui-input-prefix layui-input-split-left">
-                                        封面
-                                    </div>
-                                    <input type="text" id="UploadCover" hover placeholder="文章封面（点击上传，支持常见格式）" autocomplete="off" class="layui-input">
-                                    <div class="layui-input-split layui-input-suffix layui-input-split-right" style="color: #2d8cf0;" id="Preview" lay-on="preview">
-                                        预览
-                                    </div>
-                                </div>
-                            </div>
+                            <textarea name="slug" placeholder="文章摘要" autocomplete="off" class="layui-textarea"></textarea>
+
                         </div>
 
+
+                    </div>
+                </div>
+                <!-- 编辑器 -->
+                <div class="layui-card">
+                    <div class="layui-card-header">编辑器</div>
+                    <div class="layui-card-body layui-row layui-col-space10">
+                        <div id="editor" style="z-index: 9999;">
+                            <textarea name="content" id="content">### 关于 Editor.md
+**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。</textarea>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- 操作 -->
-            <div class="layui-col-md6">
+            <div class="layui-col-md3">
                 <div class="layui-card">
                     <div class="layui-card-header">操作</div>
                     <div class="layui-card-body layui-row layui-col-space10">
-                        <div style="text-align: center;">
-                            <button type="button" plain class="pear-btn pear-btn-danger" style="width:30%" lay-on="leave">退出编辑</button>
-                            <button plain class="pear-btn" style="width:30%" lay-submit lay-filter="ArticleChache">存为草稿</button>
-                            <button type="button" plain class="pear-btn" style="width:30%" lay-on="ViewChache">我的草稿</button>
+                        <button plain class="pear-btn pear-btn-primary" lay-submit lay-filter="setting" load>发布文章</button>
+                        <button plain class="pear-btn" lay-submit lay-filter="ArticleChache">存为草稿</button>
+                        <!-- <button type="button" plain class="pear-btn pear-btn-danger" style="width:30%" lay-on="leave">退出编辑</button> -->
 
-                            <button plain class="pear-btn pear-btn-primary" style="width:30%" lay-submit lay-filter="setting" load>发布文章</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 编辑器 -->
-            <div class="layui-col-md12">
-                <div class="layui-card">
-                    <div class="layui-card-header">编辑器</div>
-                    <div class="layui-card-body layui-row layui-col-space10">
-                        <div id="editor">
-                            <textarea name="content" id="content">### 关于 Editor.md
-**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。</textarea>
+                        <div class="right">
+                            <div class="layui-form-item">
+                                <div class="layui-input-group">
+                                    <div class="layui-input-split layui-input-prefix layui-input-split-left">
+                                        封面
+                                    </div>
+                                    <input type="text" placeholder="带任意前置和后置内容" class="layui-input" id="upload-value">
+                                    <div class="layui-input-suffix">
+                                        <button class="layui-btn layui-btn-primary" id="upload">上传</button>
+                                    </div>
+                                    <div class="layui-upload-list" id="upload-demo-preview"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,7 +136,7 @@
             // 初始化编辑器
             $(function() {
                 var editor = editormd("editor", {
-                    width: "100%",
+                    width: "98%",
                     height: "100vh",
                     path: "/sk-include/static/lib/editor/lib/"
                 });
@@ -136,7 +144,7 @@
 
             // 封面上传
             upload.render({
-                elem: '#UploadCover',
+                elem: '#upload',
                 url: '/api/upload/Cover',
                 accept: 'image',
                 done: function(res) {
@@ -144,13 +152,14 @@
                         layer.msg(res.msg, {
                             icon: 1
                         });
-                        var value = document.getElementById('UploadCover');
+                        var value = document.getElementById('upload-value');
                         value.value = res.data.url;
                     } else {
                         layer.msg(res.msg, {
                             icon: 2
                         });
                     }
+                    return false
                 }
             });
 
@@ -169,22 +178,6 @@
                     });
                     return false;
                 },
-                // 开始草稿窗口
-                'ViewChache': function() {
-                    if (oldArticleChache != null) {
-                        layer.open({
-                            type: 1,
-                            title: '文章草稿',
-                            shade: 0.1,
-                            area: ['auto', '400px'],
-                            content: getChacheView(),
-
-                        });
-                    }
-                    return false
-                }
-
-
             })
 
             // 文章缓存
@@ -195,23 +188,29 @@
                 const article = dataObj.content;
                 const title = dataObj.title;
                 const slug = dataObj.slug;
-                var chacheData = {
+                const chacheData = {
                     t: t,
                     title: title,
                     slug: slug,
                     content: article
                 };
 
+                // 如果本地存储中有旧数据，则将其转换为数组
+                let oldData;
                 if (oldArticleChache) {
-                    let oldData = Array.from(JSON.parse(oldArticleChache));
-                    let newItem = [...oldData, chacheData];
-                    var chacheData = newItem;
+                    oldData = Array.from(JSON.parse(oldArticleChache));
                 }
 
-                localStorage.setItem("ArticleChache", JSON.stringify(chacheData));
+                // 将新数据添加到旧数据中，然后将新数组转换为字符串并存储到本地存储中
+                const newItem = oldData ? [...oldData, chacheData] : [chacheData];
+                localStorage.setItem("ArticleChache", JSON.stringify(newItem));
+
+                // 显示成功消息
                 layer.msg('保存成功', {
                     icon: 1
                 });
+
+                // 返回 false 以阻止表单的默认提交行为
                 return false;
             });
 

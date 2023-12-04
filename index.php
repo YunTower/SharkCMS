@@ -39,6 +39,37 @@ session_save_path(CON . 'temp/session');
 // 开启session缓存
 session_start();
 
+// 设置全局变量CONFIG_FILE，使其指向INC目录下的app.php文件
+$GLOBALS['CONFIG_FILE'] = INC . 'config/app.php';
+
+// 检查CONFIG_FILE是否存在
+if (file_exists($GLOBALS['CONFIG_FILE'])) {
+    // 初始化一个空数组DEFINED_DATA，用于存储配置文件中定义的数据
+    $GLOBALS['DEFINED_DATA'] = [];
+    define('ConfigFile',$GLOBALS['CONFIG_FILE']);
+    // 使用include_once函数包含CONFIG_FILE，并将结果存储在foreach循环中
+    foreach (include_once $GLOBALS['CONFIG_FILE'] as $key => $arr) {
+        // 遍历数组中的每个键值对
+        foreach ($arr as $name => $value) {
+            // 将键值对添加到DEFINED_DATA数组中
+            $GLOBALS['DEFINED_DATA'][] = [$name, $value, $key];
+        }
+    }
+    // 遍历DEFINED_DATA数组中的每个数据项
+    foreach ($GLOBALS['DEFINED_DATA'] as $data) {
+        // 将键名转换为大写，并添加下划线，以生成定义的变量名
+        $name = strtoupper($data[2]) . '_' . strtoupper($data[0]);
+        // 检查变量是否已定义
+        if (!defined($name)) {
+            // 定义变量并输出其值
+            define($name, $data[1]);
+        }
+    }
+} else {
+    // 如果CONFIG_FILE不存在，输出错误信息
+    exit('系统提示：没有找到配置文件！');
+}
+
 // 自动加载
 require_once INC . 'vendor/autoload.php';
 

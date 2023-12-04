@@ -46,7 +46,6 @@ class Page
     }
 
     public function test(){
-
         var_dump(File::fileName(CON.'test.txt')->create('w'));
     }
 }

@@ -1,6 +1,6 @@
 <?php 
  return array (
-  'app' => 
+  'App' => 
   array (
     'Author' => 'fish',
     'Name' => 'SharkCMS',
@@ -11,7 +11,7 @@
     'Install' => true,
     'Time' => '2023-11-30 08:47:21',
   ),
-  'db' => 
+  'Db' => 
   array (
     'Host' => '127.0.0.1',
     'User' => 'cms',
@@ -19,7 +19,7 @@
     'Name' => 'cms',
     'Charset' => 'utf8',
   ),
-  'api' => 
+  'Api' => 
   array (
     'Host' => 'https://api.sharkcms.cn/api/',
     'Version' => 'v1',
