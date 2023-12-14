@@ -66,7 +66,7 @@ class Admin
                                 User::CreateToken($user['uid']);
                                 // 返回成功信息
                                 User::$loginStatus = true;
-                                exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['role' => $user['role'], User::$loginStatus])));
+                                exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['role' => $user['role'], 'status'=>User::$loginStatus])));
                                 // } else {
                                 //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
                                 // }

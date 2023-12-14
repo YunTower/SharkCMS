@@ -1,3 +1,7 @@
+<?php
+
+use FrameWork\View\View;
+?>
 <!DOCTYPE html>
 <html>
 
@@ -36,6 +40,13 @@
         .right #upload {
             border-radius: 4px;
         }
+
+        .right .layui-colla-content {
+            padding: 10px 5px;
+        }
+        .layui-colla-content .layui-form-checkbox{
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
@@ -48,14 +59,11 @@
                     <div class="layui-card-header">基础设置</div>
                     <div class="layui-card-body layui-row layui-col-space10">
                         <div class="layui-col-md12">
-                            <input type="text" name="title" placeholder="文章标题" autocomplete="off" class="layui-input">
+                            <input type="text" name="title" placeholder="文章标题" value="Hello World" autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-col-md12">
-                            <textarea name="slug" placeholder="文章摘要" autocomplete="off" class="layui-textarea"></textarea>
-
+                            <textarea name="slug" placeholder="文章摘要" autocomplete="off" class="layui-textarea">Hello World！ 你好！世界！</textarea>
                         </div>
-
-
                     </div>
                 </div>
                 <!-- 编辑器 -->
@@ -79,19 +87,55 @@
                         <button plain class="pear-btn" lay-submit lay-filter="ArticleChache">存为草稿</button>
                         <!-- <button type="button" plain class="pear-btn pear-btn-danger" style="width:30%" lay-on="leave">退出编辑</button> -->
 
+                        <!--右侧功能栏-->
                         <div class="right">
-                            <div class="layui-form-item">
-                                <div class="layui-input-group">
-                                    <div class="layui-input-split layui-input-prefix layui-input-split-left">
-                                        封面
+                            <div class="layui-collapse">
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">封面</div>
+                                    <div class="layui-colla-content layui-show">
+                                        <div class="layui-form-item">
+                                            <div class="layui-input-group">
+                                                <div class="layui-input-split layui-input-prefix layui-input-split-left">
+                                                    封面
+                                                </div>
+                                                <input type="text" placeholder="带任意前置和后置内容" class="layui-input" id="upload-value">
+                                                <div class="layui-input-suffix">
+                                                    <button class="layui-btn layui-btn-primary" id="upload">上传</button>
+                                                </div>
+                                                <div class="layui-upload-list" id="upload-demo-preview"></div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <input type="text" placeholder="带任意前置和后置内容" class="layui-input" id="upload-value">
-                                    <div class="layui-input-suffix">
-                                        <button class="layui-btn layui-btn-primary" id="upload">上传</button>
+                                </div>
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">分类</div>
+                                    <div class="layui-colla-content layui-show">
+                                        <?php
+                                        foreach (View::getCategories() as $category) {
+                                            echo '<input type="checkbox"lay-filter="category"  name="category[' . $category['id'] . ']" title="' . $category['name'] . '" lay-skin="tag">';
+                                        }
+                                        ?>
                                     </div>
-                                    <div class="layui-upload-list" id="upload-demo-preview"></div>
+                                </div>
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">标签</div>
+                                    <div class="layui-colla-content">
+                                        <?php
+                                        foreach (View::getTags() as $tag) {
+                                            echo '<input type="checkbox" name="tag[' . $tag['id'] . ']" title="' . $tag['name'] . '" lay-skin="tag">';
+                                        }
+                                        ?>
+                                    </div>
+                                </div>
+                                <div class="layui-colla-item">
+                                    <div class="layui-colla-title">权限</div>
+                                    <div class="layui-colla-content">
+                                        <input type="checkbox" name="allowComment" title="允许评论">
+                                        <input type="checkbox" name="private" title="不公开">
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -115,32 +159,47 @@
                 button = layui.button,
                 util = layui.util;
             const oldArticleChache = localStorage.getItem("ArticleChache");
+            var categoryItem = [];
 
-            // 生成草稿视图
-            function getChacheView() {
-                var view = [];
-                const oldArticleChache = localStorage.getItem("ArticleChache");
-                const arr = Array.from(JSON.parse(oldArticleChache));
-                arr.forEach(function(item) {
-                    var itemTitle = item['title'].length != 0 ? item.title : '无';
-                    var itemSlug = item['slug'].length != 0 ? item.slug : '无';
-                    var itemContent = item['content'].length != 0 ? item.content : '无';
-
-                    view = view + '<br>标题：' + itemTitle + '<br>简介：' + itemSlug + '<br>内容：' + itemContent
-
-                });
-                return view
-            }
-
-
-            // 初始化编辑器
             $(function() {
+                // 初始化编辑器
                 var editor = editormd("editor", {
                     width: "98%",
                     height: "100vh",
                     path: "/sk-include/static/lib/editor/lib/"
                 });
             });
+
+            form.on('checkbox(category)', function(data) {
+                // 如果 checkbox 元素被选中
+                if (data.elem.checked) {
+                    // 如果已经选择了两个分类，提示最多只能选择两个分类，并取消选中该分类
+                    if (categoryItem.length >= 1) {
+                        layer.msg('最多只能选择1个分类', {
+                            icon: 2
+                        });
+
+                        data.elem.checked = false;
+                        data.othis[0].classList.remove('layui-form-checked')
+                        return false
+                    } else {
+                        // 获取当前分类名称
+                        var categoryName = data.elem.name;
+                        // 如果该分类名称不存在于 categoryItem 数组中，则将其添加到数组中
+                        if (categoryItem.indexOf(categoryName) === -1) {
+                            categoryItem.push(categoryName);
+                        }
+                    }
+                } else {
+                    // 如果 checkbox 元素未被选中，则从 categoryItem 数组中移除该分类名称
+                    var categoryName = data.elem.name;
+                    if (categoryItem.indexOf(categoryName) !== -1) {
+                        categoryItem.splice(categoryItem.indexOf(categoryName), 1);
+                    }
+                }
+            });
+
+
 
             // 封面上传
             upload.render({
@@ -177,7 +236,7 @@
                         });
                     });
                     return false;
-                },
+                }
             })
 
             // 文章缓存
@@ -237,7 +296,7 @@
                 });
 
                 // 提交登陆
-                axios.post('/api/SaveSetting', {
+                axios.post('/api/article/save', {
                         data: data
                     })
                     .then(function(response) {

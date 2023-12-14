@@ -141,15 +141,14 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                             if (response.data.code == 200) {
                                 popup.success('登陆成功', function() {
                                     if (response.data.data.role == 'admin') {
-                                        if (sk.getData()['from'] != 'undefined') {
-                                            history.go(-1)
+                                        if (sk.getData()['from'] == undefined) {
+                                            window.location.href = '';
                                         } else {
-                                            window.location.href = '/admin/index';
+                                            history.go(-1)
                                         }
                                     } else {
                                         history.go(-1)
                                     }
-
                                 })
                             } else {
                                 if (response.data.code != 'undefind') {

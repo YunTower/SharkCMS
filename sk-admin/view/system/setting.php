@@ -83,7 +83,7 @@ use FrameWork\FrameWork;
                                         <label class="layui-form-label">单页数量:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md2">
-                                                <input type="number" name="Article-PageSize" placeholder="单页面显示数量（必填）" value="<?= FrameWork::$getSetting['Article-PageSize'] ?>" lay-verify="required|number" autocomplete="off" class="layui-input">
+                                                <input type="number" class="layui-input" lay-affix="number" min="1" name="Article-PageSize" placeholder="单页面显示数量（必填）" value="<?= FrameWork::$getSetting['Article-PageSize'] ?>" lay-verify="required|number" autocomplete="off" class="layui-input">
                                             </div>
                                         </div>
                                     </div>
@@ -146,7 +146,7 @@ use FrameWork\FrameWork;
                                         <label class="layui-form-label">显示数量:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md2">
-                                                <input type="number" name="Comment-PSize" placeholder="单页显示数量（必填）" value="<?= FrameWork::$getSetting['Comment-PSize'] ?>" lay-verify="required|number" autocomplete="off" class="layui-input">
+                                                <input type="number" class="layui-input" lay-affix="number" min="1" name="Comment-PSize" placeholder="单页显示数量（必填）" value="<?= FrameWork::$getSetting['Comment-PSize'] ?>" lay-verify="required|number" autocomplete="off" class="layui-input">
                                             </div>
                                         </div>
                                     </div>
@@ -156,7 +156,7 @@ use FrameWork\FrameWork;
                                         <label class="layui-form-label">API Key:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md6">
-                                                <input type="text" name="" value="<?= FrameWork::$_App['api']['Key'] ?>" autocomplete="off" class="layui-input" disabled>
+                                                <input type="text" name="" value="<?= API_KEY ?>" autocomplete="off" class="layui-input" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +164,7 @@ use FrameWork\FrameWork;
                                         <label class="layui-form-label">API Token:</label>
                                         <div class="layui-input-block">
                                             <div class="layui-col-md6">
-                                                <input type="text" name="" value="<?= FrameWork::$_App['api']['Token'] ?>" autocomplete="off" class="layui-input" disabled>
+                                                <input type="text" name="" value="<?= API_TOKEN ?>" autocomplete="off" class="layui-input" disabled>
                                             </div>
                                         </div>
                                     </div>

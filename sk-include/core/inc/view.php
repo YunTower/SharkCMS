@@ -69,7 +69,6 @@ class View
         }
         self::$vArticle = toArray(Db::table('sk_content')->get());
         self::$vComment = toArray(Db::table('sk_comment')->get());
-
     }
 
     public static function allTheme()
@@ -215,20 +214,12 @@ class View
         );
     }
 
-    public static function getRunTime()
-    {
-        $sitestart = strtotime(FrameWork::$_App['app']['Time']);
-        $sitenow = time();
-        $sitetime = $sitenow - $sitestart;
-        $sitedays = (int)($sitetime / 86400);
-        return $sitedays;
+
+    public static function getTags(){
+        return toArray(Db::table('sk_tag')->get());
     }
 
-    //    public static function getStatus(){
-    //        return [
-    //            'count'=>[
-    //                'article'=>
-    //            ]
-    //        ];
-    //    }
+    public static function getCategories(){
+        return toArray(Db::table('sk_category')->get());
+    }
 }

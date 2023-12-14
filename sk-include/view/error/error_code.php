@@ -1,5 +1,10 @@
 <?php ob_clean();
-header('Content-Type: text/html; charset=utf-8'); ?>
+if($_SERVER['REQUEST_METHOD']=='POST'){
+
+    exit(json_encode(['code'=>500,'msg'=>"[{$errno}] <?= $errstr ?></h1>
+    <p>错误来源于 <code><?= $errfile ?></code> 第<?= $errline ?>行</p>"]));
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -60,11 +65,11 @@ header('Content-Type: text/html; charset=utf-8'); ?>
             display: inline-block
         }
 
-        .info{
+        .info {
             width: 100%;
         }
 
-       
+
         /* Exception Info */
         .exception {
             margin-top: 20px;
@@ -210,17 +215,18 @@ header('Content-Type: text/html; charset=utf-8'); ?>
             color: #868686;
         }
 
-        pre,code{
+        pre,
+        code {
             height: 100%;
             width: 100%;
             background-color: #fafafa;
-           
+
         }
 
-        pre{
+        pre {
             border: 1px solid #E7E9E8;
             border-radius: 4px;
-            color:#262C31
+            color: #262C31
         }
 
 
@@ -281,8 +287,6 @@ header('Content-Type: text/html; charset=utf-8'); ?>
         pre.prettyprint .fun {
             color: red
         }
-
-
     </style>
 
 </head>
@@ -301,7 +305,7 @@ header('Content-Type: text/html; charset=utf-8'); ?>
                 if ($i == $errline - 1) {
                     echo '<span class="line-error">' . $lines[$i] . '</span><br>';
                 } else {
-                    if(isset($lines[$i])){
+                    if (isset($lines[$i])) {
                         echo htmlspecialchars($lines[$i]) . '<br>';
                     }
                 }

@@ -332,7 +332,7 @@ class FrameWork
         $t = date('Y-m-d H:i:s');
         $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} {$info}" . PHP_EOL;
         $file = fopen(ROOT . APP_LOGDIR . 'log_' . date('Y-m-d') . '.log', "a+");
-        fwrite($file, $log);,0k,
+        fwrite($file, $log);
         fclose($file);
         exit();
     }

@@ -23,6 +23,8 @@ define('CON', ROOT . 'sk-content/');
 define('ADM', ROOT . 'sk-admin/');
 // 错误日志目录
 define('ERROR_LOG', CON . 'temp/log/error/');
+// 设置运行模式
+define('DEBUG',true);
 
 // PHP版本检查
 if (PHP_VERSION < '8.0.2') {
@@ -31,7 +33,7 @@ if (PHP_VERSION < '8.0.2') {
 
 // 读写权限检查
 !is_writeable(CON) and exit("权限检查：目录'/sk-content/' 无读写权限，请检查！linux请设置为777！<br>");
-!is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！linux请设置为777！<br>");
+!is_writeable(INC) and exit("权限检查：目录'/sk-include/' 无读写权限，请检查！<linux></linux>请设置为777！<br>");
 
 // 设置session缓存目录
 session_save_path(CON . 'temp/session');

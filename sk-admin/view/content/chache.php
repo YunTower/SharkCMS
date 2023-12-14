@@ -64,58 +64,62 @@
 
             const oldArticleChache = localStorage.getItem("ArticleChache");
             var view = [];
-            const arr = Array.from(JSON.parse(oldArticleChache));
+            if (oldArticleChache != null) {
+                const arr = Array.from(JSON.parse(oldArticleChache));
 
-            // 按照时间排序
-            arr.sort((a, b) => {
-                const dateA = new Date(a.t);
-                const dateB = new Date(b.t);
-                return dateB - dateA;
-            });
-
-            // 渲染视图
-            if (arr.length !== 0) {
-                // 使用箭头函数遍历数组
-                arr.forEach((item, index) => {
-                    // 获取标题、slug和内容，如果没有，则设置为'-'
-                    const itemTitle = item.title.length !== 0 ? item.title : '-';
-                    const itemSlug = item.slug.length !== 0 ? item.slug : '-';
-                    const itemContent = item.content.length !== 0 ? item.content : '-';
-
-                    // 获取当前元素在数组中的索引
-                    const itemId = index;
-
-                    // 构建表格行
-                    view += `<tr><th>${itemId}</th><th>${itemTitle}</th><th class="slug">${itemSlug}</th><th class="content">${itemContent}</th><th>${item.t}</th><th><button type="button" class="layui-btn layui-bg-red layui-btn-sm"  data-del="${itemId}">删除</button><button type="button" class="layui-btn layui-bg-blue layui-btn-sm" data-edit="${itemId}">编辑</button></th></tr>`;
+                // 按照时间排序
+                arr.sort((a, b) => {
+                    const dateA = new Date(a.t);
+                    const dateB = new Date(b.t);
+                    return dateB - dateA;
                 });
-            } else {
-                // 如果数组为空，则显示一条提示信息
-                view = '<tr><th colspan="6" style="text-align:center">无数据</th></tr>';
-            }
-            document.getElementById('view').innerHTML = view;
 
-            // 草稿操作
-            document.addEventListener('click', function(event) {
-                if (event.srcElement.attributes[2] != null) {
+                // 渲染视图
+                if (arr.length !== 0) {
+                    // 使用箭头函数遍历数组
+                    arr.forEach((item, index) => {
+                        // 获取标题、slug和内容，如果没有，则设置为'-'
+                        const itemTitle = item.title.length !== 0 ? item.title : '-';
+                        const itemSlug = item.slug.length !== 0 ? item.slug : '-';
+                        const itemContent = item.content.length !== 0 ? item.content : '-';
 
-                    var nodeName = event.srcElement.attributes[2].nodeName;
-                    var nodeValue = event.srcElement.attributes[2].nodeValue
+                        // 获取当前元素在数组中的索引
+                        const itemId = index;
 
-                    if (nodeName == 'data-edit') {
-                        parent.layui.admin.addTab(11+nodeValue, "编辑草稿-"+nodeValue, "/admin/view?page=view/content/editor.php&id=" + nodeValue)
-                    } else if (nodeName == 'data-del') {
-                        // 删除数组
-                        arr.splice(nodeValue)
-                        // 更新缓存
-                        localStorage.setItem('ArticleChache', JSON.stringify(arr))
-                        layer.msg('删除成功', {
-                            icon: 1
-                        },function(){
-                            parent.layui.admin.refreshThis()
-                        })
-                    }
+                        // 构建表格行
+                        view += `<tr><th>${itemId}</th><th>${itemTitle}</th><th class="slug">${itemSlug}</th><th class="content">${itemContent}</th><th>${item.t}</th><th><button type="button" class="layui-btn layui-bg-red layui-btn-sm"  data-del="${itemId}">删除</button><button type="button" class="layui-btn layui-bg-blue layui-btn-sm" data-edit="${itemId}">编辑</button></th></tr>`;
+                    });
+                } else {
+                    // 如果数组为空，则显示一条提示信息
+                    view = '<tr><th colspan="6" style="text-align:center">无数据</th></tr>';
                 }
-            });
+                document.getElementById('view').innerHTML = view;
+
+                // 草稿操作
+                document.addEventListener('click', function(event) {
+                    if (event.srcElement.attributes[2] != null) {
+
+                        var nodeName = event.srcElement.attributes[2].nodeName;
+                        var nodeValue = event.srcElement.attributes[2].nodeValue
+
+                        if (nodeName == 'data-edit') {
+                            parent.layui.admin.addTab(11 + nodeValue, "编辑草稿-" + nodeValue, "/admin/view?page=view/content/editor.php&id=" + nodeValue)
+                        } else if (nodeName == 'data-del') {
+                            // 删除数组
+                            arr.splice(nodeValue)
+                            // 更新缓存
+                            localStorage.setItem('ArticleChache', JSON.stringify(arr))
+                            layer.msg('删除成功', {
+                                icon: 1
+                            }, function() {
+                                parent.layui.admin.refreshThis()
+                            })
+                        }
+                    }
+                });
+            }else{
+                document.getElementById('view').innerHTML = '<tr><th colspan="6" style="text-align:center">无数据</th></tr>';
+            }
         })
     </script>
 </body>

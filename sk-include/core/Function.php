@@ -1,4 +1,5 @@
 <?php
+
 /**
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
@@ -12,6 +13,7 @@
 // 错误处理
 function custom_error_handler($errno, $errstr, $errfile, $errline)
 {
+    ob_clean();
     error_log("[" . date('Y-m-d H:i:s') . "]Error: [$errno] $errstr\n", 3, ERROR_LOG . 'error_' . date('Y-m-d') . '.log');
     include_once INC . 'view/error/error_code.php';
 }
@@ -29,4 +31,13 @@ function exception_handler(Throwable $exception)
 function toArray($data)
 {
     return json_decode(json_encode($data), true);
+}
+
+function getRunTime()
+{
+    $sitestart = strtotime(APP_TIME);
+    $sitenow = time();
+    $sitetime = $sitenow - $sitestart;
+    $sitedays = (int)($sitetime / 86400);
+    return $sitedays;
 }
