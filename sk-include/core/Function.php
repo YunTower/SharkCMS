@@ -41,3 +41,7 @@ function getRunTime()
     $sitedays = (int)($sitetime / 86400);
     return $sitedays;
 }
+
+function jsonMsg(int $code,$msg,array $data=null){
+    exit(json_encode(['code'=>$code,'msg'=>$msg,'data'=>$data]));
+}

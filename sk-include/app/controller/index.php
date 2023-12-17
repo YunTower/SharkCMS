@@ -28,7 +28,7 @@ class index
 
         // 404
         if (!is_numeric($pid)) {
-            FrameWork::Error(404);
+            FrameWork::WARNING(404);
         }
 
         // 分页

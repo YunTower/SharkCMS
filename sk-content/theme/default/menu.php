@@ -19,7 +19,11 @@
                 <?php
                 use FrameWork\User\User;
                 if (User::$loginStatus) {
-                    echo '<a class="link" href="/admin/user" target="_blank">' . User::$userInfo['name'] . '</a>';
+                    echo '<a class="link"';
+                    if(User::is_admin()){
+                        echo 'href="/admin/" target="_blank"';
+                    }
+                    echo ' >' . User::$userInfo['name'] . '</a>';
                 } else {
                     echo '<a class="link" href="/admin/login" target="_blank">未登录</a>';
                 }

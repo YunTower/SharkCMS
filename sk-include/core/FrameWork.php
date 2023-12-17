@@ -36,19 +36,15 @@ class FrameWork
     {
         $log_file = ERROR_LOG . 'error_' . date('Y-m-d') . '.log';
         fopen($log_file, "w");
-
-
+        // 加载公共函数
         include_once INC . 'core/Function.php';
-
+        // 设置异常&错误处理
         error_reporting(E_ALL);
         set_exception_handler('exception_handler');
         set_error_handler('custom_error_handler');
 
-
-
-
         // 检查安装状态
-        if (!APP_INSTALL) {
+        if (APP_INSTALL == false) {
             if (self::getController() != 'install') {
                 header('Location:/install/');
             }
@@ -59,7 +55,7 @@ class FrameWork
                 'driver' => 'mysql',
                 'host' => DB_HOST,
                 'database' => DB_NAME,
-                'username' =>DB_USER,
+                'username' => DB_USER,
                 'password' => DB_PWD,
                 'charset' => DB_CHARSET,
                 'collation' => 'utf8_unicode_ci',
@@ -67,6 +63,11 @@ class FrameWork
             ]);
             $capsule->setAsGlobal();
             $capsule->bootEloquent();
+
+            // 主题名称
+            define('vName', Db::table('sk_setting')->where('name', "theme-name")->first()->value);
+            // 当前主题路径
+            define('vPath', CON . 'theme/' . vName . '/');
 
             // 加载模块文件
             spl_autoload_register(function ($name) {
@@ -311,7 +312,7 @@ class FrameWork
 
 // 错误处理
     public
-    static function Error(int $code, array $info = null)
+    static function WARNING(int $code, array $info = null)
     {
         ob_clean();
         if (self::getController() == 'api') {
@@ -322,8 +323,8 @@ class FrameWork
         if (file_exists($file)) {
             include_once $file;
         } else if ($code == 0) {
-            $title = $info['title'];
-            $msg = $info['msg'];
+            $title = $info[0];
+            $msg = $info[1];
             include_once INC . 'view/error/error.php';
         } else {
             include_once INC . 'view/error/' . $code . '.php';

@@ -39,7 +39,7 @@
 		</div>
 		<div class="layui-card">
 			<div class="layui-card-body">
-				<table id="user-table" lay-filter="user-table"></table>
+				<table id="table" lay-filter="table"></table>
 			</div>
 		</div>
 
@@ -155,7 +155,7 @@
 				]
 
 				table.render({
-					elem: '#user-table',
+					elem: '#table',
 					url: '/api/article/get',
 					page: true,
 					cols: cols,
@@ -168,7 +168,7 @@
 					}, 'filter', 'print', 'exports']
 				});
 
-				table.on('tool(user-table)', function(obj) {
+				table.on('tool(table)', function(obj) {
 					if (obj.event === 'remove') {
 						window.remove(obj);
 					} else if (obj.event === 'edit') {
@@ -176,7 +176,7 @@
 					}
 				});
 
-				table.on('toolbar(user-table)', function(obj) {
+				table.on('toolbar(table)', function(obj) {
 					if (obj.event === 'add') {
 						window.add();
 					} else if (obj.event === 'refresh') {
@@ -187,7 +187,7 @@
 				});
 
 				form.on('submit(user-query)', function(data) {
-					table.reload('user-table', {
+					table.reload('table', {
 						where: data.field
 					})
 					return false;
@@ -271,7 +271,7 @@
 										icon: 1,
 										time: 1000
 									}, function() {
-										table.reload('user-table');
+										table.reload('table');
 									});
 								} else {
 									layer.msg(result.msg, {
@@ -285,7 +285,7 @@
 				}
 
 				window.refresh = function(param) {
-					table.reload('user-table');
+					table.reload('table');
 				}
 			})
 		</script>

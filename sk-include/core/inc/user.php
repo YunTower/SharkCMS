@@ -32,15 +32,52 @@ class User
                 // 验证token真实性
                 if (isset($info)) {
                     if (count($info) == 1) {
+
                         User::$loginStatus = true;
                         User::$userInfo = $info[0];
                         User::$userRole = $info[0]['role'];
+                        if (static::is_ban()) {
+                            FrameWork::WARNING(0, ['系统提示', '您的账号已被【禁用】，请联系网站管理员！']);
+                        }
                     } else {
-                        FrameWork::Error(0, ['系统错误', '账号数据异常']);
+                        FrameWork::WARNING(0, ['系统错误', '账号数据异常']);
                     }
                 }
             }
 
+        }
+    }
+
+    public static function is_admin()
+    {
+        if (static::$loginStatus) {
+            if (static::$userRole == 'admin') {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public static function is_user()
+    {
+        if (static::$loginStatus) {
+            if (static::$userRole == 'user') {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public static function is_ban()
+    {
+        if (static::$loginStatus) {
+            if (static::$userInfo['ban'] == 1) {
+                return true;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -55,9 +92,16 @@ class User
         return $token;
     }
 
-    public static function info($id)
+    public static function getInfo($uid = null)
     {
-        return toArray(Db::table('sk_user')->where('uid = "' . $id . '"')->first());
+        if ($uid == null) {
+            if (User::$loginStatus) {
+                $id = User::$userInfo['uid'];
+            } else {
+                return false;
+            }
+        }
+        return toArray(Db::table('sk_user')->where('uid', $uid)->first());
     }
 
     public static function LoginOut()

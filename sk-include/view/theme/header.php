@@ -23,4 +23,5 @@ use FrameWork\Hook\Hook;
 <meta name="description" content="<?= FrameWork::$getSetting['Seo-Description'] ?>" />
 <?php include_once vPath . 'header.php'; ?>
 <?= Hook::add('theme-header', ''); ?>
+
 <?= FrameWork::$getSetting['Site-HeaderCode'] ?>

@@ -43,6 +43,7 @@ session_start();
 
 // 设置全局变量CONFIG_FILE，使其指向INC目录下的app.php文件
 $GLOBALS['CONFIG_FILE'] = INC . 'config/app.php';
+define('CONFIGS',$GLOBALS['CONFIG_FILE']);
 
 // 检查CONFIG_FILE是否存在
 if (file_exists($GLOBALS['CONFIG_FILE'])) {

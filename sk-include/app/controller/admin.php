@@ -16,10 +16,14 @@ class Admin
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && FrameWork::getAction()!='loginOut') {
             // 登录
             if (User::$loginStatus) {
-                // 加载后台首页
-                $this->info = User::$userInfo;
-                if (FrameWork::getAction() != 'view') {
-                    include_once ADM . 'index.php';
+                if(User::is_admin()){
+                    // 加载后台首页
+                    $this->info = User::$userInfo;
+                    if (FrameWork::getAction() != 'view') {
+                        include_once ADM . 'index.php';
+                    }
+                }else{
+                    header('Location: /');
                 }
                 // 未登录
             } else {

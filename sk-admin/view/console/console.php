@@ -152,14 +152,6 @@ use FrameWork\View\View;
                                 <td><?= APP_VERSION . '-' . APP_TYPE ?></td>
                             </tr>
                             <tr>
-                                <td>安装状态</td>
-                                <td><?php if (APP_INSTALL) {
-                                        echo '<a class="sk-text-green" style="font-weight: 550">已安装</a>';
-                                    }
-                                    ?>
-                                </td>
-                            </tr>
-                            <tr>
                                 <td>PHP版本</td>
                                 <td><?= PHP_VERSION ?></td>
                             </tr>
@@ -232,6 +224,7 @@ use FrameWork\View\View;
             table.render({
                 elem: '#table',
                 url: '/api/getNews',
+                method:'post',
                 page: true,
                 cols: cols,
                 skin: 'line',

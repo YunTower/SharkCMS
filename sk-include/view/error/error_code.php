@@ -1,8 +1,10 @@
 <?php ob_clean();
 if($_SERVER['REQUEST_METHOD']=='POST'){
 
-    exit(json_encode(['code'=>500,'msg'=>"[{$errno}] <?= $errstr ?></h1>
-    <p>错误来源于 <code><?= $errfile ?></code> 第<?= $errline ?>行</p>"]));
+    exit(json_encode(['code'=>500,'msg'=>"[{$errno}] {$errstr} <br> 错误来源于 {$errfile} 第 {$errline} 行"]));
+}else{
+    header('Content-Type: text/html; charset=utf-8');
+
 }
 ?>
 <!DOCTYPE html>

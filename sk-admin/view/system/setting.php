@@ -1,4 +1,5 @@
 <?php
+
 use FrameWork\FrameWork;
 ?>
 <!DOCTYPE html>
@@ -260,7 +261,7 @@ use FrameWork\FrameWork;
                                 icon: 1
                             });
                             // 按钮动画停止
-                            load.stop()
+                            load.stop();
                             sk.sleep(1000).then(() => {
                                 parent.layui.admin.refreshThis()
                             })
@@ -269,6 +270,7 @@ use FrameWork\FrameWork;
                                 title: '保存失败',
                                 icon: 2
                             })
+                            load.stop();
                         }
                     })
 

@@ -57,7 +57,7 @@
     "icon": "icon pear-icon pear-icon-user",
     "type": 1,
     "openType": "_iframe",
-    "href": "/admin/view?page=view/error/404.html"
+    "href": "/admin/view?page=view/user/index.php"
   },
   {
     "id": "comment",

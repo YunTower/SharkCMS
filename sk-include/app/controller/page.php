@@ -22,7 +22,7 @@ class Page
             View::$vArticle = toArray(Db::table('sk_content')->where('cid', $id)->get())[0];
             View::view('article');
         } else {
-            FrameWork::Error(404);
+            FrameWork::WARNING(404);
         }
     }
 

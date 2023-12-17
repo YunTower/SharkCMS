@@ -12,7 +12,7 @@ class Install
     public function __construct()
     {
         if (FrameWork::$_App['app']['Install'] && FrameWork::getData() != 3) {
-            FrameWork::Error(0, array('title' => '系统提示', 'msg' => '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作'));
+            FrameWork::WARNING(0, ['系统提示', '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作']);
         }
     }
 
@@ -49,7 +49,7 @@ class Install
             $data = json_decode($data, true);
 
             switch (FrameWork::getData()) {
-                    // 数据库连接
+                // 数据库连接
                 case 'connect';
                     $conn = new mysqli($data['db_host'], $data['db_user'], $data['db_pwd'], $data['db_name']);
                     if ($conn->connect_error) {
@@ -90,7 +90,7 @@ class Install
                             // 写入初始数据
                             $t = time();
                             $pwd = User::encode_pwd($data['ad_pwd'], $t);
-                            DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'role' => 'admin', 'created' => $t));
+                            DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'role' => 'admin', 'ban' => false, 'created' => $t));
                             DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));

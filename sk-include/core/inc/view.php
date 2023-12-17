@@ -18,15 +18,8 @@ use FrameWork\Hook\Hook;
 
 # --------------------------------## 主题组件 ##--------------------------------#
 
-// 主题名称
-define('vName', Db::table('sk_setting')->where('name', "theme-name")->first()->value);
-
-// 当前主题路径
-define('vPath', CON . 'theme/' . vName . '/');
-
 class View
 {
-
 
     public static $vKey;
     public static $vTheme = array();
@@ -83,7 +76,7 @@ class View
 
     public static function view($page)
     {
-        echo '<!-- Powered by SharkCMS https://sharkcms.cn/ -->' . PHP_EOL;
+        echo '<!-- Powered by SharkCMS https://gitee.com/YunTower/SharkCMS -->' . PHP_EOL;
         // 主题自定义函数
         include_once vPath . 'inc/function.php';
         // 主题自定义路由
@@ -117,7 +110,7 @@ class View
         if (file_exists($f)) {
             include_once $f;
         } else {
-            FrameWork::Error(404, '主题文件【sidebar.php】不存在');
+            FrameWork::WARNING(404, '主题文件【sidebar.php】不存在');
         }
     }
 

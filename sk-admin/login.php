@@ -151,7 +151,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                                     }
                                 })
                             } else {
-                                if (response.data.code != 'undefind') {
+                                if (response.data.code != 'undefined') {
                                     layer.msg(response.data.msg, {
                                         icon: 2
                                     })

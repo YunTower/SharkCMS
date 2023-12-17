@@ -7,6 +7,7 @@ use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
 use FrameWork\Captcha\Captcha;
+use FrameWork\Utils;
 
 class Api extends FrameWork
 {
@@ -80,36 +81,58 @@ class Api extends FrameWork
 
     function user()
     {
-        switch ($this->action) {
-            case 'token':
-                if (User::$loginStatus) {
-                    exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => true, 'token' => $_SESSION['token']]]));
-                } else {
-                    exit(json_encode(['code' => 200, 'msg' => '操作成功', 'data' => ['login' => false, 'token' => null]]));
-                }
-                break;
-            default:
-                break;
+        if (User::$loginStatus) {
+            switch ($this->action) {
+                case 'get':
+                    if (User::is_admin()) {
+                        jsonMsg(0, '数据拉取成功', toArray(Db::table('sk_user')->select('uid', 'name', 'mail', 'avatar', 'ban', 'role', 'created')->get()));
+                    } else {
+                        jsonMsg(403, '权限不足！');
+                    }
+                    break;
+                case 'token':
+                    jsonMsg(200, '操作成功', ['login' => true, 'token' => $_SESSION['token']]);
+                    break;
+                case'update':
+                    // 验证数据合法性
+                    if (is_array(Utils::DecodeRequestData('POST', 'data'))) {
+                        $data = Utils::DecodeRequestData('POST', 'data');
+                    } else {
+                        jsonMsg(404, '无数据');
+                    }
+                    // 拦截非管理员用户操作他人数据的行为
+                    if (!isset($_GET['uid']) && is_numeric(htmlspecialchars($_GET['uid'])) || User::is_user() && htmlspecialchars($_GET['uid']) != User::$userInfo['uid']) {
+                        jsonMsg(403, '权限不足！');
+                    }
+                    // 转换数据
+                    if (isset($data['ban'])) {
+                        if ($data['ban'] == 'true') {
+                            $data['ban'] = true;
+                        } else if ($data['ban'] == 'false') {
+                            $data['ban'] = false;
+                        }
+                    }
+                    // 拦截站长的作死行为
+                    if ($data['ban'] == true && $_GET['uid'] == 1 || $data['role'] == 'user' && $_GET['uid']) {
+                        jsonMsg(400, '此操作已被阻止，请不要作死');
+                    }
+                    unset($data['file']);
+                    // 更新数据
+                    if (Db::table('sk_user')->where('uid', htmlspecialchars($_GET['uid']))->update($data)) {
+                        jsonMsg(200, '更新成功');
+                    } else {
+                        jsonMsg(400, '更新失败');
+                    }
+
+                    break;
+                default:
+                    jsonMsg(403, '权限不足！');
+                    break;
+            }
+        } else {
+            jsonMsg('403', '权限不足！');
         }
     }
-
-    // // 文件操作
-    // function file()
-    // {
-    //     switch ($this->action) {
-    //         case 'list':
-    //             $file = File::List(CON . 'upload');
-    //             $msg = '查询成功';
-    //             if (!$file) {
-    //                 $msg = '没有文件或文件不存在';
-    //             }
-    //             exit(json_encode(array('code' => 0, 'msg' => $msg, 'error' => null, 'data' => $file)));
-    //             break;
-    //         default:
-    //             exit(json_encode(array('code' => 1000,)));
-    //             break;
-    //     }
-    // }
 
 
     // 输出头像
@@ -120,7 +143,7 @@ class Api extends FrameWork
             if (!empty($data['avatar'])) {
                 $file = self::getDomain() . $data['avatar'];
                 if (file_exists($file)) {
-                    header('Content-type: image/webp');
+                    header('Content - type: image / webp');
                     include $file;
                 }
             } else {
@@ -216,16 +239,11 @@ class Api extends FrameWork
                     }
                     break;
                 case 'SiteIcon':
-                    $type = [
-                        'image/png',
-                        'image/jpg',
-                        'image/webp',
-                        'image/jpeg'
-                    ];
+
                     // 文件信息
                     $data = $_FILES['file'];
                     // 类型验证
-                    for ($i = 0; $i < count($type); $i++) {
+                    for ($i = 0; $i < count($type_img); $i++) {
                         $this->type = $this->type + 1;
                     }
 
@@ -234,7 +252,7 @@ class Api extends FrameWork
                         $file = CON . "upload/" . $_FILES["file"]["name"];
                         move_uploaded_file($_FILES["file"]["tmp_name"], $file);
                         // 更新设置
-                        DB::table('sk_setting')->where('name', 'Site-Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
+                        DB::table('sk_setting')->where('name', 'Site - Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
                         exit(json_encode(['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]]));
                     } else {
                         exit(json_encode(['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"]));
@@ -260,7 +278,7 @@ class Api extends FrameWork
 
         foreach ($data as $_data) {
             $_data = array_values($_data);
-            $this->theme_array[] = ['id' => $_data[0]['Name'], 'image' => $_data[3] . 'cover.png', 'title' => $_data[0]['Name'], 'remark' => $_data[0]['Description'], 'time' => $_data[0]['Time']];
+            $this->theme_array[] = ['id' => $_data[0]['Name'], 'image' => $_data[3] . 'cover . png', 'title' => $_data[0]['Name'], 'remark' => $_data[0]['Description'], 'time' => $_data[0]['Time']];
         }
 
         echo json_encode(['code' => 0, 'msg' => '获取成功', 'count' => count($data), 'data' => $this->theme_array]);
@@ -284,7 +302,7 @@ class Api extends FrameWork
                     FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
                 }
             } else {
-                FrameWork::return_json(['code' => 400, 'msg' => '操作不存在/操作失败']);
+                FrameWork::return_json(['code' => 400, 'msg' => '操作不存在 / 操作失败']);
             }
         } else {
             FrameWork::return_json(['code' => 403, 'msg' => '参数缺失']);
@@ -313,7 +331,7 @@ class Api extends FrameWork
                     'Seo-Description' => $res['Seo-Description']
                 ];
                 foreach ($data as $key => $value) {
-                    DB::table('sk_setting')->where('name', "$key")->update(['name' => $key, 'value' => $value]);
+                    DB::table('sk_setting')->where('name', $key)->update(['name' => $key, 'value' => $value]);
                 }
                 exit(json_encode(['code' => 200, 'msg' => '设置保存成功']));
             } catch (Exception $e) {
@@ -332,7 +350,7 @@ class Api extends FrameWork
                 break;
             case 'do':
                 $url = API_HOST . 'UpdateDo';
-                $save_path = CON . 'temp/download/';
+                $save_path = CON . 'temp / download / ';
                 if (!file_exists($save_path)) {
                     mkdir($save_path, 0777, true); //创建目录
                 }
@@ -349,14 +367,14 @@ class Api extends FrameWork
                     return false;
                 }
                 curl_close($ch);
-                $filename = 'update.zip';
-                $file = fopen($save_path . $filename, 'w+');
+                $filename = 'update . zip';
+                $file = fopen($save_path . $filename, 'w + ');
                 fwrite($file, $resource);
                 fclose($file);
 
-                if (file_exists($save_path . 'update.zip')) {
+                if (file_exists($save_path . 'update . zip')) {
                     $zip = new ZipArchive;
-                    if ($zip->open(CON . 'temp/download/update.zip') === true) {
+                    if ($zip->open(CON . 'temp / download / update . zip') === true) {
                         $zip->extractTo(ROOT);
                         $zip->close();
                         exit(json_encode(['code' => 200, 'msg' => '更新成功']));
@@ -375,8 +393,8 @@ class Api extends FrameWork
 
     public function getNews()
     {
-        $headers = array('Content-Type' => 'application/json');
-        $arr = Requests::post(FrameWork::$_App['api']['Host'] . 'getNews', $headers, json_encode(FrameWork::$_App));
+        $headers = array('Content - Type' => 'application / json');
+        $arr = Requests::post(API_HOST . 'getNews', $headers, json_encode(CONFIGS));
         echo json_encode(json_decode($arr->body, true));
     }
 }
