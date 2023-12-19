@@ -4,6 +4,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 use WpOrg\Requests\Requests;
 use FrameWork\FrameWork;
 use FrameWork\User\User;
+use FrameWork\Utils;
 
 class Install
 {
@@ -11,7 +12,7 @@ class Install
 
     public function __construct()
     {
-        if (FrameWork::$_App['app']['Install'] && FrameWork::getData() != 3) {
+        if (APP_INSTALL && FrameWork::getData() != 3) {
             FrameWork::WARNING(0, ['系统提示', '你已安装过了SharkCMS，如需重置系统请前往：后台->关于->重置，进行操作']);
         }
     }
@@ -44,9 +45,7 @@ class Install
         if (!$_SERVER['REQUEST_METHOD'] === 'POST') {
             exit(json_encode(array('code' => 400, 'msg' => '请求无效', 'error' => $_SERVER['HTTP_X_REQUESTED_WITH'])));
         } else {
-            $data = file_get_contents("php://input");
-            $data = base64_decode($data);
-            $data = json_decode($data, true);
+            $data = Utils::DecodeRequestData('POST','data');
 
             switch (FrameWork::getData()) {
                 // 数据库连接
@@ -66,11 +65,11 @@ class Install
                     $capsule = new Db;
                     $capsule->addConnection([
                         'driver' => 'mysql',
-                        'host' => FrameWork::$_App['db']['Host'],
-                        'database' => FrameWork::$_App['db']['Name'],
-                        'username' => FrameWork::$_App['db']['User'],
-                        'password' => FrameWork::$_App['db']['Pwd'],
-                        'charset' => FrameWork::$_App['db']['Charset'],
+                        'host' => DB_HOST,
+                        'database' => DB_NAME,
+                        'username' => DB_USER,
+                        'password' => DB_PWD,
+                        'charset' => DB_CHARSET,
                         'collation' => 'utf8_unicode_ci',
                         'prefix' => '',
                     ]);
@@ -83,13 +82,14 @@ class Install
                     User::init();
 
                     $headers = array('Content-Type' => 'application/json');
-                    $arr = Requests::post(FrameWork::$_App['api']['Host'] . 'install', $headers, json_encode(FrameWork::$_App));
-                    $arr = json_decode($arr->body, true);
+                    $arr = Requests::post(API_HOST. 'addUser', $headers, json_encode(CONFIGS));
+                   $arr = json_decode($arr->body, true);
                     if ($arr['code'] == 200) {
                         if (FrameWork::importSQL(INC . 'config/db.sql')) {
                             // 写入初始数据
                             $t = time();
                             $pwd = User::encode_pwd($data['ad_pwd'], $t);
+                            var_dump($data);
                             DB::table('sk_user')->insert(array('uid' => 1, 'name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'role' => 'admin', 'ban' => false, 'created' => $t));
                             DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));

@@ -7,8 +7,7 @@
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
 	<link rel="icon" href="/sk-include/static/img/logo.png">
-	<link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
-	<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
+    <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css"/>
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 
 </head>
@@ -51,16 +50,17 @@
 	</p>
 	<!-- 资 源 引 入 -->
 	<script src="/sk-include/static/js/axios.min.js"></script>
-	<script src="/sk-include/static/layui/layui.js"></script>
+	<script src="/sk-admin/component/layui/layui.js"></script>
 	<script src="/sk-admin/component/pear/pear.js"></script>
 	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
-		layui.use(['form', 'layer', 'popup', 'button', 'loading'], function() {
+		layui.use(['form', 'layer', 'popup', 'button', 'loading','encrypt'], function() {
 			var form = layui.form,
 				layer = layui.layer,
 				popup = layui.popup,
 				button = layui.button,
-				loading = layui.loading;
+				loading = layui.loading,
+                encrypt = layui.encrypt;
 
 			// 提交事件
 			form.on('submit(upload)', function(data) {
@@ -79,10 +79,10 @@
 						elem: '.card',
 						msg: '安装中'
 					})
-					// base64 加密传输
-					var data = Base64.encode(data)
+					// base64
+					var data = encrypt.Base64Encode(data)
 					// 发送请求
-					axios.post('/install/install/install', data)
+					axios.post('/install/install/install', {data:data})
 						.then(function(response) {
 							if (response.data.code == 200) {
 								load.stop()

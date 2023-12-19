@@ -16,7 +16,6 @@ use ReflectionClass;
 use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
-use PhpMyAdmin\Config\ConfigFile;
 
 class FrameWork
 {
@@ -237,7 +236,7 @@ class FrameWork
     public
     static function setConfig(array $new)
     {
-        $config = include_once ConfigFile;
+        $config = include_once CONFIG_FILE;
         $file = INC . 'config/app.php';
         $_new = var_export(array_replace_recursive($config, $new), true);
         file_put_contents($file, "<?php \n return $_new;\n");

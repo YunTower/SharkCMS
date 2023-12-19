@@ -112,6 +112,10 @@ class Api extends FrameWork
                             $data['ban'] = false;
                         }
                     }
+                    // 处理密码
+                if (isset($data['pwd'])){
+                    $data['pwd']=User::encode_pwd($data['pwd'],time());
+                }
                     // 拦截站长的作死行为
                     if ($data['ban'] == true && $_GET['uid'] == 1 || $data['role'] == 'user' && $_GET['uid']) {
                         jsonMsg(400, '此操作已被阻止，请不要作死');
@@ -346,7 +350,7 @@ class Api extends FrameWork
         $a = $this->action;
         switch ($a) {
             case 'check':
-                exit(json_encode(self::$_http->post('UpdateCheck', include_once ConfigFile, 'json')));
+                exit(json_encode(self::$_http->post('UpdateCheck', include_once CONFIG_FILE, 'json')));
                 break;
             case 'do':
                 $url = API_HOST . 'UpdateDo';
@@ -360,7 +364,7 @@ class Api extends FrameWork
                 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);
                 curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); //对于https的不验证ssl证书
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(include_once ConfigFile));
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(include_once CONFIG_FILE));
                 $resource = curl_exec($ch);
                 if ($resource === FALSE) {
                     echo "CURL Error:" . curl_error($ch);

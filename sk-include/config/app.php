@@ -6,10 +6,10 @@
     'Name' => 'SharkCMS',
     'Type' => 'dev',
     'Version' => '1.0.0',
-    'Mode' => 'online',
+    'Mode' => 'dev',
     'LogDir' => '/sk-content/temp/log/',
-    'Install' => true,
-    'Time' => '2023-11-30 08:47:21',
+    'Install' => false,
+    'Time' => '',
   ),
   'Db' => 
   array (
@@ -21,9 +21,9 @@
   ),
   'Api' => 
   array (
-    'Host' => 'https://api.sharkcms.cn/api/',
+    'Host' => 'http://127.0.0.1:8787/api/',
     'Version' => 'v1',
-    'Key' => 'YmNlZ2lrbnFydHZ3eEJDREdNT1NUVlcwNDU3OCEkLV8=',
-    'Token' => '47da0a4eeb7f77e13750f146cfd83a45',
+    'Key' => '',
+    'Token' => '',
   ),
 );

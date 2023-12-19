@@ -23,12 +23,12 @@ define('CON', ROOT . 'sk-content/');
 define('ADM', ROOT . 'sk-admin/');
 // 错误日志目录
 define('ERROR_LOG', CON . 'temp/log/error/');
-// 设置运行模式
-define('DEBUG',true);
+// 设置调试模式
+define('DEBUG', true);
 
 // PHP版本检查
 if (PHP_VERSION < '8.0.2') {
-    exit ("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于8.0.2</a> 的版本！<br>");
+    exit("版本检查：你的PHP版本过于老旧，请使用 <a style='color:red'>等于或高于8.0.2</a> 的版本！<br>");
 }
 
 // 读写权限检查
@@ -43,15 +43,14 @@ session_start();
 
 // 设置全局变量CONFIG_FILE，使其指向INC目录下的app.php文件
 $GLOBALS['CONFIG_FILE'] = INC . 'config/app.php';
-define('CONFIGS',$GLOBALS['CONFIG_FILE']);
-
+define('CONFIGS', include_once(INC . 'config/app.php'));
+define('CONFIG_FILE', $GLOBALS['CONFIG_FILE']);
 // 检查CONFIG_FILE是否存在
 if (file_exists($GLOBALS['CONFIG_FILE'])) {
     // 初始化一个空数组DEFINED_DATA，用于存储配置文件中定义的数据
     $GLOBALS['DEFINED_DATA'] = [];
-    define('ConfigFile',$GLOBALS['CONFIG_FILE']);
     // 使用include_once函数包含CONFIG_FILE，并将结果存储在foreach循环中
-    foreach (include_once $GLOBALS['CONFIG_FILE'] as $key => $arr) {
+    foreach (CONFIGS as $key => $arr) {
         // 遍历数组中的每个键值对
         foreach ($arr as $name => $value) {
             // 将键值对添加到DEFINED_DATA数组中
@@ -72,6 +71,7 @@ if (file_exists($GLOBALS['CONFIG_FILE'])) {
     // 如果CONFIG_FILE不存在，输出错误信息
     exit('系统提示：没有找到配置文件！');
 }
+
 
 // 自动加载
 require_once INC . 'vendor/autoload.php';

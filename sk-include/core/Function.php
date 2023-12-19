@@ -15,7 +15,15 @@ function custom_error_handler($errno, $errstr, $errfile, $errline)
 {
     ob_clean();
     error_log("[" . date('Y-m-d H:i:s') . "]Error: [$errno] $errstr\n", 3, ERROR_LOG . 'error_' . date('Y-m-d') . '.log');
-    include_once INC . 'view/error/error_code.php';
+    if (DEBUG) {
+        include_once INC . 'view/error/error_code.php';
+    } else {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            jsonMsg(500, '系统运行时发生了一些错误');
+        } else {
+            \FrameWork\FrameWork::WARNING(0, ['系统错误', '系统运行时发生了一些错误']);
+        }
+    }
 }
 
 // 异常处理
@@ -24,7 +32,11 @@ function exception_handler(Throwable $exception)
     $title = '系统错误';
     $msg = $exception->getMessage();
     error_log("[" . date('Y-m-d H:i:s') . "]Error: $msg\n", 3, ERROR_LOG . 'error_' . date('Y-m-d') . '.log');
-    include_once INC . 'view/error/error.php';
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        jsonMsg(500, $msg);
+    } else {
+        include_once INC . 'view/error/error.php';
+    }
 }
 
 
@@ -42,6 +54,7 @@ function getRunTime()
     return $sitedays;
 }
 
-function jsonMsg(int $code,$msg,array $data=null){
-    exit(json_encode(['code'=>$code,'msg'=>$msg,'data'=>$data]));
+function jsonMsg(int $code, $msg, array $data = null)
+{
+    exit(json_encode(['code' => $code, 'msg' => $msg, 'data' => $data]));
 }
