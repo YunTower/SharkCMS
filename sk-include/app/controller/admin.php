@@ -13,16 +13,16 @@ class Admin
     public function __construct()
     {
         // 登陆状态检测
-        if ($_SERVER['REQUEST_METHOD'] == 'GET' && FrameWork::getAction()!='loginOut') {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET' && FrameWork::getAction() != 'loginOut') {
             // 登录
             if (User::$loginStatus) {
-                if(User::is_admin()){
+                if (User::is_admin()) {
                     // 加载后台首页
                     $this->info = User::$userInfo;
                     if (FrameWork::getAction() != 'view') {
                         include_once ADM . 'index.php';
                     }
-                }else{
+                } else {
                     header('Location: /');
                 }
                 // 未登录
@@ -48,7 +48,7 @@ class Admin
         } else {
             // 登陆接口
             ob_clean();
-            $data = Utils::DecodeRequestData('POST','data');
+            $data = Utils::DecodeRequestData('POST', 'data');
             if (!isset($data)) {
                 exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
             }
@@ -64,30 +64,26 @@ class Admin
                         if ($user['ban'] == false) {
                             // 密码错误
                             if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
-                                // 权限组 != admin
-                                // if ($user['role'] == 'admin') {
+
                                 // 生成Token
                                 User::CreateToken($user['uid']);
                                 // 返回成功信息
                                 User::$loginStatus = true;
-                                exit(json_encode(array('code' => 200, 'msg' => '登陆成功', 'data' => ['role' => $user['role'], 'status'=>User::$loginStatus])));
-                                // } else {
-                                //     echo json_encode(array('code' => 403, 'msg' => '【权限组】不是管理员'));
-                                // }
+                                jsonMsg(200, '登录成功', ['role' => $user['role'], 'status' => User::$loginStatus]);
                             } else {
-                                echo json_encode(array('code' => 500, 'msg' => '【密码】错误'));
+                                echo json_encode(array('code' => 403, 'msg' => '【密码】错误'));
                             }
                         } else {
-                            echo json_encode(array('code' => 500, 'msg' => '【账号】已封禁'));
+                            echo json_encode(array('code' => 403, 'msg' => '【账号】已封禁'));
                         }
                     } else {
                         echo json_encode(array('code' => 404, 'msg' => '【账号】不存在'));
                     }
                 } else {
-                    echo json_encode(array('code' => 500, 'msg' => '【验证码】错误'));
+                    echo json_encode(array('code' => 403, 'msg' => '【验证码】错误'));
                 }
             } else {
-                echo json_encode(array('code' => 500, 'msg' => '请填写【验证码】'));
+                echo json_encode(array('code' => 400, 'msg' => '请填写【验证码】'));
             }
             unset($_SESSION['captcha']);
 

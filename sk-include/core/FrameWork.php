@@ -102,8 +102,7 @@ class FrameWork
     /**
      * 启动框架并执行控制器方法
      */
-    public
-    static function run()
+    public static function run()
     {
         //调用框架类方法，获取URLk中的控制器和方法
         $controller_action = self::controller_action();
@@ -150,30 +149,26 @@ class FrameWork
     }
 
     // 获取域名
-    public
-    static function getDomain()
+    public static function getDomain()
     {
         $http_type = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')) ? 'https://' : 'http://';
         return $http_type . $_SERVER['HTTP_HOST'];
     }
 
     // 获取url
-    public
-    static function getURL()
+    public static function getURL()
     {
         return $_SERVER["REQUEST_URI"];
     }
 
     // 获取入口文件
-    public
-    static function getFile()
+    public static function getFile()
     {
         return $_SERVER['SCRIPT_NAME'];
     }
 
     // 获取uri
-    public
-    static function getURI()
+    public static function getURI()
     {
         $request = str_replace(self::getFile(), '', self::getURL());
         $request = ltrim($request, '/');
@@ -182,8 +177,7 @@ class FrameWork
     }
 
     // 获取控制器
-    public
-    static function getController()
+    public static function getController()
     {
         if (isset(self::getURI()[0]) && !empty(self::getURI()[0])) {
             return self::getURI()[0];
@@ -193,8 +187,7 @@ class FrameWork
     }
 
     // 获取方法
-    public
-    static function getAction()
+    public static function getAction()
     {
         if (isset(self::getURI()[1]) && !empty(self::getURI()[1])) {
             return self::getURI()[1];
@@ -204,8 +197,7 @@ class FrameWork
     }
 
     // 获取参数
-    public
-    static function getData()
+    public static function getData()
     {
         if (isset(self::getURI()[2]) && !empty(self::getURI()[2])) {
             return self::getURI()[2];
@@ -216,8 +208,7 @@ class FrameWork
 
 
     // 整合参数
-    public
-    static function controller_action()
+    public static function controller_action()
     {
         return array(
             'controller' => self::getController(),
@@ -226,17 +217,15 @@ class FrameWork
         );
     }
 
-    public
-    static function return_json(array $arr)
+    public static function return_json(array $arr)
     {
         exit(json_encode($arr));
     }
 
     // 配置修改
-    public
-    static function setConfig(array $new)
+    public static function setConfig(array $new)
     {
-        $config = include_once CONFIG_FILE;
+        $config = CONFIGS;
         $file = INC . 'config/app.php';
         $_new = var_export(array_replace_recursive($config, $new), true);
         file_put_contents($file, "<?php \n return $_new;\n");
@@ -244,16 +233,14 @@ class FrameWork
 
 
     // 获取来源
-    public
-    static function getOrigin()
+    public static function getOrigin()
     {
         if (isset($_SERVER['HTTP_REFERER'])) {
             return $_SERVER['HTTP_REFERER'];
         }
     }
 
-    public
-    static function getIp()
+    public static function getIp()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -264,8 +251,11 @@ class FrameWork
         return $ip;
     }
 
-    public
-    static function importSQL($file)
+    public static function getUserAgent(){
+        return $_SERVER['HTTP_USER_AGENT'];
+    }
+
+    public static function importSQL($file)
     {
         $mysqli = mysqli_connect(DB_HOST, DB_USER, DB_PWD, DB_NAME);
         // 检测连接
@@ -298,8 +288,7 @@ class FrameWork
      * $msg string 日志内容
      * @return false|true
      */
-    public
-    static function log(int $statusCode, string $msg, int $type = 0)
+    public static function log(int $statusCode, string $msg, int $type = 0)
     {
         switch ($type) {
             case 0:
@@ -309,9 +298,8 @@ class FrameWork
     }
 
 
-// 错误处理
-    public
-    static function WARNING(int $code, array $info = null)
+    // 错误处理
+    public static function WARNING(int $code, array $info = null)
     {
         ob_clean();
         if (self::getController() == 'api') {

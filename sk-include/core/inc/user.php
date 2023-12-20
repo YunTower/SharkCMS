@@ -32,10 +32,9 @@ class User
                 // 验证token真实性
                 if (isset($info)) {
                     if (count($info) == 1) {
-
-                        User::$loginStatus = true;
-                        User::$userInfo = $info[0];
-                        User::$userRole = $info[0]['role'];
+                            User::$loginStatus = true;
+                            User::$userInfo = $info[0];
+                            User::$userRole = $info[0]['role'];
                         if (static::is_ban()) {
                             FrameWork::WARNING(0, ['系统提示', '您的账号已被【禁用】，请联系网站管理员！']);
                         }

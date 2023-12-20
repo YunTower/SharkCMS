@@ -7,7 +7,7 @@
 	<title>安装 - SharkCMS内容管理系统</title>
 	<!-- 样 式 文 件 -->
 	<link rel="icon" href="/sk-include/static/img/logo.png">
-    <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css"/>
+	<link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 	<link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
 
 </head>
@@ -16,32 +16,32 @@
 	<div class="layui-panel card">
 		<form class="layui-form layui-form-pane" action="">
 			<div class="layui-form-item">
-				<label class="layui-form-label">管理员昵称</label>
+				<label class="layui-form-label">数据库地址</label>
 				<div class="layui-input-block">
-					<input type="text" value="test" name="ad_name" autocomplete="off" placeholder="请输入" value="127.0.0.1" lay-verify="required" class="layui-input">
+					<input type="text" name="db_host" autocomplete="off" placeholder="请输入" value="127.0.0.1" lay-verify="required" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">管理员邮箱</label>
+				<label class="layui-form-label">数据库名称</label>
 				<div class="layui-input-block">
-					<input type="email" value="test@test.test" name="ad_mail" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
+					<input type="text" name="db_name" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">管理员密码</label>
+				<label class="layui-form-label">数据库账号</label>
 				<div class="layui-input-block">
-					<input type="password" value="test" name="ad_pwd" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
+					<input type="text" name="db_user" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
 				</div>
 			</div>
 			<div class="layui-form-item">
-				<label class="layui-form-label">重复密码</label>
+				<label class="layui-form-label">数据库密码</label>
 				<div class="layui-input-block">
-					<input type="password" value="test" name="ad_pwd_" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
+					<input type="text" name="db_pwd" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
 				</div>
 			</div>
 
 			<div class="layui-form-item button-item button-next">
-				<button type="button" style="width:200px;height:35px" class="layui-btn layui-btn-primary layui-btn-sm" lay-submit lay-filter="upload" load>提交</button>
+				<button type="button" style="width:200px;height:35px" class="layui-btn layui-btn-primary layui-btn-sm" lay-submit lay-filter="upload">提交</button>
 			</div>
 		</form>
 	</div>
@@ -54,54 +54,44 @@
 	<script src="/sk-admin/component/pear/pear.js"></script>
 	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
-		layui.use(['form', 'layer', 'popup', 'button', 'loading','encrypt'], function() {
+		layui.use(['form', 'popup', 'encrypt'], function() {
 			var form = layui.form,
-				layer = layui.layer,
 				popup = layui.popup,
-				button = layui.button,
-				loading = layui.loading,
-                encrypt = layui.encrypt;
+				encrypt = layui.encrypt;
 
 			// 提交事件
 			form.on('submit(upload)', function(data) {
 				var data = JSON.stringify(data.field);
-				if (JSON.parse(data).ad_pwd != JSON.parse(data).ad_pwd_) {
-					layer.msg('两次输入的密码不一致', {
-						icon: '2'
+				// base64 
+				var data = encrypt.Base64Encode(data)
+				// 配置axios拦截器
+				axios.interceptors.request.use(config => {
+					if (config.method === 'post') {
+						config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+					}
+					return config;
+				});
+				// 发送请求
+				axios.post('/install/install/connect', {
+						data: data
 					})
-				} else {
-					// 按钮加载效果
-					var load = button.load({
-						elem: '[load]',
-					})
-					loading.block({
-						type: 1,
-						elem: '.card',
-						msg: '安装中'
-					})
-					// base64
-					var data = encrypt.Base64Encode(data)
-					// 发送请求
-					axios.post('/install/install/install', {data:data})
-						.then(function(response) {
-							if (response.data.code == 200) {
-								load.stop()
-								loading.blockRemove(".card", 0);
-								popup.success(response.data.msg, function() {
-									window.location.href = '/install/step/3';
-								})
-							} else {
-								load.stop()
-								loading.blockRemove(".card", 0);
-								layer.alert(response.data.msg, {
-									title: '安装错误',
-									icon: 2
+					.then(function(response) {
+						if (response.data.code == 200) {
+							popup.success(response.data.msg, function() {
+								window.location.href = '/install/step/3';
+							})
+						} else {
+							if (response.data.code == 'undefined') {
+								layer.alert(response.data, {
+									'title': '安装错误'
 								});
 
+							} else {
+								popup.failure(response.data.msg)
 							}
-						})
+						}
+					})
 
-				}
 				return false;
 			});
 		});

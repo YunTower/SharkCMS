@@ -14,78 +14,25 @@
 
 <body class="layui-bg-gray sk-form">
 	<div class="layui-panel card">
-		<form class="layui-form layui-form-pane" action="">
-			<div class="layui-form-item">
-				<label class="layui-form-label">数据库地址</label>
-				<div class="layui-input-block">
-					<input type="text" name="db_host" autocomplete="off" placeholder="请输入" value="127.0.0.1" lay-verify="required" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">数据库名称</label>
-				<div class="layui-input-block">
-					<input type="text" name="db_name" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">数据库账号</label>
-				<div class="layui-input-block">
-					<input type="text" name="db_user" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
-				</div>
-			</div>
-			<div class="layui-form-item">
-				<label class="layui-form-label">数据库密码</label>
-				<div class="layui-input-block">
-					<input type="text" name="db_pwd" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
-				</div>
-			</div>
-
-			<div class="layui-form-item button-item button-next">
-				<button type="button" style="width:200px;height:35px" class="layui-btn layui-btn-primary layui-btn-sm" lay-submit lay-filter="upload">提交</button>
-			</div>
-		</form>
+		<p class="title">欢迎使用<a class="main-color">SharkCMS</a>，请仔细阅读使用须知：</p>
+		<ul>
+			<li>1、在安装之前请确认数据库服务已开启，并确认是<a class="red">Mysql</a>数据库</li>
+			<li>2、请确认当前系统安装在网站的<a class="red">一级目录（根目录）</a>，SharkCMS对于二级目录有兼容性问题</li>
+			<li>3、在<a class="main-color">SharkCMS</a>使用过程中会<a class="red">收集系统信息</a>用于<a class="blue">统计分析</a>，同时也会用于<a class="red">云端接口授权</a>（为了保证云端接口不被随意调用），全程都将采用<a class="blue">加密通信</a>，安全问题可以放心</li>
+			<li>4、在使用过程中请不要随意篡改程序（包括但不限于配置文件），否则可能导致系统出错或云端接口无法使用等</li>
+		</ul><br>
+		<p>如果你已了解并同意上述内容，请点击下方按钮。</p><br>
+		<div class="button-next">
+			<button type="button" style="width:200px;height:35px" onclick="jump()" class="layui-btn layui-btn-primary layui-btn-sm">我接受，并进行下一步操作</button>
+		</div>
 	</div>
 	<p class="sk-copyright">
 		<a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
 	</p>
-	<!-- 资 源 引 入 -->
-	<script src="/sk-include/static/js/axios.min.js"></script>
-	<script src="/sk-admin/component/layui/layui.js"></script>
-	<script src="/sk-admin/component/pear/pear.js"></script>
-	<script src="/sk-include/static/js/sharkcms.min.js"></script>
 	<script>
-		layui.use(['form', 'popup','encrypt'], function() {
-			var form = layui.form,
-				popup = layui.popup,
-                encrypt = layui.encrypt;
-
-			// 提交事件
-			form.on('submit(upload)', function(data) {
-				var data = JSON.stringify(data.field);
-				// base64 
-				var data = encrypt.Base64Encode(data)
-				// 发送请求
-				axios.post('/install/install/connect', {data:data})
-					.then(function(response) {
-						if (response.data.code == 200) {
-							popup.success(response.data.msg, function() {
-								window.location.href = '/install/step/2';
-							})
-						} else {
-							if (response.data.code == 'undefined') {
-								layer.alert(response.data, {
-									'title': '安装错误'
-								});
-
-							} else {
-								popup.failure(response.data.msg)
-							}
-						}
-					})
-
-				return false;
-			});
-		});
+		function jump() {
+			window.location.href = '/install/step/1'
+		}
 	</script>
 </body>
 

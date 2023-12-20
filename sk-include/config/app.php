@@ -26,4 +26,12 @@
     'Key' => '',
     'Token' => '',
   ),
+  'db' => 
+  array (
+    'Host' => '127.0.0.1',
+    'User' => 'cms',
+    'Pwd' => 'cmscms',
+    'Name' => 'cms',
+    'Charset' => 'utf8',
+  ),
 );
