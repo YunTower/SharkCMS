@@ -38,14 +38,14 @@ class FrameWork
         // 加载公共函数
         include_once INC . 'core/Function.php';
         // 设置异常&错误处理
-        error_reporting(E_ALL);
-        set_exception_handler('exception_handler');
-        set_error_handler('custom_error_handler');
+        // error_reporting(E_ALL);
+        // set_exception_handler('exception_handler');
+        // set_error_handler('custom_error_handler');
 
         // 检查安装状态
         if (APP_INSTALL == false) {
             if (self::getController() != 'install') {
-                header('Location:/install/');
+                header('Location:/install/step/1');
             }
         } else {
             // 初始化数据库
@@ -72,13 +72,10 @@ class FrameWork
             spl_autoload_register(function ($name) {
                 $core_file = explode('\\', $name)[1];
                 if (!empty($core_file) && $core_file != 'DBAL') {
-
                     $class_file = INC . 'core/inc/' . explode('\\', $name)[1] . '.php';
                     if (file_exists($class_file)) {
                         include_once INC . 'core/inc/' . explode('\\', $name)[1] . '.php';
-
                     }
-
                 }
             });
 
@@ -251,7 +248,8 @@ class FrameWork
         return $ip;
     }
 
-    public static function getUserAgent(){
+    public static function getUserAgent()
+    {
         return $_SERVER['HTTP_USER_AGENT'];
     }
 

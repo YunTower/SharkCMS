@@ -225,7 +225,7 @@
 					title: '添加',
 					shade: 0.1,
 					area: ['350px', '500px'],
-					content: '/admin/view?page=view/user/edit.php&type=add',
+					content: '/admin/view?page=view/user/add.php',
 					end: function() {
 						table.reload('table');
 					}
@@ -253,7 +253,7 @@
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: MODULE_PATH + "remove?id=" + obj.data['id'],
+						url: MODULE_PATH + "remove?uid=" + obj.data['uid'],
 						dataType: 'json',
 						type: 'delete',
 						success: function(result) {
@@ -266,9 +266,8 @@
 									obj.del();
 								});
 							} else {
-								layer.msg(result.msg, {
+								layer.alert(result.msg, {
 									icon: 2,
-									time: 1000
 								});
 							}
 						}
@@ -277,7 +276,7 @@
 			}
 
 			window.batchRemove = function(obj) {
-				var checkIds = common.checkField(obj, 'id');
+				var checkIds = common.checkField(obj, 'uid');
 				if (checkIds === "") {
 					layer.msg("未选中数据", {
 						icon: 3,
@@ -293,9 +292,9 @@
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: MODULE_PATH + "batchRemove?id=" + checkIds,
+						url: MODULE_PATH + "batchRemove?uid=" + checkIds,
 						dataType: 'json',
-						type: 'get',
+						type: 'post',
 						success: function(result) {
 							layer.close(loading);
 							if (result.code == 200) {
@@ -306,9 +305,8 @@
 									table.reload('table');
 								});
 							} else {
-								layer.msg(result.msg, {
+								layer.alert(result.msg, {
 									icon: 2,
-									time: 1000
 								});
 							}
 						}

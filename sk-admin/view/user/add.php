@@ -1,23 +1,9 @@
-<?php
-
-use FrameWork\User\User;
-
-if (isset($_GET['uid'])) {
-    if (is_numeric(htmlspecialchars($_GET['uid']))) $uid = htmlspecialchars($_GET['uid']);
-    $data = User::getInfo($uid);
-    if (empty($data)) {
-        FrameWork\FrameWork::WARNING(404);
-    }
-} else {
-    FrameWork\FrameWork::WARNING(403);
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>修改</title>
+    <title>新增</title>
     <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
 
 </head>
@@ -32,7 +18,7 @@ if (isset($_GET['uid'])) {
                             <div class="layui-input-split layui-input-prefix">
                                 头像
                             </div>
-                            <input type="text" name="avatar" placeholder="点击上传头像" value="<?= $data['avatar'] ?>" id="Avatar" class="layui-input">
+                            <input type="text" name="avatar" placeholder="点击上传头像" value="" id="Avatar" class="layui-input">
                             <div class="layui-input-split layui-input-suffix" style="color: #2d8cf0;" id="Preview" lay-on="preview">
                                 预览
                             </div>
@@ -45,7 +31,7 @@ if (isset($_GET['uid'])) {
                             <div class="layui-input-split layui-input-prefix">
                                 用户名
                             </div>
-                            <input type="text" name="name" placeholder="" lay-verify="required" value="<?= $data['name'] ?>" class="layui-input">
+                            <input type="text" name="name" placeholder="" lay-verify="required" value="" class="layui-input">
                         </div>
                     </div>
                 </div>
@@ -55,7 +41,17 @@ if (isset($_GET['uid'])) {
                             <div class="layui-input-split layui-input-prefix">
                                 邮箱
                             </div>
-                            <input type="email" name="mail" placeholder="" lay-verify="required|email" value="<?= $data['mail'] ?>" class="layui-input">
+                            <input type="email" name="mail" placeholder="" lay-verify="required|email" value="" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-form-item">
+                        <div class="layui-input-group">
+                            <div class="layui-input-split layui-input-prefix">
+                                密码
+                            </div>
+                            <input type="password" name="pwd" placeholder="" class="layui-input">
                         </div>
                     </div>
                 </div>
@@ -66,8 +62,8 @@ if (isset($_GET['uid'])) {
                                 角色
                             </div>
                             <select name="role" lay-verify="">
-                                <option value="admin" <?php if (User::$userRole=='admin') echo 'clected' ?>>Admin</option>
-                                <option value="user" <?php if (User::$userRole=='user') echo 'clected' ?>>User</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
                             </select>
                         </div>
                     </div>
@@ -79,22 +75,13 @@ if (isset($_GET['uid'])) {
                                 状态
                             </div>
                             <select name="ban" lay-verify="">
-                                <option value="false" <?php if (!User::is_ban()) echo 'clected' ?>>启用</option>
-                                <option value="true" <?php if (User::is_ban()) echo 'clected' ?>>禁用</option>
+                                <option value="false">启用</option>
+                                <option value="true">禁用</option>
                             </select>
                         </div>
                     </div>
                 </div>
-                <div class="layui-form-item">
-                    <div class="layui-form-item">
-                        <div class="layui-input-group">
-                            <div class="layui-input-split layui-input-prefix">
-                                新密码
-                            </div>
-                            <input type="password" name="pwd" placeholder="留空则不重置密码" class="layui-input">
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </div>
         <div class="bottom">
@@ -154,7 +141,7 @@ if (isset($_GET['uid'])) {
             // 头像上传
             upload.render({
                 elem: '#Avatar',
-                url: '/api/upload?file=image&type=avatar',
+                url: '/api/upload/avatar',
                 accept: 'image',
                 done: function(res, index, upload) {
                     console.log(res)
@@ -194,7 +181,7 @@ if (isset($_GET['uid'])) {
                 // 提交数据
                 var uid = sk.getData()['uid']
                 var data = encrypt.Base64Encode(data)
-                axios.post('/api/user/update?uid=' + uid, {
+                axios.post('/api/user/add', {
                         data: data
                     })
                     .then(function(response) {

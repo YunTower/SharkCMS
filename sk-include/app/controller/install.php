@@ -22,7 +22,8 @@ class Install
 
     public function index()
     {
-        include_once INC . 'view/install/index.php';
+        $_SESSION['install_step'] = 1;
+        header('Location:/install/step/1');
     }
 
     public function step()
@@ -62,7 +63,7 @@ class Install
             $data = Utils::DecodeRequestData('POST', 'data');
 
             switch (FrameWork::getData()) {
-                // 数据库连接
+                    // 数据库连接
                 case 'connect';
                     $conn = new mysqli($data['db_host'], $data['db_user'], $data['db_pwd'], $data['db_name']);
                     if ($conn->connect_error) {
@@ -103,7 +104,7 @@ class Install
                             // 写入初始数据
                             $t = time();
                             $pwd = User::encode_pwd($data['ad_pwd'], $t);
-                            DB::table('sk_user')->insert(array('name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.webp', 'role' => 'admin', 'ban' => false, 'ua' => FrameWork::getUserAgent(), 'created' => $t));
+                            DB::table('sk_user')->insert(array('name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.jpg', 'role' => 'admin', 'ban' => false, 'ua' => FrameWork::getUserAgent(), 'created' => $t));
                             DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
                             DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));

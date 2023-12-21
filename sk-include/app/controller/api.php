@@ -7,6 +7,7 @@ use FrameWork\User\User;
 use FrameWork\View\View;
 use FrameWork\Plugin\Plugin;
 use FrameWork\Captcha\Captcha;
+use FrameWork\File\File;
 use FrameWork\Utils;
 
 class Api extends FrameWork
@@ -90,6 +91,37 @@ class Api extends FrameWork
                         jsonMsg(403, '权限不足！');
                     }
                     break;
+                case 'add':
+                    // 验证数据合法性
+                    if (is_array(Utils::DecodeRequestData('POST', 'data'))) {
+                        $data = Utils::DecodeRequestData('POST', 'data');
+                    } else {
+                        jsonMsg(404, '无数据');
+                    }
+                    // 拦截非管理员用户操作他人数据的行为
+                    if (User::is_user()) {
+                        jsonMsg(403, '权限不足！');
+                    }
+                    // 转换数据
+                    if (isset($data['ban'])) {
+                        if ($data['ban'] == 'true') {
+                            $data['ban'] = true;
+                        } else if ($data['ban'] == 'false') {
+                            $data['ban'] = false;
+                        }
+                    }
+                    // 处理密码
+                    if (isset($data['pwd'])) {
+                        $data['pwd'] = User::encode_pwd($data['pwd'], time());
+                    }
+                    unset($data['file']);
+                    // 更新数据
+                    if (Db::table('sk_user')->insert(['name' => $data['name'], 'pwd' => $data['pwd'], 'mail' => $data['mail'], 'avatar' => $data['avatar'], 'role' => $data['role'], 'ban' => $data['ban'], 'created' => time()])) {
+                        jsonMsg(200, '添加成功');
+                    } else {
+                        jsonMsg(400, '添加失败');
+                    }
+                    break;
                 case 'token':
                     jsonMsg(200, '操作成功', ['login' => true, 'token' => $_SESSION['token']]);
                     break;
@@ -113,9 +145,9 @@ class Api extends FrameWork
                         }
                     }
                     // 处理密码
-                if (isset($data['pwd'])){
-                    $data['pwd']=User::encode_pwd($data['pwd'],time());
-                }
+                    if (isset($data['pwd'])) {
+                        $data['pwd'] = User::encode_pwd($data['pwd'], time());
+                    }
                     // 拦截站长的作死行为
                     if ($data['ban'] == true && $_GET['uid'] == 1 || $data['role'] == 'user' && $_GET['uid']) {
                         jsonMsg(400, '此操作已被阻止，请不要作死');
@@ -128,6 +160,44 @@ class Api extends FrameWork
                         jsonMsg(400, '更新失败');
                     }
 
+                    break;
+                case 'remove':
+                    if (isset($_GET['uid']) && is_numeric($_GET['uid'])) {
+                        try {
+                            if (DB::table('sk_user')->where('uid', $_GET['uid'])->exists()) {
+                                DB::table('sk_user')->where('uid', $_GET['uid'])->delete();
+                                jsonMsg(200, '删除成功');
+                            } else {
+                                jsonMsg(400, '数据不存在');
+                            }
+                        } catch (Exception $e) {
+                            jsonMsg(500, $e->getMessage());
+                        }
+                    } else {
+                        jsonMsg(403, '参数错误');
+                    }
+                    break;
+                case 'batchRemove':
+                    if (User::is_admin()) {
+                        if (isset($_GET['uid'])) {
+                            $ids = $_GET['uid'];
+                            $ids = preg_split('/,/', $ids, -1, PREG_SPLIT_NO_EMPTY);
+                            try {
+                                foreach ($ids as $id) {
+                                    if (is_numeric($id)) {
+                                        if (DB::table('sk_user')->where('uid', $_GET['uid'])->exists()) {
+                                            DB::table('sk_user')->where('uid', $_GET['uid'])->delete();
+                                        }
+                                    }
+                                }
+                                jsonMsg(200, '删除成功');
+                            } catch (Exception $e) {
+                                jsonMsg(500, $e->getMessage());
+                            }
+                        } else {
+                            jsonMsg(403, '参数错误');
+                        }
+                    }
                     break;
                 default:
                     jsonMsg(403, '权限不足！');
@@ -147,7 +217,7 @@ class Api extends FrameWork
             if (!empty($data['avatar'])) {
                 $file = self::getDomain() . $data['avatar'];
                 if (file_exists($file)) {
-                    header('Content - type: image / webp');
+                    header('Content-type:image/webp');
                     include $file;
                 }
             } else {
@@ -215,64 +285,41 @@ class Api extends FrameWork
     // 文件上传
     public function upload()
     {
-        $type_img = [
-            'image/png',
-            'image/jpg',
-            'image/webp',
-            'image/jpeg'
+        $file_type = [
+            'image' => ['image/png',
+                'image/jpg',
+                'image/webp',
+                'image/jpeg']
         ];
-        if (isset($_FILES['file'])) {
-            switch ($this->action) {
-                case 'Cover':
-                    try {
-                        $data = $_FILES['file'];
-                        // 类型验证
-                        for ($i = 0; $i < count($type_img); $i++) {
-                            $this->type = $this->type + 1;
-                        }
-                        if ($this->type == 4) {
-                            // 存储文件
-                            $dir = CON . "upload/avatar/" . $_FILES["file"]["name"];
-                            $data = File::Upload($_FILES["file"]["tmp_name"], $dir);
-
-                        } else {
-                            $data = ['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"];
-                        }
-                    } catch (Exception $e) {
-                        $data = ['code' => 500, 'msg' => $e->getMessage()];
-                    }
-                    break;
-                case 'SiteIcon':
-
-                    // 文件信息
-                    $data = $_FILES['file'];
-                    // 类型验证
-                    for ($i = 0; $i < count($type_img); $i++) {
-                        $this->type = $this->type + 1;
-                    }
-
-                    if ($this->type == 4) {
-                        // 存储文件
-                        $file = CON . "upload/" . $_FILES["file"]["name"];
-                        move_uploaded_file($_FILES["file"]["tmp_name"], $file);
-                        // 更新设置
-                        DB::table('sk_setting')->where('name', 'Site - Logo')->update(['value' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]);
-                        exit(json_encode(['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/' . $_FILES["file"]["name"]]]));
+        $upload_type = [
+            'avatar' => ['avatar', CON . 'upload/avatar/']
+        ];
+        // 请求参数验证
+        if (isset($_GET['file'], $_GET['type'], $_FILES['file'])) {
+            try {
+                $data = $_FILES['file'];
+                // 文件类型验证
+                for ($i = 0; $i < count($file_type[$_GET['file']]); $i++) {
+                    $this->type = $this->type + 1;
+                }
+                if ($this->type == 4 && isset($upload_type[$_GET['type']])) {
+                    // 存储文件
+                    $dir = $upload_type[$_GET['type']][1] . $_FILES["file"]["name"];
+                    $data = File::Upload($_FILES["file"]["tmp_name"], $dir);
+                    if ($data['code'] == 200) {
+                        jsonMsg($data['code'], $data['msg'], ['url' => $data['data']['url']]);
                     } else {
-                        exit(json_encode(['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"]));
+                        jsonMsg(500, '上传失败');
                     }
-                    break;
-
-                case 'video':
-
-                default:
-                    exit(json_encode(array('code' => 400, 'msg' => '操作失败', 'error' => null)));
-                    break;
+                } else {
+                    $data = ['code' => 400, 'msg' => "不支持{$data['type']}类型的文件"];
+                }
+            } catch (Exception $e) {
+                jsonMsg(500, $e->getMessage());
             }
         } else {
-            $data = ['code' => 400, 'msg' => '文件上传失败，无效的操作'];
+            jsonMsg(403, '参数错误');
         }
-        exit(json_encode($data));
     }
 
     public function getTheme()
@@ -290,7 +337,7 @@ class Api extends FrameWork
 
     public function plugin()
     {
-        if (isset($_POST['action']) && isset($_POST['name'])) {
+        if (isset($_POST['action']) && isset($_POST['name']) && User::is_admin()) {
             $action = $_POST['action'];
             $name = $_POST['name'];
             if ($action == 'active') {
@@ -309,14 +356,14 @@ class Api extends FrameWork
                 FrameWork::return_json(['code' => 400, 'msg' => '操作不存在 / 操作失败']);
             }
         } else {
-            FrameWork::return_json(['code' => 403, 'msg' => '参数缺失']);
+            jsonMsg(403, '非法请求');
         }
     }
 
     public function SaveSetting()
     {
 
-        if (isset($_POST['data'])) {
+        if (isset($_POST['data']) && User::is_admin()) {
             try {
                 $res = $_POST['data'];
                 $data = [
@@ -341,20 +388,24 @@ class Api extends FrameWork
             } catch (Exception $e) {
                 exit(json_encode(['code' => 500, 'msg' => '保存设置时发生错误：' . $e->getMessage()]));
             }
+        } else {
+            jsonMsg(403, '非法请求');
         }
     }
 
     public function update()
     {
-
         $a = $this->action;
         switch ($a) {
             case 'check':
-                exit(json_encode(self::$_http->post('UpdateCheck', include_once CONFIG_FILE, 'json')));
+                $headers = array('Content-Type' => 'application/json');
+                $arr = Requests::post(API_HOST . 'UpdateCheck', $headers, json_encode(CONFIGS));
+                $arr = json_decode($arr->body, true);
+                jsonMsg(200, 'success', $arr);
                 break;
             case 'do':
                 $url = API_HOST . 'UpdateDo';
-                $save_path = CON . 'temp / download / ';
+                $save_path = CON . 'temp/download/ ';
                 if (!file_exists($save_path)) {
                     mkdir($save_path, 0777, true); //创建目录
                 }

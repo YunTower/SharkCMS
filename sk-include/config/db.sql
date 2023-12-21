@@ -195,7 +195,7 @@ CREATE TABLE `sk_user`
     `ban`       varchar(32)  DEFAULT NULL,
     `logintime` varchar(64)  DEFAULT NULL,
     `token`     varchar(150) DEFAULT NULL,
-    `ua`        text         NOT NULL,
+    `ua`        text         DEFAULT NULL,
     `created`   int(10) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

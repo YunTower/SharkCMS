@@ -1,4 +1,3 @@
-# 开发版本请勿下载！
 <center>
 
 <div style="width: 300px">
@@ -19,10 +18,10 @@
 
 ## 🎉 简介
 
-SharkCMS 是由<a href="https://www.xyfish.cn/">fish</a>开发的内容管理系统，可用于<code>搭建博客、官网等</code>SharkCMS
-可以安装任意适配 SharkCMS 的主题，也欢迎各位开发者为 SharkCMS 开发主题。
+SharkCMS 是由 <a href="https://www.xyfish.cn/">fish</a> 开发的内容管理系统，可用于<code>搭建博客、官网等</code>SharkCMS
+可以安装任意适配 SharkCMS 的主题
 
-`本项目采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成功`
+`本项目采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成果`
 
 Gitee：https://gitee.com/YunTower/SharkCMS  
 Github：https://github.com/YunTower/SharkCMS
@@ -30,19 +29,20 @@ Github：https://github.com/YunTower/SharkCMS
 ## 🛠 安装要求
 
 - Nginx / Apache / IIS
-- PHP >= 7.0
+- PHP >= 8.0.2
 - Mysql >= 5.6   
 
-```推荐配置：Nginx + PHP 7.4 + Mysql 5.7```  
+```推荐配置：Nginx + PHP 8.0.2 + Mysql 5.7```  
 ```不建议【虚拟主机】使用SharkCMS，可能会导致系统出现一些无法预测的错误```
 
 ## 😋 致谢
 
 - [Layui（MIT License）](https://gitee.com/layui/layui)
+- [Pear Admin Layer（MIT License）](https://gitee.com/pear-admin/Pear-Admin-Layui/)
 - [Editor.md License）](http://editor.md.ipandao.com/)
 - [Axios.js（MIT License）](https://github.com/axios/axios)
 - [illuminate/database（MIT License）](https://github.com/illuminate/database)
-- [Requests]
+- [Requests for PHP（ISC License）](https://requests.ryanmccue.info/)
 - 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>

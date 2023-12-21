@@ -1,6 +1,7 @@
 <?php
 
 use FrameWork\View\View;
+use FrameWork\Hook\Hook;
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,7 +45,8 @@ use FrameWork\View\View;
         .right .layui-colla-content {
             padding: 10px 5px;
         }
-        .layui-colla-content .layui-form-checkbox{
+
+        .layui-colla-content .layui-form-checkbox {
             margin-bottom: 5px;
         }
     </style>
@@ -134,6 +136,8 @@ use FrameWork\View\View;
                                         <input type="checkbox" name="private" title="不公开">
                                     </div>
                                 </div>
+                                <?= Hook::add('admin-article-edit-right', ''); ?>
+
                             </div>
 
                         </div>
