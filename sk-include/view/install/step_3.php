@@ -39,10 +39,11 @@
 					<input type="password" value="test" name="ad_pwd_" autocomplete="off" placeholder="请输入" lay-verify="required" class="layui-input">
 				</div>
 			</div>
-
+			<input type="checkbox" name="mode" value="offline" title="开启【离线模式】">
 			<div class="layui-form-item button-item button-next">
-				<button type="button" style="width:200px;height:35px" class="layui-btn layui-btn-primary layui-btn-sm" lay-submit lay-filter="upload" load>提交</button>
+				<button type="button" style="width:200px;height:35px" class="layui-btn layui-btn-primary layui-btn-sm" lay-submit id="install" lay-filter="install" load>开始安装</button>
 			</div>
+			<p>了解<a color="#2d8cf0" title="" href="https://www.yuque.com/fishnb/sharkcms/hfeta0ccq5et58vq#W373D" target="_blank"">【离线模式】</a></p>
 		</form>
 	</div>
 	<p class="sk-copyright">
@@ -63,8 +64,9 @@
 				encrypt = layui.encrypt;
 
 			// 提交事件
-			form.on('submit(upload)', function(data) {
+			form.on('submit(install)', function(data) {
 				var data = JSON.stringify(data.field);
+				var mode = data.mode;
 				if (JSON.parse(data).ad_pwd != JSON.parse(data).ad_pwd_) {
 					layer.msg('两次输入的密码不一致', {
 						icon: '2'
@@ -89,27 +91,69 @@
 						return config;
 					});
 					// 发送请求
-					axios.post('/install/install/install', {
-							data: data
-						})
-						.then(function(response) {
-							if (response.data.code == 200) {
-								load.stop()
-								loading.blockRemove(".card", 0);
-								popup.success(response.data.msg, function() {
-									window.location.href = '/install/step/4';
-								})
-							} else {
-								load.stop()
-								loading.blockRemove(".card", 0);
-								layer.alert(response.data.msg, {
-									title: '安装错误',
-									icon: 2
-								});
-
-							}
-						})
-
+					var install = function() {
+						axios.post('/install/install/install', {
+								data: data,
+								mode: mode
+							})
+							.then(function(response) {
+								if (response.data.code == 200) {
+									load.stop()
+									loading.blockRemove(".card", 0);
+									popup.success(response.data.msg, function() {
+										window.location.href = '/install/step/4';
+									})
+								} else {
+									load.stop()
+									loading.blockRemove(".card", 0);
+									if (response.data.code == 501) {
+										layer.alert('云端连接失败，是否需要开启<a color:"#2d8cf0" title="了解离线模式" href="https://www.yuque.com/fishnb/sharkcms/hfeta0ccq5et58vq#W373D" target="_blank"">【离线模式】</a>', {
+											title: '提示',
+											icon: 0,
+											btn: ['开启【离线模式】并安装', '重试'],
+											btnAlign: 'c',
+											btn1: function() {
+												axios.post('/install/install/install', {
+														data: data,
+														mode: 'offline'
+													})
+													.then(function(res) {
+														if (res.data.code == 200) {
+															load.stop()
+															loading.blockRemove(".card", 0);
+															popup.success(response.data.msg, function() {
+																window.location.href = '/install/step/4';
+															})
+														} else {
+															layer.alert(response.data.msg, {
+																title: '安装错误',
+																icon: 2
+															});
+														}
+													})
+											},
+											btn2: function() {
+												var load = button.load({
+													elem: '[load]',
+												})
+												loading.block({
+													type: 1,
+													elem: '.card',
+													msg: '安装中'
+												})
+												install();
+											}
+										});
+									} else {
+										layer.alert(response.data.msg, {
+											title: '安装错误',
+											icon: 2
+										});
+									}
+								}
+							})
+					}
+					install()
 				}
 				return false;
 			});

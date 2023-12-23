@@ -29,6 +29,7 @@ function custom_error_handler($errno, $errstr, $errfile, $errline)
 // 异常处理
 function exception_handler(Throwable $exception)
 {
+    ob_clean();
     $title = '系统错误';
     $msg = $exception->getMessage();
     error_log("[" . date('Y-m-d H:i:s') . "]Error: $msg\n", 3, ERROR_LOG . 'error_' . date('Y-m-d') . '.log');
@@ -37,6 +38,7 @@ function exception_handler(Throwable $exception)
     } else {
         include_once INC . 'view/error/error.php';
     }
+    exit();
 }
 
 
@@ -56,5 +58,7 @@ function getRunTime()
 
 function jsonMsg(int $code, $msg, array $data = null)
 {
+    ob_clean();
     exit(json_encode(['code' => $code, 'msg' => $msg, 'data' => $data]));
 }
+

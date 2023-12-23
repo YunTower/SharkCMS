@@ -69,8 +69,8 @@ class Install
                     if ($conn->connect_error) {
                         jsonMsg(500, '数据库连接失败：' . $conn->connect_error);
                     } else {
-                        FrameWork::setConfig(['db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf8')]);
-                        $_SESSION['install_step'] += 1;
+                        FrameWork::setConfig(['Db' => array('Host' => $data['db_host'], 'User' => $data['db_user'], 'Pwd' => $data['db_pwd'], 'Name' => $data['db_name'], 'Charset' => 'utf8')]);
+                        $_SESSION['install_step'] = 3;
                         jsonMsg(200, '数据库连接成功');
                     }
                     break;
@@ -95,47 +95,55 @@ class Install
                     include_once INC . 'core/inc/User.php';
                     // 初始化类
                     User::init();
+                    $mode = empty($data['mode']) ? 'online' : 'offline';
+                    $config = ['App' => ['Mode' => $mode, 'Install' => true, 'Time' => date('Y-m-d H:i:s')]];
 
-                    $headers = array('Content-Type' => 'application/json');
-                    $arr = Requests::post(API_HOST . 'addUser', $headers, json_encode(CONFIGS));
-                    $arr = json_decode($arr->body, true);
-                    if ($arr['code'] == 200) {
-                        if (FrameWork::importSQL(INC . 'config/db.sql')) {
-                            // 写入初始数据
-                            $t = time();
-                            $pwd = User::encode_pwd($data['ad_pwd'], $t);
-                            DB::table('sk_user')->insert(array('name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.jpg', 'role' => 'admin', 'ban' => false, 'ua' => FrameWork::getUserAgent(), 'created' => $t));
-                            DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
-                            DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
-                            DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
-                            $data =
-                                [
-                                    ['name' => 'Site-Title', 'value' => 'SharkCMS'],
-                                    ['name' => 'Site-Subtitle', 'value' => '中国人自己的开源内容管理系统'],
-                                    ['name' => 'Site-Logo', 'value' => '/sk-include/static/img/logo.png'],
-                                    ['name' => 'Site-HeaderCode', 'value' => ''],
-                                    ['name' => 'Site-FooterCode', 'value' => ''],
-                                    ['name' => 'Article-PageSize', 'value' => 15],
-                                    ['name' => 'Article-AllowComment', 'value' => true],
-                                    ['name' => 'User-AllowReg', 'value' => false],
-                                    ['name' => 'Comment-Examined', 'value' => false],
-                                    ['name' => 'Comment-PostLoginComments', 'value' => true],
-                                    ['name' => 'Comment-PSize', 'value' => 15],
-                                    ['name' => 'Seo-Keyword', 'value' => 'SharkCMS',],
-                                    ['name' => 'Seo-Description', 'value' => '又一个SharkCMS站点']
-                                ];
-                            Db::table('sk_setting')->insert($data);
-                        } else {
-                            jsonMsg(500, '数据库安装出错');
+                    if ($mode == 'online') {
+                        $headers = array('Content-Type' => 'application/json');
+                        $arr = Requests::post(API_HOST . 'install', $headers, json_encode(CONFIGS));
+                        $arr = json_decode($arr->body, true);
+                        if ($arr['code'] != 200) {
+                            jsonMsg(501, '云端连接失败，是否需要开启离线模式');
                         }
-                        // 写入信息
-                        FrameWork::setConfig(['App' => ['Install' => true, 'Time' => date('Y-m-d H:i:s')], 'Api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]]);
-                        User::CreateToken(1);
-                        $_SESSION['install_step'] += 1;
-                        jsonMsg(200, '安装成功');
-                    } else {
-                        jsonMsg(500, '云端连接错误：' . $arr['msg']);
+                        $mode = 'online';
+                        $config += ['Api' => ['Key' => $arr['data']['key'], 'Token' => $arr['data']['token']]];
                     }
+
+                    if (FrameWork::importSQL(INC . 'config/db.sql')) {
+                        // 写入初始数据
+                        $t = time();
+                        $pwd = User::encode_pwd($data['ad_pwd'], $t);
+                        DB::table('sk_user')->insert(array('name' => $data['ad_name'], 'pwd' => $pwd, 'mail' => $data['ad_mail'], 'avatar' => '/sk-content/upload/avatar/default.jpg', 'role' => 'admin', 'ban' => false, 'ua' => FrameWork::getUserAgent(), 'created' => $t));
+                        DB::table('sk_content')->insert(array('title' => 'Hello SharkCMS', 'slug' => '你好！世界！', 'content' => '当你看到这篇文章的时候，说明SharkCMS已经安装成功了，删除这篇文章，开始创作吧！', 'category' => 'SharkCMS', 'tag' => 'default', 'uid' => 1, 'uname' => $data['ad_name']));
+                        DB::table('sk_category')->insert(array('name' => 'SharkCMS', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+                        DB::table('sk_tag')->insert(array('name' => 'default', 'cid' => 1, 'uid' => 1, 'uname' => $data['ad_name']));
+                        $data =
+                            [
+                                ['name' => 'Site-Title', 'value' => 'SharkCMS'],
+                                ['name' => 'Site-Subtitle', 'value' => '中国人自己的开源内容管理系统'],
+                                ['name' => 'Site-Logo', 'value' => '/sk-include/static/img/logo.png'],
+                                ['name' => 'Site-HeaderCode', 'value' => ''],
+                                ['name' => 'Site-FooterCode', 'value' => ''],
+                                ['name' => 'Article-PageSize', 'value' => 15],
+                                ['name' => 'Article-AllowComment', 'value' => true],
+                                ['name' => 'User-AllowReg', 'value' => false],
+                                ['name' => 'Comment-Examined', 'value' => false],
+                                ['name' => 'Comment-PostLoginComments', 'value' => true],
+                                ['name' => 'Comment-PSize', 'value' => 15],
+                                ['name' => 'Seo-Keyword', 'value' => 'SharkCMS',],
+                                ['name' => 'Seo-Description', 'value' => '又一个SharkCMS站点']
+                            ];
+                        Db::table('sk_setting')->insert($data);
+                    } else {
+                        jsonMsg(500, '数据库安装出错');
+                    }
+
+                    // 写入信息
+                    FrameWork::setConfig($config);
+                    User::CreateToken(1);
+                    $_SESSION['install_step'] += 1;
+                    jsonMsg(200, '安装成功');
+
                     break;
 
                 default:

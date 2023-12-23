@@ -197,7 +197,7 @@ class FrameWork
     public static function getData()
     {
         if (isset(self::getURI()[2]) && !empty(self::getURI()[2])) {
-            return self::getURI()[2];
+            return htmlspecialchars(self::getURI()[2]);
         } else {
             return null;
         }

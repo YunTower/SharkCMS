@@ -125,7 +125,7 @@ class Api extends FrameWork
                 case 'token':
                     jsonMsg(200, '操作成功', ['login' => true, 'token' => $_SESSION['token']]);
                     break;
-                case'update':
+                case 'update':
                     // 验证数据合法性
                     if (is_array(Utils::DecodeRequestData('POST', 'data'))) {
                         $data = Utils::DecodeRequestData('POST', 'data');
@@ -269,7 +269,6 @@ class Api extends FrameWork
                         exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
                     }
                 } else {
-
                 }
 
                 break;
@@ -286,10 +285,12 @@ class Api extends FrameWork
     public function upload()
     {
         $file_type = [
-            'image' => ['image/png',
+            'image' => [
+                'image/png',
                 'image/jpg',
                 'image/webp',
-                'image/jpeg']
+                'image/jpeg'
+            ]
         ];
         $upload_type = [
             'avatar' => ['avatar', CON . 'upload/avatar/']
@@ -448,8 +449,27 @@ class Api extends FrameWork
 
     public function getNews()
     {
-        $headers = array('Content - Type' => 'application / json');
-        $arr = Requests::post(API_HOST . 'getNews', $headers, json_encode(CONFIGS));
-        echo json_encode(json_decode($arr->body, true));
+    }
+
+    function cloud()
+    {
+        if (CONFIGS['App']['Mode'] == 'online') {
+            if (!empty(FrameWork::getData())) {
+                switch (FrameWork::getData()) {
+                    case 'getNews':
+                        $headers = array('Content - Type' => 'application / json');
+                        $arr = Requests::post(API_HOST . 'getNews', $headers, json_encode(CONFIGS));
+                        echo json_encode(json_decode($arr->body, true));
+                        break;
+                    default:
+                        jsonMsg(400, '非法请求');
+                        break;
+                }
+            } else {
+                jsonMsg(403, '非法请求');
+            }
+        } else {
+            jsonMsg(400, '您已开启【离线模式】无法进行与【云端】相关的操作');
+        }
     }
 }

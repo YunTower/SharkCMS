@@ -223,8 +223,8 @@ use FrameWork\View\View;
 
             table.render({
                 elem: '#table',
-                url: '/api/getNews',
-                method:'post',
+                url: '/api/cloud/getNews',
+                method: 'post',
                 page: true,
                 cols: cols,
                 skin: 'line',
