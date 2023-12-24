@@ -131,7 +131,7 @@ class FrameWork
                     if (self::getController() != 'admin') {
                         if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
                             if (self::getAction() != 'index' && self::getAction() != 'index') {
-                                self::Error(404);
+                                self::WARNING(404);
                             }
                         }
                     }
@@ -140,7 +140,7 @@ class FrameWork
                     $method->invoke($instance);
                 }
             } else {
-                self::Error(404);
+                self::WARNING(404);
             }
         }
     }

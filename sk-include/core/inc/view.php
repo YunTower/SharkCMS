@@ -159,7 +159,7 @@ class View
                 $data = toArray(Db::table('sk_content')->where('cid', $cid)->get());
                 break;
             default:
-                self::Error(0, "在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】'");
+                self::WARNING(0, "在调用模板方法时产生错误【View::query】，没有方法【' . $a . '】'");
                 break;
         }
         return $data;

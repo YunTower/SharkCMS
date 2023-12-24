@@ -13,18 +13,23 @@
 			<form class="layui-form" action="">
 				<div class="layui-form-item">
 					<div class="layui-form-item layui-inline">
-						<label class="layui-form-label">ID</label>
+						<label class="layui-form-label">UID</label>
 						<div class="layui-input-inline">
-							<input type="text" name="realName" placeholder="" class="layui-input">
+							<input type="text" name="uid" placeholder="" class="layui-input">
 						</div>
 					</div>
 					<div class="layui-form-item layui-inline">
-						<label class="layui-form-label">标题</label>
+						<label class="layui-form-label">用户名</label>
 						<div class="layui-input-inline">
-							<input type="text" name="realName" placeholder="" class="layui-input">
+							<input type="text" name="name" placeholder="" class="layui-input">
 						</div>
 					</div>
-
+					<div class="layui-form-item layui-inline">
+						<label class="layui-form-label">邮箱</label>
+						<div class="layui-input-inline">
+							<input type="text" name="mail" placeholder="" class="layui-input">
+						</div>
+					</div>
 					<div class="layui-form-item layui-inline">
 						<button class="pear-btn pear-btn-md pear-btn-primary" lay-submit lay-filter="user-query">
 							<i class="layui-icon layui-icon-search"></i>
@@ -82,7 +87,14 @@
 			<span style="color: red">封禁</span>
 			{{# } }}
 	</script>
-	<script type="text/html" id="time">
+	<script type="text/html" id="logintime">
+	{{#if (d.logintime == 0 || d.logintime== '' || d.logintime == null) { }}
+		<span>未登录</span>
+		{{# }else{ }}
+			<span>{{= formatTime(d.logintime) }}</span>
+			{{# } }}
+	</script>
+	<script type="text/html" id="created">
 		<span>{{= formatTime(d.created) }}</span>
 	</script>
 	<script type="text/html" id="bar">
@@ -128,7 +140,7 @@
 						type: 'checkbox'
 					},
 					{
-						title: 'ID',
+						title: 'UID',
 						field: 'uid',
 						width: 50,
 					},
@@ -162,10 +174,21 @@
 						templet: '#role'
 					},
 					{
+						title: 'UA',
+						field: 'ua',
+						width: 150
+					},
+					{
+						title: '登录时间',
+						field: 'logintime',
+						width: 150,
+						templet: '#logintime'
+					},
+					{
 						title: '创建时间',
 						field: 'created',
 						width: 150,
-						templet: '#time'
+						templet: '#created'
 					},
 					{
 						title: '操作',
@@ -209,7 +232,8 @@
 			});
 
 			form.on('submit(user-query)', function(data) {
-				table.reload('table', {
+				table.reloadData('table', {
+					url:'/api/user/search',
 					where: data.field
 				})
 				return false;
@@ -227,7 +251,7 @@
 					area: ['350px', '500px'],
 					content: '/admin/view?page=view/user/add.php',
 					end: function() {
-						table.reload('table');
+						table.reloadData('table');
 					}
 				});
 			}
@@ -235,12 +259,12 @@
 			window.edit = function(obj) {
 				layer.open({
 					type: 2,
-					title: '修改 - '+obj.data.uid+' - '+obj.data.name,
+					title: '修改 - ' + obj.data.uid + ' - ' + obj.data.name,
 					shade: 0.1,
 					area: ['350px', '500px'],
 					content: '/admin/view?page=view/user/edit.php&uid=' + obj.data.uid,
 					end: function() {
-						table.reload('table');
+						table.reloadData('table');
 					}
 				});
 			}

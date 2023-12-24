@@ -95,7 +95,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                 </button>
             </div>
             <div class="layui-form-item demo-login-other" style="text-align: center">
-                <a href="/admin/reg">注册帐号</a>
+                <a href="/admin/register">注册帐号</a>
             </div>
         </form>
     </div>

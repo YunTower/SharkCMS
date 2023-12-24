@@ -22,43 +22,6 @@ class Api extends FrameWork
     function __construct()
     {
         header('Content-Type: application/json; charset=utf-8');
-        // 请求频率控制
-        if (isset($_SESSION['ban']) && $_SESSION['ban'] == true) {
-            // 获取起始时间
-            $ban_start = $_SESSION['ban_start'];
-            // 获取当前时间戳
-            $now = time();
-            // 剩余封禁时间（秒）
-            $t = 600 - ($now - $ban_start);
-            // 剩余时间大于600秒
-            if ($t >= 0) {
-                exit(json_encode(['code' => 403, 'msg' => "请求过于频繁，请在【{$t}秒】后重试"]));
-            } else {
-                // 取消封禁
-                unset($_SESSION['count']);
-                unset($_SESSION['require_start']);
-                unset($_SESSION['ban']);
-                unset($_SESSION['ban_start']);
-            }
-        } else {
-            // 频率记录
-            if (isset($_SESSION['count'])) {
-                $start = $_SESSION['require_start'];
-                $now = time();
-                // 30秒内请求大于等于20次
-                if ($now - $start <= 30 && $_SESSION['count'] >= 20) {
-                    $_SESSION['ban'] = true;
-                    $_SESSION['ban_start'] = time();
-                    exit(json_encode(['code' => 403, 'msg' => '请求过于频繁，请在600秒后重试']));
-                }
-                // 次数+1
-                $_SESSION['count'] = $_SESSION['count'] + 1;
-            } else {
-                // 设置初始次数和开始时间
-                $_SESSION['count'] = 1;
-                $_SESSION['require_start'] = time();
-            }
-        }
 
         // 初始化请求
         $data = file_get_contents("php://input");
@@ -86,7 +49,22 @@ class Api extends FrameWork
             switch ($this->action) {
                 case 'get':
                     if (User::is_admin()) {
-                        jsonMsg(0, '数据拉取成功', toArray(Db::table('sk_user')->select('uid', 'name', 'mail', 'avatar', 'ban', 'role', 'created')->get()));
+                        if (isset($_GET['page'], $_GET['limit']) && is_numeric($_GET['page']) && is_numeric($_GET['limit'])) {
+                            $data = array_reverse(toArray(Db::table('sk_user')->select('uid','name','mail','avatar','role','ban','logintime','ua','created')->get()));
+                            // 当前页码
+                            $page = !empty($_GET['page']) ? $_GET['page'] : 1;
+                            // 数据数量
+                            $limit = !empty($_GET['limit']) ? $_GET['limit'] : 10;
+                            // 分页
+                            $data = Utils::Pager($data, $limit, $_GET['page']);
+                            if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
+                                jsonMsg(400,'页码大于总页数');
+                            } else {
+                                exit(json_encode(['code' => 0, 'count' => $data['total_count'], 'data' => $data['data']]));
+                            }
+                        } else {
+                            jsonMsg(400,'请求无效');
+                        }
                     } else {
                         jsonMsg(403, '权限不足！');
                     }
@@ -160,6 +138,9 @@ class Api extends FrameWork
                         jsonMsg(400, '更新失败');
                     }
 
+                    break;
+                case 'search':
+                    if ()
                     break;
                 case 'remove':
                     if (isset($_GET['uid']) && is_numeric($_GET['uid'])) {

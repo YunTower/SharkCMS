@@ -48,6 +48,15 @@ class User
         }
     }
 
+    public static function is_login()
+    {
+        if (static::$loginStatus) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static function is_admin()
     {
         if (static::$loginStatus) {
@@ -87,7 +96,7 @@ class User
         // 生成Token
         $token = base64_encode(json_encode(array('uid' => $id, 'time' => $time)));
         // 保存Token
-        Db::table('sk_user')->where('uid', $id)->update(array('token' => $token));
+        Db::table('sk_user')->where('uid', $id)->update(array('logintime' => time(), 'token' => $token));
         $_SESSION['token'] = $token;
         return $token;
     }

@@ -176,7 +176,7 @@ CREATE TABLE `sk_theme`
 --
 
 INSERT INTO `sk_theme` (`tid`, `name`, `value`, `created`)
-VALUES (1, 'd-home-avatar', '/sk-content/upload/avatar/default.webp', '2023-07-07 09:00:32');
+VALUES (1, 'd-home-avatar', '/sk-include/static/img/logo.png', '2023-07-07 09:00:32');
 
 -- --------------------------------------------------------
 

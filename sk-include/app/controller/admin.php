@@ -28,7 +28,7 @@ class Admin
                 // 未登录
             } else {
                 // 加载登录页面
-                if (FrameWork::getAction() != 'reg') {
+                if (FrameWork::getAction() != 'register') {
                     // 若来源于文章
                     if (isset(explode('/', FrameWork::getOrigin())[4]) && explode('/', FrameWork::getOrigin())[4] == 'article') {
                         FrameWork::$_data = json_encode(['from' => 'article']);
@@ -55,16 +55,18 @@ class Admin
             $user = toArray(Db::table('sk_user')->where('mail', $data['umail'])->get())[0];
 
             // 没有验证码
+            if (User::is_login()) {
+                jsonMsg(403, '您已登录，请先退出当前账号');
+            }
             if (isset($data['captcha'])) {
                 // 验证码错误
-                if ($data['captcha'] == @$_SESSION['captcha']) {
+                if (isset($_SESSION['captcha']) && $data['captcha'] == @$_SESSION['captcha']) {
                     // 账号不存在
                     if ($user != null) {
                         // 账号已封禁
-                        if ($user['ban'] == false) {
+                        if ($user['ban'] == false || $user['ban'] == 0) {
                             // 密码错误
                             if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
-
                                 // 生成Token
                                 User::CreateToken($user['uid']);
                                 // 返回成功信息
@@ -86,7 +88,6 @@ class Admin
                 echo json_encode(array('code' => 400, 'msg' => '请填写【验证码】'));
             }
             unset($_SESSION['captcha']);
-
         }
     }
 
@@ -104,9 +105,12 @@ class Admin
         }
     }
 
-    public function reg()
+    public function register()
     {
-        include ADM . 'reg.php';
+        if (FrameWork::$getSetting['User-AllowReg']) {
+        } else {
+            FrameWork::WARNING(0, ['提示', '注册功能已关闭']);
+        }
     }
 
     public function view()
@@ -125,5 +129,4 @@ class Admin
             echo 1;
         }
     }
-
 }

@@ -1,5 +1,4 @@
-<center>
-
+<div align="center">
 <div style="width: 300px">
 
 ![img](https://cdn.sharkcms.cn/img/text.svg)
@@ -12,7 +11,8 @@
 [ 官网 ](https://sharkcms.cn/) |
 [ 演示 ](https://demo.sharkcms.cn/)|
 [ 文档 ](https://doc.sharkcms.cn/)
-</center>
+
+</div>
 
 ---
 
@@ -30,10 +30,10 @@ Github：https://github.com/YunTower/SharkCMS
 
 - Nginx / Apache / IIS
 - PHP >= 8.0.2
-- Mysql >= 5.6   
+- Mysql >= 5.6
 
-```推荐配置：Nginx + PHP 8.0.2 + Mysql 5.7```  
-```不建议【虚拟主机】使用SharkCMS，可能会导致系统出现一些无法预测的错误```
+`推荐配置：Nginx + PHP 8.0.2 + Mysql 5.7`  
+`不建议【虚拟主机】使用SharkCMS，可能会导致系统出现一些无法预测的错误`
 
 ## 😋 致谢
 
@@ -43,12 +43,12 @@ Github：https://github.com/YunTower/SharkCMS
 - [Axios.js（MIT License）](https://github.com/axios/axios)
 - [illuminate/database（MIT License）](https://github.com/illuminate/database)
 - [Requests for PHP（ISC License）](https://requests.ryanmccue.info/)
-- 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为SharkCMS设计 Logo
+- 感谢【[海藻酸钠](https://www.yuque.com/hzsn/)】为 SharkCMS 设计 Logo
 
 ## 💰 <a id="zanzhu">捐赠</a>
->所有资金都将用于SharkCMS项目的维护等相关内容，感谢支持   
 
-|    微信    |                      支付宝                       |
-|:--------:|:----------------------------------------------:|
+> 所有资金都将用于 SharkCMS 项目的维护等相关内容，感谢支持
+
+|                     微信                      |                     支付宝                     |
+| :-------------------------------------------: | :--------------------------------------------: |
 | ![img](https://cdn.sharkcms.cn/img/wxpay.png) | ![img](https://cdn.sharkcms.cn/img/alipay.png) |
-

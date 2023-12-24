@@ -58,7 +58,6 @@ function getRunTime()
 
 function jsonMsg(int $code, $msg, array $data = null)
 {
-    ob_clean();
     exit(json_encode(['code' => $code, 'msg' => $msg, 'data' => $data]));
 }
 
