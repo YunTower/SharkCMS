@@ -38,7 +38,7 @@ class FrameWork
         // 加载公共函数
         include_once INC . 'core/Function.php';
         // 设置异常&错误处理
-        // error_reporting(E_ALL);
+        error_reporting(E_ALL);
         // set_exception_handler('exception_handler');
         // set_error_handler('custom_error_handler');
 
@@ -177,7 +177,7 @@ class FrameWork
     public static function getController()
     {
         if (isset(self::getURI()[0]) && !empty(self::getURI()[0])) {
-            return self::getURI()[0];
+            return htmlspecialchars(self::getURI()[0]);
         } else {
             return 'index';
         }
@@ -187,7 +187,7 @@ class FrameWork
     public static function getAction()
     {
         if (isset(self::getURI()[1]) && !empty(self::getURI()[1])) {
-            return self::getURI()[1];
+            return htmlspecialchars(self::getURI()[1]);
         } else {
             return 'index';
         }
@@ -212,11 +212,6 @@ class FrameWork
             'action' => self::getAction(),
             'data' => self::getData()
         );
-    }
-
-    public static function return_json(array $arr)
-    {
-        exit(json_encode($arr));
     }
 
     // 配置修改

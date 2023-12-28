@@ -10,5 +10,5 @@
     'Version' => '1.0',
     'Class' => 'DefaultPlugin',
   ),
-  'use' => false,
+  'use' => true,
 );

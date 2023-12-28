@@ -24,9 +24,12 @@ SharkCMS 是由 <a href="https://www.xyfish.cn/">fish</a> 开发的内容管理�
 `本项目采用 GPL-v3 开源协议，请遵循协议并尊重他人劳动成果`
 
 Gitee：https://gitee.com/YunTower/SharkCMS  
-Github：https://github.com/YunTower/SharkCMS
+Github：https://github.com/YunTower/SharkCMS  
 
-## 🛠 安装要求
+演示地址：[https://demo.sharkcms.cn](https://demo.sharkcms.cn)  
+账号：test@test.test 密码：test
+
+## 🛠 环境
 
 - Nginx / Apache / IIS
 - PHP >= 8.0.2

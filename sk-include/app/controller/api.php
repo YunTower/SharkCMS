@@ -43,6 +43,34 @@ class Api extends FrameWork
     }
 
 
+    function article()
+    {
+        if (User::is_admin() && !empty(FrameWork::getData())) {
+            switch (FrameWork::getData()) {
+                case 'add':
+                    if (!isset($_POST) && !is_array($_POST)) {
+                        jsonMsg(403, '参数错误');
+                    }
+
+                    if (!isset($_POST['title'], $_POST['slug'], $_POST['content'])) {
+                        jsonMsg(403, '参数缺失');
+                    }
+                    var_dump($_POST);
+                    foreach ($_POST['tag'] as $v){
+                        var_dump(array_keys($_POST['tag'],$v));
+                    }
+
+                    break;
+                default:
+                    jsonMsg(404, '页面不存在！');
+                    break;
+            }
+        } else {
+            jsonMsg(403, '权限不足！');
+        }
+    }
+
+
     function user()
     {
         if (User::$loginStatus) {
@@ -50,7 +78,22 @@ class Api extends FrameWork
                 case 'get':
                     if (User::is_admin()) {
                         if (isset($_GET['page'], $_GET['limit']) && is_numeric($_GET['page']) && is_numeric($_GET['limit'])) {
-                            $data = array_reverse(toArray(Db::table('sk_user')->select('uid','name','mail','avatar','role','ban','logintime','ua','created')->get()));
+                            if (!isset($_GET['uid'], $_GET['name'], $_GET['mail'])) {
+                                $data = array_reverse(toArray(Db::table('sk_user')->select('uid', 'name', 'mail', 'avatar', 'role', 'ban', 'logintime', 'ua', 'created')->get()));
+                            } else {
+                                $uid = isset($_GET['uid']) ? $_GET['uid'] : null;
+                                $name = isset($_GET['name']) ? htmlspecialchars($_GET['name']) : null;
+                                $mail = isset($_GET['mail']) ? $_GET['mail'] : null;
+                                $db = Db::table('sk_user');
+                                if ($uid) {
+                                    $data = $db->where('uid', $uid)->select('uid', 'name', 'mail', 'avatar', 'role', 'ban', 'logintime', 'ua', 'created');
+                                } else if ($mail) {
+                                    $data = DB::select('select uid,name,mail,avatar,role,ban,logintime,ua,created from sk_user where mail like ?', ['%' . $mail . '%']);
+                                } else {
+                                    $data = DB::select('select uid,name,mail,avatar,role,ban,logintime,ua,created from sk_user where name like ?', ['%' . $name . '%']);
+                                }
+                                $data = array_reverse(toArray($data));
+                            }
                             // 当前页码
                             $page = !empty($_GET['page']) ? $_GET['page'] : 1;
                             // 数据数量
@@ -58,12 +101,12 @@ class Api extends FrameWork
                             // 分页
                             $data = Utils::Pager($data, $limit, $_GET['page']);
                             if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
-                                jsonMsg(400,'页码大于总页数');
+                                jsonMsg(400, '页码大于总页数');
                             } else {
                                 exit(json_encode(['code' => 0, 'count' => $data['total_count'], 'data' => $data['data']]));
                             }
                         } else {
-                            jsonMsg(400,'请求无效');
+                            jsonMsg(400, '请求无效');
                         }
                     } else {
                         jsonMsg(403, '权限不足！');
@@ -138,9 +181,6 @@ class Api extends FrameWork
                         jsonMsg(400, '更新失败');
                     }
 
-                    break;
-                case 'search':
-                    if ()
                     break;
                 case 'remove':
                     if (isset($_GET['uid']) && is_numeric($_GET['uid'])) {
@@ -233,35 +273,6 @@ class Api extends FrameWork
         }
     }
 
-
-    // 文章操作
-    function article()
-    {
-        switch ($this->action) {
-            case 'save':
-                $data = $_POST['data'];
-                if (is_array($data) && !empty($data['title']) && !empty($data['slug']) && !empty($data['content'])) {
-
-                    $info = User::$userInfo;
-                    $sql = self::$_db->table('sk_content')->insert(array('title' => $data['title'], 'slug' => $data['slug'], 'content' => $data['content'], 'cover' => $data['cover'], 'pwd' => $data['pwd'], 'uid' => $info['uid'], 'uname' => $info['name']));
-                    if ($sql) {
-                        exit(json_encode(array('code' => 200, 'msg' => '操作成功', 'error' => null)));
-                    } else {
-                        exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => self::$_db->error()['error'])));
-                    }
-                } else {
-                }
-
-                break;
-            case 'get':
-                exit(json_encode(['code' => 0, 'msg' => '操作成功', 'data' => View::$vArticle, 'count' => count(View::$vArticle)]));
-            default:
-                exit(json_encode(array('code' => 500, 'msg' => '操作失败', 'error' => null)));
-                break;
-        }
-        return exit(json_encode($res));
-    }
-
     // 文件上传
     public function upload()
     {
@@ -274,19 +285,20 @@ class Api extends FrameWork
             ]
         ];
         $upload_type = [
-            'avatar' => ['avatar', CON . 'upload/avatar/']
+            'avatar' => [CON . 'upload/avatar/', $file_type['image']],
+            'sitelogo' => [CON . 'upload/', $file_type['image']],
         ];
         // 请求参数验证
-        if (isset($_GET['file'], $_GET['type'], $_FILES['file'])) {
+        if (isset($_GET['type'], $_FILES['file'])) {
             try {
                 $data = $_FILES['file'];
                 // 文件类型验证
-                for ($i = 0; $i < count($file_type[$_GET['file']]); $i++) {
+                for ($i = 0; $i < count($upload_type[$_GET['type']][1]); $i++) {
                     $this->type = $this->type + 1;
                 }
                 if ($this->type == 4 && isset($upload_type[$_GET['type']])) {
                     // 存储文件
-                    $dir = $upload_type[$_GET['type']][1] . $_FILES["file"]["name"];
+                    $dir = $upload_type[$_GET['type']][0] . $_FILES["file"]["name"];
                     $data = File::Upload($_FILES["file"]["tmp_name"], $dir);
                     if ($data['code'] == 200) {
                         jsonMsg($data['code'], $data['msg'], ['url' => $data['data']['url']]);

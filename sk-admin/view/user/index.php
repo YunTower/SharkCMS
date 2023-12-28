@@ -15,7 +15,7 @@
 					<div class="layui-form-item layui-inline">
 						<label class="layui-form-label">UID</label>
 						<div class="layui-input-inline">
-							<input type="text" name="uid" placeholder="" class="layui-input">
+							<input type="number" name="uid" placeholder="" class="layui-input">
 						</div>
 					</div>
 					<div class="layui-form-item layui-inline">
@@ -27,7 +27,7 @@
 					<div class="layui-form-item layui-inline">
 						<label class="layui-form-label">邮箱</label>
 						<div class="layui-input-inline">
-							<input type="text" name="mail" placeholder="" class="layui-input">
+							<input type="email" name="mail" placeholder="" class="layui-input">
 						</div>
 					</div>
 					<div class="layui-form-item layui-inline">
@@ -233,7 +233,6 @@
 
 			form.on('submit(user-query)', function(data) {
 				table.reloadData('table', {
-					url:'/api/user/search',
 					where: data.field
 				})
 				return false;

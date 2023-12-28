@@ -100,7 +100,7 @@ use FrameWork\Hook\Hook;
                                                 <div class="layui-input-split layui-input-prefix layui-input-split-left">
                                                     封面
                                                 </div>
-                                                <input type="text" placeholder="带任意前置和后置内容" class="layui-input" id="upload-value">
+                                                <input type="text" placeholder="" class="layui-input" id="upload-value">
                                                 <div class="layui-input-suffix">
                                                     <button class="layui-btn layui-btn-primary" id="upload">上传</button>
                                                 </div>
@@ -281,7 +281,7 @@ use FrameWork\Hook\Hook;
             form.on('submit(setting)', function(data) {
                 var data = JSON.parse(JSON.stringify(data.field));
                 if (data.title == '' || data.slug == '' || data.content == '') {
-                    layer.msg('请填写【标题】或【摘要】或【文章内容】', {
+                    layer.msg('请填写【标题、摘要、文章内容】', {
                         icon: 2
                     })
                     return false;
@@ -300,9 +300,7 @@ use FrameWork\Hook\Hook;
                 });
 
                 // 提交登陆
-                axios.post('/api/article/save', {
-                        data: data
-                    })
+                axios.post('/api/article/add', data)
                     .then(function(response) {
                         if (response.data.code == 200) {
                             layer.msg(response.data.msg, {
@@ -320,6 +318,8 @@ use FrameWork\Hook\Hook;
                             })
                         }
                     })
+                    load.stop()
+
 
                 return false;
             });
