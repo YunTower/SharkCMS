@@ -47,17 +47,102 @@ class Api extends FrameWork
     {
         if (User::is_admin() && !empty(FrameWork::getData())) {
             switch (FrameWork::getData()) {
+                case 'get':
+                    if (User::is_admin()) {
+                        if (isset($_GET['page'], $_GET['limit']) && is_numeric($_GET['page']) && is_numeric($_GET['limit'])) {
+                            if (!isset($_GET['uid'], $_GET['name'], $_GET['mail'])) {
+                                $data = array_reverse(toArray(Db::table('sk_content')->select('cid','title','slug','cover','category','tag','status','uid','uname','allowComment','top','created')->get()));
+                            } else {
+                                $cid = isset($_GET['cid']) ? $_GET['cid'] : null;
+                                $title = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : null;
+                                $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
+                                $db = Db::table('sk_content');
+                                if ($cid) {
+                                    $data = $db->where('cid', $cid)->select('cid','title','slug','cover','category','tag','status','uid','uname','allowComment','top','created');
+                                } else if ($title) {
+                                    $data = DB::select('select cid,title,slug,cover,category,tag,status,uid,uname,allowComment,top,created from sk_content where title like ?', ['%' . $title . '%']);
+                                } else {
+                                    $data = DB::select('select cid,title,slug,cover,category,tag,status,uid,uname,allowComment,top,created from sk_content where slug like ?', ['%' . $slug . '%']);
+                                }
+                                $data = array_reverse(toArray($data));
+                            }
+                            // 当前页码
+                            $page = !empty($_GET['page']) ? $_GET['page'] : 1;
+                            // 数据数量
+                            $limit = !empty($_GET['limit']) ? $_GET['limit'] : 10;
+                            // 分页
+                            $data = Utils::Pager($data, $limit, $_GET['page']);
+                            if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
+                                jsonMsg(400, '页码大于总页数');
+                            } else {
+                                exit(json_encode(['code' => 0, 'count' => $data['total_count'], 'data' => $data['data']]));
+                            }
+                        } else {
+                            jsonMsg(400, '请求无效');
+                        }
+                    } else {
+                        jsonMsg(403, '权限不足！');
+                    }
+                    break;
                 case 'add':
-                    if (!isset($_POST) && !is_array($_POST)) {
-                        jsonMsg(403, '参数错误');
+                    if (!isset($_POST) && !is_array($_POST)) jsonMsg(403, '参数错误');
+                    if (!isset($_POST['title'], $_POST['slug'], $_POST['content'])) jsonMsg(403, '参数缺失');
+                    if (isset($_POST['file'])) unset($_POST['file']);
+
+                    // 处理分类
+                    if (isset($_POST['category']) && is_array($_POST['category'])) {
+                        $category = [];
+                        foreach ($_POST['category'] as $k => $v) {
+                            $category += [$k];
+                        }
+
+                        if (count($category) == 1) {
+                            $_POST['category'] = $category[0];
+                        } else {
+                            jsonMsg(404, '只能选择一个分类');
+                        }
                     }
 
-                    if (!isset($_POST['title'], $_POST['slug'], $_POST['content'])) {
-                        jsonMsg(403, '参数缺失');
+                    // 处理标签
+                    if (isset($_POST['tag']) && !empty($_POST['tag'])) {
+                        $tags = explode(',', $_POST['tag']);
+
+                        $_POST['tag'] = json_encode($tags);
+                    } else {
+                        $_POST['tag'] = null;
                     }
-                    var_dump($_POST);
-                    foreach ($_POST['tag'] as $v){
-                        var_dump(array_keys($_POST['tag'],$v));
+
+                    if (isset($_POST['top']) && $_POST['top'] == 'on') {
+                        $_POST['top'] = true;
+                    } else {
+                        $_POST['top'] = false;
+                    }
+                    
+                    if (isset($_POST['allowComment']) && $_POST['allowComment'] == 'on') {
+                        $_POST['allowComment'] = true;
+                    } else {
+                        $_POST['allowComment'] = false;
+                    }
+
+                    if (isset($_POST['private']) && $_POST['private'] == 'on') {
+                        unset($_POST['private']);
+                        $_POST['status'] = false;
+                    } else {
+                        unset($_POST['private']);
+                        $_POST['status'] = true;
+                    }
+                    unset($_POST['table-align']);
+
+
+                    $_POST += ['uid' => User::$userInfo['uid'], 'uname' => User::$userInfo['name']];
+
+
+                    try {
+                        if (Db::table('sk_content')->insert([$_POST])) {
+                            jsonMsg(200, '添加成功！');
+                        }
+                    } catch (\Exception $e) {
+                        jsonMsg(500, $e->getMessage());
                     }
 
                     break;
@@ -286,6 +371,7 @@ class Api extends FrameWork
         ];
         $upload_type = [
             'avatar' => [CON . 'upload/avatar/', $file_type['image']],
+            'cover' => [CON . 'upload/cover/', $file_type['image']],
             'sitelogo' => [CON . 'upload/', $file_type['image']],
         ];
         // 请求参数验证

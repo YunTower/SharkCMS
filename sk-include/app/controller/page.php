@@ -46,6 +46,9 @@ class Page
     }
 
     public function test(){
-        var_dump(File::fileName(CON.'test.txt')->create('w'));
+        $tid=['tid'=>1];
+        $data=toArray(Db::table('sk_tag')->get());
+        $data=array_search($tid,$data);
+        var_dump($data);
     }
 }

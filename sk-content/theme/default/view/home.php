@@ -23,7 +23,7 @@ use FrameWork\View\View as View;
             <div class="post animated fadeInDown">
                 <div class="post-title">
                     <h3 class="font-medium">
-                        <a href="/page/article/<?= $a['cid'] ?>"><?= $a['title'] ?></a>
+                        <a href="/page/article/<?= $a['cid'] ?>"><?php if ($a['top']==1)echo '[置顶]'  ?><?= $a['title'] ?></a>
                     </h3>
                 </div>
                 <div class="post-content text-sm text-black/50">

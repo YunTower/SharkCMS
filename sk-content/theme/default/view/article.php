@@ -49,7 +49,10 @@ View::$vTitle = $a['title'] . ' - ' . FrameWork::$getSetting['Site-Title'];
                 <div class="post animated fadeInDown">
                     <div id="post-content" class="post-content markdown-body">
                         <article>
-                            <?= $a['content'] ?>
+                            <?php
+                            $Parsedown = new Parsedown();
+                            echo $Parsedown->text($a['content']); 
+                            ?>
                         </article>
                     </div>
                     <div class="pagination flex items-center justify-between"></div>

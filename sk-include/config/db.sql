@@ -33,7 +33,6 @@ CREATE TABLE `sk_category`
 (
     `id`      int(6) UNSIGNED NOT NULL,
     `name`    text      NOT NULL,
-    `cid`     text      NOT NULL,
     `uid`     text      NOT NULL,
     `uname`   text      NOT NULL,
     `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -71,11 +70,12 @@ CREATE TABLE `sk_content`
     `content`      text        NOT NULL,
     `cover`        varchar(190)         DEFAULT NULL,
     `category`     varchar(20)          DEFAULT NULL,
-    `tag`          varchar(20)          DEFAULT NULL,
+    `tag`          json                 DEFAULT NULL,
     `status`       varchar(10)          DEFAULT NULL,
     `uid`          varchar(10) NOT NULL,
     `uname`        varchar(32) NOT NULL,
     `allowComment` char(1)              DEFAULT NULL,
+    `top`          varchar(10)          DEFAULT NULL,
     `created`      timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -141,21 +141,6 @@ CREATE TABLE `sk_setting`
 INSERT INTO `sk_setting` (`name`, `value`, `created`)
 VALUES ('theme-name', 'default', '2023-07-06 12:48:51');
 
--- --------------------------------------------------------
-
---
--- 表的结构 `sk_tag`
---
-
-CREATE TABLE `sk_tag`
-(
-    `id`      int(6) UNSIGNED NOT NULL,
-    `name`    text      NOT NULL,
-    `cid`     text      NOT NULL,
-    `uid`     text      NOT NULL,
-    `uname`   text      NOT NULL,
-    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -239,11 +224,6 @@ ALTER TABLE `sk_page`
 ALTER TABLE `sk_setting`
     ADD PRIMARY KEY (`id`);
 
---
--- 表的索引 `sk_tag`
---
-ALTER TABLE `sk_tag`
-    ADD PRIMARY KEY (`id`);
 
 --
 -- 表的索引 `sk_theme`
@@ -297,11 +277,6 @@ ALTER TABLE `sk_page`
 ALTER TABLE `sk_setting`
     MODIFY `id` int (6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
---
--- 使用表AUTO_INCREMENT `sk_tag`
---
-ALTER TABLE `sk_tag`
-    MODIFY `id` int (6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- 使用表AUTO_INCREMENT `sk_theme`

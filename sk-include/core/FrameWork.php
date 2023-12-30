@@ -1,4 +1,5 @@
 <?php
+
 /**
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
@@ -273,6 +274,7 @@ class FrameWork
         return true;
     }
 
+
     /***
      * @name 日志记录
      * @data
@@ -299,9 +301,11 @@ class FrameWork
             exit(json_encode(['code' => 404, 'msg' => '页面不存在']));
         }
 
-        $file = CON . 'theme/' . vName . '/view/error/' . $code . '.php';
-        if (file_exists($file)) {
-            include_once $file;
+        if (APP_INSTALL) {
+            $file = CON . 'theme/' . vName . '/view/error/' . $code . '.php';
+            if (file_exists($file)) {
+                include_once $file;
+            }
         } else if ($code == 0) {
             $title = $info[0];
             $msg = $info[1];
@@ -398,4 +402,3 @@ class Utils
         );
     }
 }
-

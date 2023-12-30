@@ -34,12 +34,12 @@ use FrameWork\Hook\Hook;
             padding: 10px 0
         }
 
-        .right input {
-            border-radius: 0 4px 4px 0;
-        }
+        .right input {}
 
         .right #upload {
             border-radius: 4px;
+            border-radius: 0 4px 4px 0;
+
         }
 
         .right .layui-colla-content {
@@ -100,7 +100,7 @@ use FrameWork\Hook\Hook;
                                                 <div class="layui-input-split layui-input-prefix layui-input-split-left">
                                                     封面
                                                 </div>
-                                                <input type="text" placeholder="" class="layui-input" id="upload-value">
+                                                <input type="text" name="cover" placeholder="" class="layui-input" id="upload-value">
                                                 <div class="layui-input-suffix">
                                                     <button class="layui-btn layui-btn-primary" id="upload">上传</button>
                                                 </div>
@@ -114,7 +114,7 @@ use FrameWork\Hook\Hook;
                                     <div class="layui-colla-content layui-show">
                                         <?php
                                         foreach (View::getCategories() as $category) {
-                                            echo '<input type="checkbox"lay-filter="category"  name="category[' . $category['id'] . ']" title="' . $category['name'] . '" lay-skin="tag">';
+                                            echo '<input type="checkbox"lay-filter="category"  name="category[' . $category['name'] . ']" title="' . $category['name'] . '" lay-skin="tag">';
                                         }
                                         ?>
                                     </div>
@@ -122,16 +122,14 @@ use FrameWork\Hook\Hook;
                                 <div class="layui-colla-item">
                                     <div class="layui-colla-title">标签</div>
                                     <div class="layui-colla-content">
-                                        <?php
-                                        foreach (View::getTags() as $tag) {
-                                            echo '<input type="checkbox" name="tag[' . $tag['id'] . ']" title="' . $tag['name'] . '" lay-skin="tag">';
-                                        }
-                                        ?>
+                                        <input type="text" name="tag" placeholder="请输入标签（以英文逗号分割）" autocomplete="off" class="layui-input">
+
                                     </div>
                                 </div>
                                 <div class="layui-colla-item">
                                     <div class="layui-colla-title">权限</div>
                                     <div class="layui-colla-content">
+                                        <input type="checkbox" name="top" title="置顶文章">
                                         <input type="checkbox" name="allowComment" title="允许评论">
                                         <input type="checkbox" name="private" title="不公开">
                                     </div>
@@ -208,7 +206,7 @@ use FrameWork\Hook\Hook;
             // 封面上传
             upload.render({
                 elem: '#upload',
-                url: '/api/upload/Cover',
+                url: '/api/upload?type=cover',
                 accept: 'image',
                 done: function(res) {
                     if (res.code == 200) {
@@ -309,7 +307,7 @@ use FrameWork\Hook\Hook;
                             // 按钮动画停止
                             load.stop()
                             sk.sleep(1000).then(() => {
-                                parent.layui.admin.refreshThis()
+                                parent.layui.admin.jump(201, "文章", "/admin/view?page=view/content/article.php")
                             })
                         } else {
                             layer.alert(response.data.msg, {
@@ -318,7 +316,7 @@ use FrameWork\Hook\Hook;
                             })
                         }
                     })
-                    load.stop()
+                load.stop()
 
 
                 return false;

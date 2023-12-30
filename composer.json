@@ -5,6 +5,7 @@
         "illuminate/pagination": "^9.52",
         "illuminate/events": "^9.52",
         "symfony/var-dumper": "^6.0",
-        "rmccue/requests": "^2.0"
+        "rmccue/requests": "^2.0",
+        "erusev/parsedown": "^1.7"
     }
 }
