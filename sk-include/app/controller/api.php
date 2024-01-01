@@ -50,15 +50,15 @@ class Api extends FrameWork
                 case 'get':
                     if (User::is_admin()) {
                         if (isset($_GET['page'], $_GET['limit']) && is_numeric($_GET['page']) && is_numeric($_GET['limit'])) {
-                            if (!isset($_GET['uid'], $_GET['name'], $_GET['mail'])) {
-                                $data = array_reverse(toArray(Db::table('sk_content')->select('cid','title','slug','cover','category','tag','status','uid','uname','allowComment','top','created')->get()));
+                            if (!isset($_GET['cid'], $_GET['title'], $_GET['slug'])) {
+                                $data = array_reverse(toArray(Db::table('sk_content')->select('cid', 'title', 'slug', 'cover', 'category', 'tag', 'status', 'uid', 'uname', 'allowComment', 'top', 'created')->get()));
                             } else {
                                 $cid = isset($_GET['cid']) ? $_GET['cid'] : null;
                                 $title = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : null;
                                 $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
                                 $db = Db::table('sk_content');
                                 if ($cid) {
-                                    $data = $db->where('cid', $cid)->select('cid','title','slug','cover','category','tag','status','uid','uname','allowComment','top','created');
+                                    $data = $db->where('cid', $cid)->select('cid', 'title', 'slug', 'cover', 'category', 'tag', 'status', 'uid', 'uname', 'allowComment', 'top', 'created');
                                 } else if ($title) {
                                     $data = DB::select('select cid,title,slug,cover,category,tag,status,uid,uname,allowComment,top,created from sk_content where title like ?', ['%' . $title . '%']);
                                 } else {
@@ -117,7 +117,7 @@ class Api extends FrameWork
                     } else {
                         $_POST['top'] = false;
                     }
-                    
+
                     if (isset($_POST['allowComment']) && $_POST['allowComment'] == 'on') {
                         $_POST['allowComment'] = true;
                     } else {
@@ -147,6 +147,46 @@ class Api extends FrameWork
 
                     break;
                 default:
+                case 'remove':
+                    if (isset($_GET['cid']) && is_numeric($_GET['cid'])) {
+                        try {
+                            if (DB::table('sk_content')->where('cid', $_GET['cid'])->exists()) {
+                                DB::table('sk_content')->where('cid', $_GET['cid'])->delete();
+                                jsonMsg(200, '删除成功');
+                            } else {
+                                jsonMsg(400, '数据不存在');
+                            }
+                        } catch (Exception $e) {
+                            jsonMsg(500, $e->getMessage());
+                        }
+                    } else {
+                        jsonMsg(403, '参数错误');
+                    }
+                    break;
+                case 'batchRemove':
+                    if (User::is_admin()) {
+                        if (isset($_GET['cid'])) {
+                            $ids = htmlspecialchars($_GET['cid']);
+                            $ids = preg_split('/,/', $ids, -1, PREG_SPLIT_NO_EMPTY);
+                            try {
+                                foreach ($ids as $id) {
+                                    if (is_numeric($id)) {
+                                        if (DB::table('sk_content')->where('cid', $id)->exists()) {
+                                            DB::table('sk_content')->where('cid', $id)->delete();
+                                        }
+                                    }else{
+                                        jsonMsg(400, '参数错误');
+                                    }
+                                }
+                                jsonMsg(200, '删除成功');
+                            } catch (Exception $e) {
+                                jsonMsg(500, $e->getMessage());
+                            }
+                        } else {
+                            jsonMsg(403, '参数错误');
+                        }
+                    }
+                    break;
                     jsonMsg(404, '页面不存在！');
                     break;
             }
@@ -286,13 +326,15 @@ class Api extends FrameWork
                 case 'batchRemove':
                     if (User::is_admin()) {
                         if (isset($_GET['uid'])) {
-                            $ids = $_GET['uid'];
+                            $ids = htmlspecialchars($_GET['uid']);
                             $ids = preg_split('/,/', $ids, -1, PREG_SPLIT_NO_EMPTY);
                             try {
                                 foreach ($ids as $id) {
                                     if (is_numeric($id)) {
-                                        if (DB::table('sk_user')->where('uid', $_GET['uid'])->exists()) {
-                                            DB::table('sk_user')->where('uid', $_GET['uid'])->delete();
+                                        if (DB::table('sk_user')->where('uid', $id)->exists()) {
+                                            DB::table('sk_user')->where('uid', $id)->delete();
+                                        }else{
+                                            jsonMsg(400,'参数错误');
                                         }
                                     }
                                 }
@@ -306,7 +348,7 @@ class Api extends FrameWork
                     }
                     break;
                 default:
-                    jsonMsg(403, '权限不足！');
+                    jsonMsg(404, '页面不存在！');
                     break;
             }
         } else {
@@ -370,9 +412,9 @@ class Api extends FrameWork
             ]
         ];
         $upload_type = [
-            'avatar' => [CON . 'upload/avatar/', $file_type['image']],
-            'cover' => [CON . 'upload/cover/', $file_type['image']],
-            'sitelogo' => [CON . 'upload/', $file_type['image']],
+            'avatar' => ['upload/avatar/', $file_type['image']],
+            'cover' => ['upload/cover/', $file_type['image']],
+            'sitelogo' => ['upload/', $file_type['image']],
         ];
         // 请求参数验证
         if (isset($_GET['type'], $_FILES['file'])) {
@@ -384,8 +426,8 @@ class Api extends FrameWork
                 }
                 if ($this->type == 4 && isset($upload_type[$_GET['type']])) {
                     // 存储文件
-                    $dir = $upload_type[$_GET['type']][0] . $_FILES["file"]["name"];
-                    $data = File::Upload($_FILES["file"]["tmp_name"], $dir);
+                    $dir = CON . $upload_type[$_GET['type']][0] . $_FILES["file"]["name"];
+                    $data = File::Upload($_FILES["file"]["tmp_name"], $dir, $upload_type[$_GET['type']][0]);
                     if ($data['code'] == 200) {
                         jsonMsg($data['code'], $data['msg'], ['url' => $data['data']['url']]);
                     } else {

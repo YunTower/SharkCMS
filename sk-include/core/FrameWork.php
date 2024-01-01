@@ -46,6 +46,7 @@ class FrameWork
         // 检查安装状态
         if (APP_INSTALL == false) {
             if (self::getController() != 'install') {
+            if (isset($_SESSION['install_step'])) $_SESSION['install_step'] = 1;
                 header('Location:/install/step/1');
             }
         } else {
@@ -315,11 +316,10 @@ class FrameWork
         }
         // 日志
         $t = date('Y-m-d H:i:s');
-        $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} {$info}" . PHP_EOL;
+        $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} ".implode($info) . PHP_EOL;
         $file = fopen(ROOT . APP_LOGDIR . 'log_' . date('Y-m-d') . '.log', "a+");
         fwrite($file, $log);
         fclose($file);
-        exit();
     }
 }
 

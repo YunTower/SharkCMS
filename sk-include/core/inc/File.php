@@ -1,4 +1,5 @@
 <?php
+
 /**
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
@@ -17,17 +18,16 @@ class File
 {
     private $filename;
 
-    public static function Upload($file, $dir)
+    public static function Upload($file, $dir, $path)
     {
         if (isset($file) && isset($dir)) {
             try {
                 move_uploaded_file($file, $dir);
-                return ['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/upload/avatar/' . $_FILES["file"]["name"]]];
+                return ['code' => 200, 'msg' => '上传成功', 'data' => ['url' => FrameWork::getDomain() . '/sk-content/' . $path . $_FILES["file"]["name"]]];
             } catch (Exception $e) {
                 return ['code' => 500, 'msg' => $e->getMessage()];
             }
         }
-
     }
 
     public static function fileName($file)
@@ -36,7 +36,6 @@ class File
             $file = new static();
             $file->filename = $file;
             return $file;
-
         } else {
             $file = new static;
             $file->filename = false;

@@ -67,7 +67,7 @@
 	{{#if (d.cover == '' || d.cover==null) { }}
 		<span>无</span>
 		{{# }else { }}
-			<span style="color:#0969da" id="ImagePreview" data-url="{{ d.avatar }}">查看</span>
+			<span style="color:#0969da" id="ImagePreview" data-url="{{ d.cover }}">查看</span>
 			{{# } }}
 	</script>
 	<script type="text/html" id="category">
@@ -81,19 +81,27 @@
 	{{#if (d.tag == '' || d.tag==null) { }}
 		<span class="layui-badge-rim">无</span>
 		{{# }else { }}
-			{{#if (Array.from(JSON.parse(d.tag)).length>1) { }}
-				{{# layui.each(d.tag, function(index, item){ }}
+			{{# if (Array.from(JSON.parse(d.tag)).length>1) { }}
+				{{# layui.each(Array.from(JSON.parse(d.tag)), function(index, item){ }}
 					<span class="layui-badge-rim">{{= item }}</span>
 					{{# }); }}
 						{{# }else { }}
-							<span class="layui-badge-rim">{{ d.tag }}</span>
+							<span class="layui-badge-rim">{{ Array.from(JSON.parse(d.tag))[0] }}</span>
 							{{# } }}
+								{{# } }}
 	</script>
 	<script type="text/html" id="status">
 	{{#if (d.status == 0 || d.status==null) { }}
 		<span style="color:red">私密</span>
 		{{# }else if (d.status==1) { }}
 			<span style="color:#0969da">公开</span>
+			{{# } }}
+	</script>
+	<script type="text/html" id="comment">
+	{{#if (d.allowComment == 0 || d.allowComment==null) { }}
+		<span style="color:red">不允许</span>
+		{{# }else if (d.allowComment==1) { }}
+			<span style="color:#0969da">允许</span>
 			{{# } }}
 	</script>
 	<script type="text/html" id="top">
@@ -105,6 +113,10 @@
 	</script>
 	<script type="text/html" id="created">
 	{{layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss')}}
+	</script>
+	<script type="text/html" id="bar">
+		<button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
+		<button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
 	</script>
 
 	<script src="/sk-admin/component/layui/layui.js"></script>
@@ -138,7 +150,7 @@
 			})
 
 
-			let MODULE_PATH = "operate/";
+			let MODULE_PATH = "/api/article/";
 
 			let cols = [
 				[{
@@ -160,8 +172,7 @@
 					},
 					{
 						title: '封面',
-						field: 'title',
-						align: 'cover',
+						field: 'cover',
 						templet: '#cover'
 					},
 					{
@@ -191,7 +202,7 @@
 						title: '评论',
 						field: 'allowComment',
 						align: 'center',
-						templet: '#author'
+						templet: '#comment'
 					},
 					{
 						title: '置顶',
@@ -209,7 +220,8 @@
 						title: '操作',
 						toolbar: '#bar',
 						align: 'center',
-						width: 130
+						width: 130,
+						fixed: 'right'
 					}
 				]
 			]
@@ -262,24 +274,18 @@
 			}
 
 			window.edit = function(obj) {
-				layer.open({
-					type: 2,
-					title: '修改',
-					shade: 0.1,
-					area: ['500px', '400px'],
-					content: MODULE_PATH + 'edit.html'
-				});
+				parent.layui.admin.addTab(0 + obj.data['cid'], "修改文章 - " + obj.data['cid'], "/admin/view?page=view/content/editor.php&action=edit&cid=" + obj.data['cid'])
 			}
 
 			window.remove = function(obj) {
-				layer.confirm('确定要删除该用户', {
+				layer.confirm('确定要删除该文章', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: MODULE_PATH + "remove/" + obj.data['userId'],
+						url: "/api/article/remove?cid=" + obj.data['cid'],
 						dataType: 'json',
 						type: 'delete',
 						success: function(result) {
@@ -304,7 +310,7 @@
 
 			window.batchRemove = function(obj) {
 
-				var checkIds = common.checkField(obj, 'userId');
+				var checkIds = common.checkField(obj, 'cid');
 
 				if (checkIds === "") {
 					layer.msg("未选中数据", {
@@ -314,14 +320,14 @@
 					return false;
 				}
 
-				layer.confirm('确定要删除这些用户', {
+				layer.confirm('确定要删除这些文章', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
 					layer.close(index);
 					let loading = layer.load();
 					$.ajax({
-						url: MODULE_PATH + "batchRemove/" + ids,
+						url: "/api/article/batchRemove?cid=" + checkIds,
 						dataType: 'json',
 						type: 'delete',
 						success: function(result) {

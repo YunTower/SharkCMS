@@ -19,8 +19,8 @@
 
 <body class="sk-error">
     <div class="main">
-        <div class="title"><?php echo $title ?></div>
-        <p class="content"><?php echo $msg ?></p>
+        <div class="title"><?php echo implode($title) ?></div>
+        <p class="content"><?php echo implode($msg) ?></p>
     </div>
     <p class="sk-copyright">
         <a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
