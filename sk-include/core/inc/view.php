@@ -140,6 +140,18 @@ class View
         return toArray(Db::table('sk_theme')->where("$key", "$name")->get())[0]['value'];
     }
 
+    public static function find(string $name, array $data)
+    {
+        switch ($name) {
+            case 'article':
+                return toArray(Db::table('sk_content')->where($data[0], $data[1])->get());
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
+
     // 列表查询
     public static function query(string $a)
     {
@@ -208,11 +220,13 @@ class View
     }
 
 
-    public static function getTags(){
+    public static function getTags()
+    {
         return toArray(Db::table('sk_tag')->get());
     }
 
-    public static function getCategories(){
+    public static function getCategories()
+    {
         return toArray(Db::table('sk_category')->get());
     }
 }

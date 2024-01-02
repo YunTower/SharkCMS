@@ -46,7 +46,7 @@ class FrameWork
         // 检查安装状态
         if (APP_INSTALL == false) {
             if (self::getController() != 'install') {
-            if (isset($_SESSION['install_step'])) $_SESSION['install_step'] = 1;
+                if (isset($_SESSION['install_step'])) $_SESSION['install_step'] = 1;
                 header('Location:/install/step/1');
             }
         } else {
@@ -306,6 +306,12 @@ class FrameWork
             $file = CON . 'theme/' . vName . '/view/error/' . $code . '.php';
             if (file_exists($file)) {
                 include_once $file;
+            } else if ($code == 0) {
+                $title = $info[0];
+                $msg = $info[1];
+                include_once INC . 'view/error/error.php';
+            } else {
+                include_once INC . 'view/error/' . $code . '.php';
             }
         } else if ($code == 0) {
             $title = $info[0];
@@ -316,7 +322,7 @@ class FrameWork
         }
         // 日志
         $t = date('Y-m-d H:i:s');
-        $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} ".implode($info) . PHP_EOL;
+        $log = "【{$t}】[" . self::getURL() . "][" . self::getIp() . "]{$code} " . implode($info) . PHP_EOL;
         $file = fopen(ROOT . APP_LOGDIR . 'log_' . date('Y-m-d') . '.log', "a+");
         fwrite($file, $log);
         fclose($file);

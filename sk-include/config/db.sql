@@ -71,11 +71,11 @@ CREATE TABLE `sk_content`
     `cover`        varchar(190)         DEFAULT NULL,
     `category`     varchar(20)          DEFAULT NULL,
     `tag`          json                 DEFAULT NULL,
-    `status`       varchar(10)          DEFAULT NULL,
+    `status`       int(10)          DEFAULT NULL,
     `uid`          varchar(10) NOT NULL,
     `uname`        varchar(32) NOT NULL,
-    `allowComment` char(1)              DEFAULT NULL,
-    `top`          varchar(10)          DEFAULT NULL,
+    `allowComment` int(1)              DEFAULT NULL,
+    `top`          int(10)          DEFAULT NULL,
     `created`      timestamp   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

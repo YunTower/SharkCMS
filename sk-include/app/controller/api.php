@@ -28,8 +28,10 @@ class Api extends FrameWork
         if (!empty($_POST) && is_array($_POST)) $request_data = $_POST;
         if (!empty($request_data)) {
             foreach ($request_data as $k => $v) {
-                if ($_SERVER['REQUEST_METHOD'] == 'GET') $_GET[$k] = htmlspecialchars($v);
-                if ($_SERVER['REQUEST_METHOD'] == 'POST') $_POST[$k] = htmlspecialchars($k);
+                if ($k != 'tag') {
+                    if ($_SERVER['REQUEST_METHOD'] == 'GET') $_GET[$k] = htmlspecialchars($v);
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST') $_POST[$k] = htmlspecialchars($k);
+                }
             }
         }
 
@@ -89,7 +91,7 @@ class Api extends FrameWork
                         jsonMsg(403, '权限不足！');
                     }
                     break;
-                case 'add':
+                case 'add' || 'edit':
                     if (!isset($_POST) && !is_array($_POST)) jsonMsg(403, '参数错误');
                     if (!isset($_POST['title'], $_POST['slug'], $_POST['content'])) jsonMsg(403, '参数缺失');
                     if (isset($_POST['file'])) unset($_POST['file']);
@@ -111,7 +113,6 @@ class Api extends FrameWork
                     // 处理标签
                     if (isset($_POST['tag']) && !empty($_POST['tag'])) {
                         $tags = explode(',', $_POST['tag']);
-
                         $_POST['tag'] = json_encode($tags);
                     } else {
                         $_POST['tag'] = null;
@@ -138,16 +139,22 @@ class Api extends FrameWork
                     }
                     unset($_POST['table-align']);
 
-
                     $_POST += ['uid' => User::$userInfo['uid'], 'uname' => User::$userInfo['name']];
 
-
-                    try {
-                        if (Db::table('sk_content')->insert([$_POST])) {
-                            jsonMsg(200, '添加成功！');
+                    if (!empty($_POST) && isset($_POST) && is_array($_POST)) {
+                        try {
+                            if (FrameWork::getData() == 'edit' && isset($_GET['cid']) && is_numeric($_GET['cid'])) {
+                                if (Db::table('sk_content')->where('cid', $_GET['cid'])->update($_POST)) {
+                                    jsonMsg(200, '更新成功！');
+                                }
+                            } else {
+                                if (Db::table('sk_content')->insert([$_POST])) {
+                                    jsonMsg(200, '添加成功！');
+                                }
+                            }
+                        } catch (Exception $e) {
+                            jsonMsg(500, $e->getMessage());
                         }
-                    } catch (\Exception $e) {
-                        jsonMsg(500, $e->getMessage());
                     }
 
                     break;
@@ -472,18 +479,18 @@ class Api extends FrameWork
             $name = $_POST['name'];
             if ($action == 'active') {
                 if (Plugin::setConfig($name, ['use' => true])) {
-                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                    jsonMsg(200, '操作成功');
                 }
             } else if ($action == 'interdict') {
                 if (Plugin::setConfig($name, ['use' => false])) {
-                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                    jsonMsg(200, '操作成功');
                 }
             } else if ($action == 'del') {
                 if (Plugin::del_plugin(Plugin::$plugin_config[$name]['path'])) {
-                    FrameWork::return_json(['code' => 200, 'msg' => '操作成功']);
+                    jsonMsg(200, '操作成功');
                 }
             } else {
-                FrameWork::return_json(['code' => 400, 'msg' => '操作不存在 / 操作失败']);
+                jsonMsg(400, '操作不存在 / 失败');
             }
         } else {
             jsonMsg(403, '非法请求');

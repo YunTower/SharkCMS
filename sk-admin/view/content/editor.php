@@ -1,7 +1,27 @@
 <?php
 
+use FrameWork\FrameWork;
 use FrameWork\View\View;
 use FrameWork\Hook\Hook;
+
+function data()
+{
+    if (isset($_GET['action'], $_GET['cid']) && $_GET['action'] == 'edit') {
+        $cid = htmlentities($_GET['cid']);
+        return View::find('article', ['cid', $cid]);
+    }
+}
+function _edit()
+{
+    if (isset($_GET['action'], $_GET['cid']) && $_GET['action'] == 'edit') {
+        if (empty(data())) {
+            FrameWork::WARNING(0, ['系统错误', '文章不存在']);
+            exit;
+        }
+        return data()[0];
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -61,10 +81,10 @@ use FrameWork\Hook\Hook;
                     <div class="layui-card-header">基础设置</div>
                     <div class="layui-card-body layui-row layui-col-space10">
                         <div class="layui-col-md12">
-                            <input type="text" name="title" placeholder="文章标题" value="Hello World" autocomplete="off" class="layui-input">
+                            <input type="text" name="title" placeholder="文章标题" value="<?php if (_edit()) echo _edit()['title'] ?>" autocomplete="off" class="layui-input">
                         </div>
                         <div class="layui-col-md12">
-                            <textarea name="slug" placeholder="文章摘要" autocomplete="off" class="layui-textarea">Hello World！ 你好！世界！</textarea>
+                            <textarea name="slug" placeholder="文章摘要" autocomplete="off" class="layui-textarea"><?php if (_edit()) echo _edit()['slug'] ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -73,8 +93,7 @@ use FrameWork\Hook\Hook;
                     <div class="layui-card-header">编辑器</div>
                     <div class="layui-card-body layui-row layui-col-space10">
                         <div id="editor" style="z-index: 9999;">
-                            <textarea name="content" id="content">### 关于 Editor.md
-**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。</textarea>
+                            <textarea name="content" id="content"><?php if (_edit()) echo _edit()['content'] ?></textarea>
                         </div>
                     </div>
                 </div>
@@ -100,7 +119,7 @@ use FrameWork\Hook\Hook;
                                                 <div class="layui-input-split layui-input-prefix layui-input-split-left">
                                                     封面
                                                 </div>
-                                                <input type="text" name="cover" placeholder="" class="layui-input" id="upload-value">
+                                                <input type="text" name="cover" placeholder="" value="<?php if (_edit()) echo _edit()['cover'] ?>" class="layui-input" id="upload-value">
                                                 <div class="layui-input-suffix">
                                                     <button class="layui-btn layui-btn-primary" id="upload">上传</button>
                                                 </div>
@@ -114,7 +133,12 @@ use FrameWork\Hook\Hook;
                                     <div class="layui-colla-content layui-show">
                                         <?php
                                         foreach (View::getCategories() as $category) {
-                                            echo '<input type="checkbox"lay-filter="category"  name="category[' . $category['name'] . ']" title="' . $category['name'] . '" lay-skin="tag">';
+                                            if (_edit() && _edit()['category'] == $category['name']) {
+                                                $checked = 'checked';
+                                            } else {
+                                                $checked = '';
+                                            }
+                                            echo '<input type="checkbox"lay-filter="category"  name="category[' . $category['name'] . ']" title="' . $category['name'] . '" lay-skin="tag" ' . $checked . '>';
                                         }
                                         ?>
                                     </div>
@@ -122,16 +146,25 @@ use FrameWork\Hook\Hook;
                                 <div class="layui-colla-item">
                                     <div class="layui-colla-title">标签</div>
                                     <div class="layui-colla-content">
-                                        <input type="text" name="tag" placeholder="请输入标签（以英文逗号分割）" autocomplete="off" class="layui-input">
-
+                                        <input type="text" name="tag" placeholder="请输入标签（以英文逗号分割）" value="<?php if (_edit()) {
+                                                                                                                foreach (json_decode(_edit()['tag']) as $data) {
+                                                                                                                    $index = array_search($data, json_decode(_edit()['tag']));
+                                                                                                                    $count = count(json_decode(_edit()['tag']));
+                                                                                                                    if ($index === $count - 1) {
+                                                                                                                        echo $data;
+                                                                                                                    } else {
+                                                                                                                        echo $data . ',';
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            } ?>" autocomplete="off" class="layui-input">
                                     </div>
                                 </div>
                                 <div class="layui-colla-item">
                                     <div class="layui-colla-title">权限</div>
                                     <div class="layui-colla-content">
-                                        <input type="checkbox" name="top" title="置顶文章">
-                                        <input type="checkbox" name="allowComment" title="允许评论">
-                                        <input type="checkbox" name="private" title="不公开">
+                                        <input type="checkbox" name="top" title="置顶文章" <?php if (_edit() && _edit()['top'] == 1) echo 'checked' ?>>
+                                        <input type="checkbox" name="allowComment" title="允许评论" <?php if (_edit() && _edit()['allowComment'] == 1) echo 'checked' ?>>
+                                        <input type="checkbox" name="private" title="不公开" <?php if (_edit() && _edit()['status'] == 1) echo 'checked' ?>>
                                     </div>
                                 </div>
                                 <?= Hook::add('admin-article-edit-right', ''); ?>
@@ -153,15 +186,21 @@ use FrameWork\Hook\Hook;
     <script src="/sk-include/static/lib/editor/editormd.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
-        layui.use(['form', 'element', 'layer', 'util', 'upload', 'button'], function() {
+        layui.use(['form', 'element', 'layer', 'util', 'upload', 'button', 'encrypt'], function() {
             var form = layui.form,
                 layer = layui.layer,
                 element = layui.element,
                 upload = layui.upload,
                 button = layui.button,
-                util = layui.util;
+                util = layui.util,
+                encrypt = layui.encrypt;
             const oldArticleChache = localStorage.getItem("ArticleChache");
             var categoryItem = [];
+            var request_url = '/api/article/add';
+            if (sk.getData()['action'] == 'edit') {
+                var request_url = '/api/article/edit';
+            }
+
 
             $(function() {
                 // 初始化编辑器
@@ -298,7 +337,7 @@ use FrameWork\Hook\Hook;
                 });
 
                 // 提交登陆
-                axios.post('/api/article/add', data)
+                axios.post(request_url + "?cid=" + sk.getData()['cid'], data)
                     .then(function(response) {
                         if (response.data.code == 200) {
                             layer.msg(response.data.msg, {

@@ -30,20 +30,13 @@
       },
       {
         "id": 203,
-        "title": "标签",
-        "type": 1,
-        "openType": "_iframe",
-        "href": "/admin/view?page=view/error/404.html"
-      },
-      {
-        "id": 204,
         "title": "分类",
         "type": 1,
         "openType": "_iframe",
         "href": "/admin/view?page=view/error/404.html"
       },
       {
-        "id": 205,
+        "id": 204,
         "title": "资源",
         "type": 1,
         "openType": "_iframe",
