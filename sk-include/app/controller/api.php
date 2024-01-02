@@ -24,10 +24,15 @@ class Api extends FrameWork
         header('Content-Type: application/json; charset=utf-8');
 
         // 初始化请求
-        $data = file_get_contents("php://input");
-        $data = base64_decode($data);
-        $data = json_decode($data, true);
-        $this->data = $data;
+        if (!empty($_GET) && is_array($_GET)) $request_data = $_GET;
+        if (!empty($_POST) && is_array($_POST)) $request_data = $_POST;
+        if (!empty($request_data)) {
+            foreach ($request_data as $k => $v) {
+                if ($_SERVER['REQUEST_METHOD'] == 'GET') $_GET[$k] = htmlspecialchars($v);
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') $_POST[$k] = htmlspecialchars($k);
+            }
+        }
+
         $this->action = FrameWork::getData();
         // 接口权限验证
         if (FrameWork::getAction() != 'login' && FrameWork::getAction() != 'captcha') {
@@ -53,12 +58,12 @@ class Api extends FrameWork
                             if (!isset($_GET['cid'], $_GET['title'], $_GET['slug'])) {
                                 $data = array_reverse(toArray(Db::table('sk_content')->select('cid', 'title', 'slug', 'cover', 'category', 'tag', 'status', 'uid', 'uname', 'allowComment', 'top', 'created')->get()));
                             } else {
-                                $cid = isset($_GET['cid']) ? $_GET['cid'] : null;
+                                $cid = isset($_GET['cid']) ? intval($_GET['cid']) : null;
                                 $title = isset($_GET['title']) ? htmlspecialchars($_GET['title']) : null;
                                 $slug = isset($_GET['slug']) ? $_GET['slug'] : null;
                                 $db = Db::table('sk_content');
                                 if ($cid) {
-                                    $data = $db->where('cid', $cid)->select('cid', 'title', 'slug', 'cover', 'category', 'tag', 'status', 'uid', 'uname', 'allowComment', 'top', 'created');
+                                    $data = $db->where('cid', $cid)->select('cid', 'title', 'slug', 'cover', 'category', 'tag', 'status', 'uid', 'uname', 'allowComment', 'top', 'created')->get();
                                 } else if ($title) {
                                     $data = DB::select('select cid,title,slug,cover,category,tag,status,uid,uname,allowComment,top,created from sk_content where title like ?', ['%' . $title . '%']);
                                 } else {
@@ -174,7 +179,7 @@ class Api extends FrameWork
                                         if (DB::table('sk_content')->where('cid', $id)->exists()) {
                                             DB::table('sk_content')->where('cid', $id)->delete();
                                         }
-                                    }else{
+                                    } else {
                                         jsonMsg(400, '参数错误');
                                     }
                                 }
@@ -206,12 +211,12 @@ class Api extends FrameWork
                             if (!isset($_GET['uid'], $_GET['name'], $_GET['mail'])) {
                                 $data = array_reverse(toArray(Db::table('sk_user')->select('uid', 'name', 'mail', 'avatar', 'role', 'ban', 'logintime', 'ua', 'created')->get()));
                             } else {
-                                $uid = isset($_GET['uid']) ? $_GET['uid'] : null;
+                                $uid = isset($_GET['uid']) ? intval($_GET['uid']) : null;
                                 $name = isset($_GET['name']) ? htmlspecialchars($_GET['name']) : null;
                                 $mail = isset($_GET['mail']) ? $_GET['mail'] : null;
                                 $db = Db::table('sk_user');
                                 if ($uid) {
-                                    $data = $db->where('uid', $uid)->select('uid', 'name', 'mail', 'avatar', 'role', 'ban', 'logintime', 'ua', 'created');
+                                    $data = $db->where('uid', $uid)->select('uid', 'name', 'mail', 'avatar', 'role', 'ban', 'logintime', 'ua', 'created')->get();
                                 } else if ($mail) {
                                     $data = DB::select('select uid,name,mail,avatar,role,ban,logintime,ua,created from sk_user where mail like ?', ['%' . $mail . '%']);
                                 } else {
@@ -292,10 +297,13 @@ class Api extends FrameWork
                     }
                     // 处理密码
                     if (isset($data['pwd'])) {
+                        if (htmlspecialchars($_GET['uid'] == 1) && User::$userInfo['uid'] != 1) {
+                            jsonMsg(403, '只允许超级管理员本人修改');
+                        }
                         $data['pwd'] = User::encode_pwd($data['pwd'], time());
                     }
                     // 拦截站长的作死行为
-                    if ($data['ban'] == true && $_GET['uid'] == 1 || $data['role'] == 'user' && $_GET['uid']) {
+                    if ($data['ban'] == true && htmlspecialchars($_GET['uid']) == 1 || $data['role'] == 'user' && $_GET['uid']) {
                         jsonMsg(400, '此操作已被阻止，请不要作死');
                     }
                     unset($data['file']);
@@ -333,8 +341,8 @@ class Api extends FrameWork
                                     if (is_numeric($id)) {
                                         if (DB::table('sk_user')->where('uid', $id)->exists()) {
                                             DB::table('sk_user')->where('uid', $id)->delete();
-                                        }else{
-                                            jsonMsg(400,'参数错误');
+                                        } else {
+                                            jsonMsg(400, '参数错误');
                                         }
                                     }
                                 }

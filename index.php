@@ -39,7 +39,10 @@ if (PHP_VERSION < '8.0.2') {
 session_save_path(CON . 'temp/session');
 
 // 开启session缓存
-session_start();
+session_start([
+    'cookie_secure' => true,
+    'cookie_httponly' => true
+]);
 
 // 设置全局变量CONFIG_FILE，使其指向INC目录下的app.php文件
 $GLOBALS['CONFIG_FILE'] = INC . 'config/app.php';
