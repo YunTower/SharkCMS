@@ -1,4 +1,5 @@
 <?php
+
 /**
  * --------------------------------------------------------------------------------
  * @ Author：fish（https://gitee.com/fish_nb）
@@ -142,14 +143,8 @@ class View
 
     public static function find(string $name, array $data)
     {
-        switch ($name) {
-            case 'article':
-                return toArray(Db::table('sk_content')->where($data[0], $data[1])->get());
-                break;
-            default:
-                return false;
-                break;
-        }
+       return toArray(Db::table($name)->where($data[0], $data[1])->get());
+        
     }
 
     // 列表查询

@@ -8,7 +8,7 @@ function data()
 {
     if (isset($_GET['action'], $_GET['cid']) && $_GET['action'] == 'edit') {
         $cid = htmlentities($_GET['cid']);
-        return View::find('article', ['cid', $cid]);
+        return View::find('sk_article', ['cid', $cid]);
     }
 }
 function _edit()
@@ -29,7 +29,7 @@ function _edit()
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <title>撰写文章</title>
+    <title>撰写 / 修改 文章</title>
     <link href="/sk-admin/component/pear/css/pear.css" rel="stylesheet">
     <link href="/sk-include/static/css/sharkcms.min.css" rel="stylesheet">
     <link href="/sk-include/static/css/editor.css" rel="stylesheet">
