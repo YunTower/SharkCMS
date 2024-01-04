@@ -46,7 +46,6 @@ class FrameWork
         // 检查安装状态
         if (APP_INSTALL == false) {
             if (self::getController() != 'install') {
-                if (isset($_SESSION['install_step'])) $_SESSION['install_step'] = 1;
                 header('Location:/install/step/1');
             }
         } else {
@@ -406,5 +405,15 @@ class Utils
             'page_count' => $pCount,     // 当前页码
             'page_size' => $pSize   // 每页数据条目数
         );
+    }
+
+    public static function AES_Encode($data, $key)
+    {
+        return openssl_encrypt($data, 'AES-128-ECB', $key);
+    }
+
+    public static function AES_Decode($data, $key)
+    {
+        return openssl_decrypt($data, 'AES-128-CBC', $key);
     }
 }

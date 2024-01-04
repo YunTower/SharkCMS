@@ -8,16 +8,16 @@
     'Version' => '1.0.0',
     'Mode' => 'offline',
     'LogDir' => '/sk-content/temp/log/',
-    'Install' => false,
-    'Time' => '',
+    'Install' => true,
+    'Time' => '2024-01-04 20:57:44',
   ),
   'Db' => 
   array (
     'Host' => '127.0.0.1',
-    'User' => '',
-    'Pwd' => '',
-    'Name' => '',
-    'Charset' => '',
+    'User' => 'cms',
+    'Pwd' => 'cmscms',
+    'Name' => 'cms',
+    'Charset' => 'utf8',
   ),
   'Api' => 
   array (

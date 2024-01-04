@@ -337,7 +337,7 @@
 									icon: 1,
 									time: 1000
 								}, function() {
-									table.reload('table');
+									table.reloadData('table');
 								});
 							} else {
 								layer.msg(result.msg, {

@@ -23,17 +23,12 @@
 		</ul><br>
 		<p>如果你已了解并同意上述内容，请点击下方按钮。</p><br>
 		<div class="button-next">
-			<button type="button" style="width:200px;height:35px" onclick="jump()" class="layui-btn layui-btn-primary layui-btn-sm">我接受，并进行下一步操作</button>
+			<button type="button" style="width:200px;height:35px" onclick="window.location.href='/install/step/2'" class="layui-btn layui-btn-primary layui-btn-sm">我接受，并进行下一步操作</button>
 		</div>
 	</div>
 	<p class="sk-copyright">
 		<a target="_blank" href="https://www.sharkcms.cn">Powered by SharkCMS</a>
 	</p>
-	<script>
-		function jump() {
-			window.location.href = '/install/step/1'
-		}
-	</script>
 </body>
 
 </html>

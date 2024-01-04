@@ -40,8 +40,8 @@ class User
                             FrameWork::WARNING(0, ['系统提示', '您的账号已被【禁用】，请联系网站管理员！']);
                         }
                     } else {
-                        User::LoginOut();
                         FrameWork::WARNING(0, ['系统提示', '账号数据异常，请刷新此页面后重新登陆']);
+                        User::LoginOut();
                     }
                 }
             }
@@ -129,8 +129,11 @@ class User
         }
     }
 
-    public static function encode_pwd($pwd, $t)
+    public static function encode_pwd($pwd)
     {
-        return md5(md5($pwd) . $t);
+        $password = md5($pwd);
+        $salt = mt_rand(100000, 999999);
+        $hashed_password = hash('sha256', $salt . $password);
+        return password_hash($hashed_password, PASSWORD_DEFAULT);
     }
 }

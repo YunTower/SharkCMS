@@ -203,7 +203,7 @@
 			}
 
 			window.remove = function(obj) {
-				layer.confirm('确定要删除该文章', {
+				layer.confirm('确定要删除该分类', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
@@ -243,7 +243,7 @@
 					return false;
 				}
 
-				layer.confirm('确定要删除这些文章', {
+				layer.confirm('确定要删除这些分类', {
 					icon: 3,
 					title: '提示'
 				}, function(index) {
@@ -260,7 +260,7 @@
 									icon: 1,
 									time: 1000
 								}, function() {
-									table.reload('table');
+									table.reloadData('table');
 								});
 							} else {
 								layer.msg(result.msg, {

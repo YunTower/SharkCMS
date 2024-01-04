@@ -91,7 +91,8 @@ class Api extends FrameWork
                         jsonMsg(403, '权限不足！');
                     }
                     break;
-                case 'add' || 'edit':
+                case 'add':
+                case 'edit':
                     if (!isset($_POST) && !is_array($_POST)) jsonMsg(403, '参数错误');
                     if (!isset($_POST['title'], $_POST['slug'], $_POST['content'])) jsonMsg(403, '参数缺失');
                     if (isset($_POST['file'])) unset($_POST['file']);
@@ -222,11 +223,7 @@ class Api extends FrameWork
                 case 'get':
                     if (User::is_admin()) {
                         if (isset($_GET['page'], $_GET['limit']) && is_numeric($_GET['page']) && is_numeric($_GET['limit'])) {
-                            if (!isset($_GET['id'], $_GET['name']) && !empty($_GET['id']) && !empty($_GET['name'])) {
-                                echo 1;
-                                $data = array_reverse(toArray(Db::table('sk_category')->get()));
-                            } else {
-                                echo 2;
+                            if (isset($_GET['id'], $_GET['name']) && !empty($_GET['id']) || !empty($_GET['name'])) {
                                 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
                                 $name = isset($_GET['name']) ? htmlspecialchars($_GET['name']) : null;
                                 $db = Db::table('sk_category');
@@ -236,6 +233,8 @@ class Api extends FrameWork
                                     $data = DB::select('select * from sk_category where name like ?', ['%' . $name . '%']);
                                 }
                                 $data = array_reverse(toArray($data));
+                            } else {
+                                $data = array_reverse(toArray(Db::table('sk_category')->get()));
                             }
                             // 当前页码
                             $page = !empty($_GET['page']) ? $_GET['page'] : 1;
@@ -255,7 +254,8 @@ class Api extends FrameWork
                         jsonMsg(403, '权限不足！');
                     }
                     break;
-                case 'add' || 'edit':
+                case 'add':
+                case 'edit':
                     if (!isset($_POST) && !is_array($_POST)) jsonMsg(403, '参数错误');
                     if (!isset($_POST['name'])) jsonMsg(403, '参数缺失');
 
@@ -395,7 +395,7 @@ class Api extends FrameWork
                     }
                     // 处理密码
                     if (isset($data['pwd'])) {
-                        $data['pwd'] = User::encode_pwd($data['pwd'], time());
+                        $data['pwd'] = User::encode_pwd($data['pwd']);
                     }
                     unset($data['file']);
                     // 更新数据
@@ -432,7 +432,7 @@ class Api extends FrameWork
                         if (htmlspecialchars($_GET['uid'] == 1) && User::$userInfo['uid'] != 1) {
                             jsonMsg(403, '只允许超级管理员本人修改');
                         }
-                        $data['pwd'] = User::encode_pwd($data['pwd'], time());
+                        $data['pwd'] = User::encode_pwd($data['pwd']);
                     }
                     // 拦截站长的作死行为
                     if ($data['ban'] == true && htmlspecialchars($_GET['uid']) == 1 || $data['role'] == 'user' && $_GET['uid']) {

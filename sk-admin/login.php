@@ -109,6 +109,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <script src="/sk-include/static/js/axios.min.js"></script>
     <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
+    <script src="/sk-include/static/lib/aes.js"></script>
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
         layui.use(['form', 'layer', 'encrypt', 'popup', 'jquery'], function() {
@@ -169,7 +170,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
                 return false;
             });
         });
-    </script>
+    </scrip>
 </body>
 
 </html>

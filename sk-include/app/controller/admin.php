@@ -66,7 +66,7 @@ class Admin
                         // 账号已封禁
                         if ($user['ban'] == false || $user['ban'] == 0) {
                             // 密码错误
-                            if (md5(md5($data['upwd']) . $user['created']) == $user['pwd']) {
+                            if (password_verify($data['upwd'], $user['pwd'])) {
                                 // 生成Token
                                 User::CreateToken($user['uid']);
                                 // 返回成功信息
