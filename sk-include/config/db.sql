@@ -173,7 +173,7 @@ CREATE TABLE `sk_user`
 (
     `uid`       int(6) UNSIGNED NOT NULL,
     `name`      varchar(32)  NOT NULL,
-    `pwd`       varchar(32)  NOT NULL,
+    `pwd`       text  NOT NULL,
     `mail`      varchar(150) NOT NULL,
     `avatar`    text,
     `role`      varchar(64)  NOT NULL,

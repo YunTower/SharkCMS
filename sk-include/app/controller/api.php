@@ -29,8 +29,8 @@ class Api extends FrameWork
         if (!empty($request_data)) {
             foreach ($request_data as $k => $v) {
                 if ($k != 'tag') {
-                    if ($_SERVER['REQUEST_METHOD'] == 'GET') $_GET[$k] = htmlspecialchars($v);
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST') $_POST[$k] = htmlspecialchars($v);
+                    if ($_SERVER['REQUEST_METHOD'] == 'GET' && !empty($_GET[$k])) $_GET[$k] = htmlspecialchars($v);
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST[$k])) $_POST[$k] = htmlspecialchars($v);
                 }
             }
         }
@@ -73,12 +73,11 @@ class Api extends FrameWork
                                 }
                                 $data = array_reverse(toArray($data));
                             }
-                            // 当前页码
                             $page = !empty($_GET['page']) ? $_GET['page'] : 1;
                             // 数据数量
                             $limit = !empty($_GET['limit']) ? $_GET['limit'] : 10;
                             // 分页
-                            $data = Utils::Pager($data, $limit, $_GET['page']);
+                            $data = Utils::Pager($data, $limit, $page);
                             if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
                                 jsonMsg(400, '页码大于总页数');
                             } else {
@@ -236,12 +235,11 @@ class Api extends FrameWork
                             } else {
                                 $data = array_reverse(toArray(Db::table('sk_category')->get()));
                             }
-                            // 当前页码
                             $page = !empty($_GET['page']) ? $_GET['page'] : 1;
                             // 数据数量
                             $limit = !empty($_GET['limit']) ? $_GET['limit'] : 10;
                             // 分页
-                            $data = Utils::Pager($data, $limit, $_GET['page']);
+                            $data = Utils::Pager($data, $limit, $page);
                             if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
                                 jsonMsg(400, '页码大于总页数');
                             } else {
@@ -356,12 +354,11 @@ class Api extends FrameWork
                                 }
                                 $data = array_reverse(toArray($data));
                             }
-                            // 当前页码
                             $page = !empty($_GET['page']) ? $_GET['page'] : 1;
                             // 数据数量
                             $limit = !empty($_GET['limit']) ? $_GET['limit'] : 10;
                             // 分页
-                            $data = Utils::Pager($data, $limit, $_GET['page']);
+                            $data = Utils::Pager($data, $limit, $page);
                             if ($_GET['page'] > $data['total_page'] && $_GET['page'] != 1) {
                                 jsonMsg(400, '页码大于总页数');
                             } else {
@@ -496,6 +493,119 @@ class Api extends FrameWork
         }
     }
 
+    function file()
+    {
+        if (User::is_admin() && !empty(FrameWork::getData() && isset($_GET['path']))) {
+            if (isset($_GET['path']) && !empty($_GET['path']) && !is_dir($_GET['path']) || !File::isDirectoryInParent($_GET['path'], './sk-content/')) {
+                jsonMsg(404, '文件不存在');
+            }
+
+            switch (FrameWork::getData()) {
+                case 'get':
+                    if (User::is_admin() && is_dir($_GET['path'])) {
+
+                        if (isset($_GET['filename']) && !empty($_GET['filename'])) {
+                            $filename = isset($_GET['filename']) ? htmlspecialchars($_GET['filename']) : null;
+                            if ($filename) {
+
+                            }
+//                                $data = array_reverse(toArray($data));
+                        } else {
+                            $data = [];
+                            foreach (scandir($_GET['path']) as $item) {
+                                if ($item != '.' && $item != '..' && $item != '.keep') {
+                                    $path = realpath($_GET['path'] . $item);
+                                    if (is_dir($path)) {
+                                        $data[] = ['type' => 0, 'name' => $item, 'path' => $_GET['path'] . $item,'size'=>'','atime'=>'','mtime'=>'','ctime'=>''];
+                                    } else if (is_file($path)) {
+                                        $data[] = ['type' => 1, 'name' => $item, 'path' => $_GET['path'] . $item, 'size' => bytesToSize(filesize($path)), 'atime' => fileatime($path), 'mtime' => filemtime($path), 'ctime' => filectime($path)];
+                                    }
+                                }
+                            }
+                        }
+                        exit(json_encode(['code' => 0, 'count' => count($data), 'data' => $data]));
+                    } else {
+                        jsonMsg(403, '权限不足！');
+                    }
+                    break;
+                case 'add':
+                case 'edit':
+                    if (!isset($_POST) && !is_array($_POST)) jsonMsg(403, '参数错误');
+                    if (!isset($_POST['name'])) jsonMsg(403, '参数缺失');
+
+                    $_POST += ['uid' => User::$userInfo['uid'], 'uname' => User::$userInfo['name']];
+
+                    if (!empty($_POST) && isset($_POST) && is_array($_POST)) {
+                        try {
+                            if (FrameWork::getData() == 'edit' && isset($_GET['id']) && is_numeric($_GET['id'])) {
+                                if (Db::table('sk_category')->where('id', htmlspecialchars($_GET['id']))->update($_POST)) {
+                                    jsonMsg(200, '更新成功！');
+                                } else {
+                                    jsonMsg(500, '未知错误');
+                                }
+                            } else {
+                                if (Db::table('sk_category')->insert([$_POST])) {
+                                    jsonMsg(200, '添加成功！');
+                                } else {
+                                    jsonMsg(500, '未知错误');
+                                }
+                            }
+                        } catch (Exception $e) {
+                            jsonMsg(500, $e->getMessage());
+                        }
+                    } else {
+                        jsonMsg(400, '非法请求！');
+                    }
+
+                    break;
+                case 'remove':
+                    if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+                        try {
+                            if (DB::table('sk_category')->where('id', $_GET['id'])->exists()) {
+                                DB::table('sk_category')->where('id', $_GET['id'])->delete();
+                                jsonMsg(200, '删除成功');
+                            } else {
+                                jsonMsg(400, '数据不存在');
+                            }
+                        } catch (Exception $e) {
+                            jsonMsg(500, $e->getMessage());
+                        }
+                    } else {
+                        jsonMsg(403, '参数错误');
+                    }
+                    break;
+                case 'batchRemove':
+                    if (User::is_admin()) {
+                        if (isset($_GET['id'])) {
+                            $ids = htmlspecialchars($_GET['id']);
+                            $ids = preg_split('/,/', $ids, -1, PREG_SPLIT_NO_EMPTY);
+                            try {
+                                foreach ($ids as $id) {
+                                    if (is_numeric($id)) {
+                                        if (DB::table('sk_category')->where('id', $id)->exists()) {
+                                            DB::table('sk_category')->where('id', $id)->delete();
+                                        }
+                                    } else {
+                                        jsonMsg(400, '参数错误');
+                                    }
+                                }
+                                jsonMsg(200, '删除成功');
+                            } catch (Exception $e) {
+                                jsonMsg(500, $e->getMessage());
+                            }
+                        } else {
+                            jsonMsg(403, '参数错误');
+                        }
+                    }
+                    break;
+                default:
+                    jsonMsg(404, '页面不存在！');
+                    break;
+            }
+        } else {
+            jsonMsg(404, '页面不存在！');
+        }
+    }
 
     // 输出头像
     function avatar()
@@ -516,29 +626,6 @@ class Api extends FrameWork
         }
     }
 
-    function comment()
-    {
-        $data = $this->data;
-
-        switch ($this->action) {
-            case 'post':
-                $arr = ['cid' => $data['cid'], 'type' => $data['type'], 'content' => $data['content'], 'uid' => User::$userInfo['uid'], 'status' => null, 'parent' => 0];
-                $db = DB::table('sk_comment')->insert($arr);
-                if ($db) {
-                    exit(json_encode(['code' => 200, 'msg' => '评论成功', 'data' => ['status' => true, 'login' => true]]));
-                } else {
-                    exit(json_encode(['code' => 500, 'msg' => '评论失败', 'data' => ['status' => false, 'login' => true]]));
-                }
-                break;
-            case 'update':
-                break;
-            case 'get':
-                break;
-            default:
-                exit(json_encode(['code' => 400, 'msg' => '无效的请求', 'data' => []]));
-                break;
-        }
-    }
 
     // 文件上传
     public function upload()

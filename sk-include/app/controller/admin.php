@@ -48,7 +48,7 @@ class Admin
         } else {
             // 登陆接口
             ob_clean();
-            $data = Utils::DecodeRequestData('POST', 'data');
+            $data = $_POST['data'];
             if (!isset($data)) {
                 exit(json_encode(['code' => 403, 'msg' => '请求被拒绝']));
             }
@@ -66,7 +66,7 @@ class Admin
                         // 账号已封禁
                         if ($user['ban'] == false || $user['ban'] == 0) {
                             // 密码错误
-                            if (password_verify($data['upwd'], $user['pwd'])) {
+                            if (User::check_pwd($data['upwd'],$user['pwd'])) {
                                 // 生成Token
                                 User::CreateToken($user['uid']);
                                 // 返回成功信息

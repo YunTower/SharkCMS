@@ -132,8 +132,11 @@ class User
     public static function encode_pwd($pwd)
     {
         $password = md5($pwd);
-        $salt = mt_rand(100000, 999999);
-        $hashed_password = hash('sha256', $salt . $password);
-        return password_hash($hashed_password, PASSWORD_DEFAULT);
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    public static function check_pwd($pwd, $hashed_password)
+    {
+        return password_verify($pwd, $hashed_password);
     }
 }

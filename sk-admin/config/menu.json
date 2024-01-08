@@ -40,7 +40,7 @@
         "title": "文件",
         "type": 1,
         "openType": "_iframe",
-        "href": "/admin/view?page=view/error/404.html"
+        "href": "/admin/view?page=view/file/file.php"
       }
     ]
   },

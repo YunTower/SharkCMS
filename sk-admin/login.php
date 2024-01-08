@@ -13,7 +13,6 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>登陆 - <?= FrameWork::$getSetting['Site-Title'] ?></title>
-    <link rel="stylesheet" href="/sk-include/static/layui/css/layui.css" />
     <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
     <link rel="stylesheet" href="/sk-include/static/css/sharkcms.min.css" />
     <style>
@@ -52,7 +51,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
         <div class="title">
             <h2 style="font-weight: 200">登陆</h2>
         </div>
-        <form class="layui-form" action="">
+        <form class="layui-form" action="" method="POST">
             <div class="layui-form-item">
                 <div class="layui-input-wrap">
                     <div class="layui-input-prefix">
@@ -91,7 +90,7 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <a href="/admin/reg" style="float: right; margin-top: 7px;">注册账号</a>
 </div> -->
             <div class="layui-form-item">
-                <button class="layui-btn layui-btn-fluid pear-btn pear-btn-primary" lay-submit lay-filter="login">登录
+                <button class="layui-btn layui-btn-fluid pear-btn pear-btn-primary" lay-submit lay-filter="login" novalidate>登录
                 </button>
             </div>
             <div class="layui-form-item demo-login-other" style="text-align: center">
@@ -109,68 +108,70 @@ if (@isset(json_decode(FrameWork::$_data)->from) && @json_decode(FrameWork::$_da
     <script src="/sk-include/static/js/axios.min.js"></script>
     <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
-    <script src="/sk-include/static/lib/aes.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/aes-js@3.1.2/index.min.js"></script>
+
     <script src="/sk-include/static/js/sharkcms.min.js"></script>
     <script>
-        layui.use(['form', 'layer', 'encrypt', 'popup', 'jquery'], function() {
+        layui.use(['form', 'layer', 'encrypt', 'jquery'], function() {
             var form = layui.form,
                 layer = layui.layer,
                 encrypt = layui.encrypt,
-                popup = layui.popup,
                 $ = layui.jquery;
 
             // 提交事件
             form.on('submit(login)', function(data) {
-                var data = JSON.parse(JSON.stringify(data.field));
-                //  if uname 有特殊字符
-                if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(data.uname)) {
-                    layer.msg('【用户名】不能包含特殊字符', {
-                        icon: 2
+                var t = new Date().getTime();
+
+
+                var data = {
+                    umail: data.field.umail,
+                    upwd: encrypt.md5(data.field.upwd),
+                    captcha: data.field.captcha
+                };
+
+                // 配置axios拦截器
+                axios.interceptors.request.use(config => {
+                    if (config.method === 'post') {
+                        config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    }
+                    return config;
+                });
+                axios.post('/admin/login/' + t, {
+                        data: data
                     })
-                } else {
-                    // 配置axios拦截器
-                    axios.interceptors.request.use(config => {
-                        if (config.method === 'post') {
-                            config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-                        }
-                        return config;
-                    });
-                    axios.post('/admin/login/' + new Date().getTime(), {
-                            data: encrypt.Base64Encode(JSON.stringify(data))
-                        })
-                        .then(function(response) {
-                            if (response.data.code == 200) {
-                                popup.success('登陆成功', function() {
-                                    if (response.data.data.role == 'admin') {
-                                        if (sk.getData()['from'] == undefined) {
-                                            window.location.href = '';
-                                        } else {
-                                            history.go(-1)
-                                        }
+                    .then(function(response) {
+                        if (response.data.code == 200) {
+                            layer.msg('登陆成功', {
+                                icon: 1
+                            }, function() {
+                                if (response.data.data.role == 'admin') {
+                                    if (sk.getData()['from'] == undefined) {
+                                        window.location.href = '';
                                     } else {
                                         history.go(-1)
                                     }
-                                })
-                            } else {
-                                if (response.data.code != 'undefined') {
-                                    layer.msg(response.data.msg, {
-                                        icon: 2
-                                    })
-                                    $('#captcha').attr('src', '/api/captcha/' + new Date().getTime())
                                 } else {
-                                    layer.alert(response.data, {
-                                        title: '系统错误',
-                                        icon: 2
-                                    })
+                                    history.go(-1)
                                 }
+                            })
+                        } else {
+                            if (response.data.code != 'undefined') {
+                                layer.msg(response.data.msg, {
+                                    icon: 2
+                                })
+                                $('#captcha').attr('src', '/api/captcha/' + new Date().getTime())
+                            } else {
+                                layer.alert(response.data, {
+                                    title: '系统错误',
+                                    icon: 2
+                                })
                             }
-                        })
-
-                }
+                        }
+                    })
                 return false;
             });
         });
-    </scrip>
+    </script>
 </body>
 
 </html>

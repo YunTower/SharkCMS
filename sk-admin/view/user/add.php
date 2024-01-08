@@ -18,7 +18,7 @@
                             <div class="layui-input-split layui-input-prefix">
                                 头像
                             </div>
-                            <input type="text" name="avatar" placeholder="点击上传头像" value="" id="Avatar" class="layui-input">
+                            <input type="text" name="avatar" title="点击上传" placeholder="点击上传头像" value="" id="Avatar" class="layui-input">
                             <div class="layui-input-split layui-input-suffix" style="color: #2d8cf0;" id="Preview" lay-on="preview">
                                 预览
                             </div>

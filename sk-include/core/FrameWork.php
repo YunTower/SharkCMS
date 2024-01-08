@@ -40,8 +40,8 @@ class FrameWork
         include_once INC . 'core/Function.php';
         // 设置异常&错误处理
         error_reporting(E_ALL);
-        // set_exception_handler('exception_handler');
-        // set_error_handler('custom_error_handler');
+//         set_exception_handler('exception_handler');
+//         set_error_handler('custom_error_handler');
 
         // 检查安装状态
         if (APP_INSTALL == false) {
@@ -102,47 +102,51 @@ class FrameWork
      */
     public static function run()
     {
-        //调用框架类方法，获取URLk中的控制器和方法
-        $controller_action = self::controller_action();
-        $controller = $controller_action['controller'];
-        $action = $controller_action['action'];
-        //拼接控制器类文件名称
-        $class_file = INC . 'app/controller/' . $controller . '.php';
+        try {
+            //调用框架类方法，获取URLk中的控制器和方法
+            $controller_action = self::controller_action();
+            $controller = $controller_action['controller'];
+            $action = $controller_action['action'];
+            //拼接控制器类文件名称
+            $class_file = INC . 'app/controller/' . $controller . '.php';
 
-        if ($controller != 'sk-content') {
-            if (file_exists($class_file)) {
-                //加载控制器类文件
-                require_once $class_file;
-                //获取控制器类
-                $class = new ReflectionClass($controller);
-                //获取控制器类的实例
-                $instance = $class->newInstanceArgs();
-                //获取控制器类的所有方法
-                $methods = $class->getMethods();
-                //判断类中是否有$action方法
-                $method = '';
-                foreach ($methods as $obj) {
-                    if ($obj->getName() == $action) {
-                        $method = $class->getMethod($action);
-                        break;
-                    }
-                }
-                //若方法不存在，则跳转到错误控制器
-                if ($method == '') {
-                    if (self::getController() != 'admin') {
-                        if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
-                            if (self::getAction() != 'index' && self::getAction() != 'index') {
-                                self::WARNING(404);
-                            }
+            if ($controller != 'sk-content') {
+                if (file_exists($class_file)) {
+                    //加载控制器类文件
+                    require_once $class_file;
+                    //获取控制器类
+                    $class = new ReflectionClass($controller);
+                    //获取控制器类的实例
+                    $instance = $class->newInstanceArgs();
+                    //获取控制器类的所有方法
+                    $methods = $class->getMethods();
+                    //判断类中是否有$action方法
+                    $method = '';
+                    foreach ($methods as $obj) {
+                        if ($obj->getName() == $action) {
+                            $method = $class->getMethod($action);
+                            break;
                         }
                     }
+                    //若方法不存在，则跳转到错误控制器
+                    if ($method == '') {
+                        if (self::getController() != 'admin') {
+                            if (self::getAction() != 'index' && !is_numeric(self::getAction())) {
+                                if (self::getAction() != 'index' && self::getAction() != 'index') {
+                                    self::WARNING(404);
+                                }
+                            }
+                        }
+                    } else {
+                        //执行方法
+                        $method->invoke($instance);
+                    }
                 } else {
-                    //执行方法
-                    $method->invoke($instance);
+                    self::WARNING(404);
                 }
-            } else {
-                self::WARNING(404);
             }
+        } catch (Exception $e) {
+            static::WARNING(0, ['系统错误', $e->getMessage()]);
         }
     }
 

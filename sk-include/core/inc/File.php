@@ -30,27 +30,24 @@ class File
         }
     }
 
-    public static function fileName($file)
+    public static function isDirectoryInParent($directoryPath, $parentDirectory)
     {
-        if (is_file($file) && file_exists($file)) {
-            $file = new static();
-            $file->filename = $file;
-            return $file;
-        } else {
-            $file = new static;
-            $file->filename = false;
-            var_dump($file);
-            return $file;
+        // 获取目标目录的真实路径
+        $targetDir = realpath($directoryPath);
+
+        if ($targetDir === false || !is_dir($targetDir)) {
+            return false; // 目录不存在或无法获取其真实路径
         }
+
+        // 获取父目录的真实路径
+        $parentDir = realpath($parentDirectory);
+
+        if ($parentDir === false || !is_dir($parentDir)) {
+            return false; // 父目录不存在或无法获取其真实路径
+        }
+
+        // 比较目标目录与父目录的前缀部分
+        return strpos($targetDir, $parentDir . DIRECTORY_SEPARATOR) === 0;
     }
 
-    public function create($type)
-    {
-        if ($this->filename) {
-            fopen($this->filename, $type);
-            return true;
-        } else {
-            return false;
-        }
-    }
 }
