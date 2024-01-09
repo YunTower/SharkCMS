@@ -516,7 +516,7 @@ class Api extends FrameWork
                                 if ($item != '.' && $item != '..' && $item != '.keep') {
                                     $path = realpath($_GET['path'] . $item);
                                     if (is_dir($path)) {
-                                        $data[] = ['type' => 0, 'name' => $item, 'path' => $_GET['path'] . $item,'size'=>'','atime'=>'','mtime'=>'','ctime'=>''];
+                                        $data[] = ['type' => 0, 'name' => $item, 'path' => $_GET['path'] . $item.'/','size'=>'','atime'=>'','mtime'=>'','ctime'=>''];
                                     } else if (is_file($path)) {
                                         $data[] = ['type' => 1, 'name' => $item, 'path' => $_GET['path'] . $item, 'size' => bytesToSize(filesize($path)), 'atime' => fileatime($path), 'mtime' => filemtime($path), 'ctime' => filectime($path)];
                                     }

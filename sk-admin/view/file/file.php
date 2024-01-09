@@ -5,6 +5,18 @@
     <meta charset="utf-8">
     <title>用户</title>
     <link rel="stylesheet" href="/sk-admin/component/pear/css/pear.css" />
+    <style>
+        .icon {
+            height: 26px;
+            width: 26px;
+            padding: 5px;
+        }
+
+        .folder a:hover {
+            color: #2D8CF0;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body class="pear-container">
@@ -53,21 +65,14 @@
     <script type="text/html" id="toolbar">
         <div class="layui-btn-container">
             <form onsubmit="return false;">
-                <div class="layui-input-group">
-                    <input type="text" value="" placeholder="路径" id="path" class="layui-input">
-                    <div class="layui-input-split layui-input-suffix" style="cursor: pointer;">
-                        <i class="layui-icon layui-icon-search"></i>
+                <div class="layui-input-wrap">
+                    <div class="layui-input-prefix layui-input-split" lay-on="back">
+                        <i class="layui-icon layui-icon-left"></i>
                     </div>
+                    <input type="text" id="path" value="" placeholder="路径" id="path" lay-affix="search" lay-filter="search" class="layui-input">
                 </div>
             </form>
         </div>
-        <script>
-            var path = document.getElementById('path');
-            if (path.value == '') {
-                path.value = './sk-content/upload/'
-            }
-            var default_path = path.value;
-    </script>
     </script>
     <script>
         function formatTime(timestamp) {
@@ -126,18 +131,38 @@
         function getIcon(filename) {
             const regex = /\.\w+$/;
             const fileExtension = filename.match(regex)[0];
-            console.log(fileExtension)
-            types.forEach((item, index) => {
-                if (item.list.includes(fileExtension)) {
-                    return fileIcon[index][item.name]
-                } else {
-                    return fileIcon[5].question
+
+            // 循环读取变量types，验证fileExtension是否包含于types的list中
+            for (let i = 0; i < types.length; i++) {
+                if (types[i].list.includes(fileExtension)) {
+                    return fileIcon[i][types[i].name];
                 }
-            });
+            }
+            return fileIcon[fileIcon.length - 1]['folder']; // 如果没有匹配的类型，则返回文件夹图标
+        }
+
+        function getFileType(filename) {
+            const regex = /\.\w+$/;
+            const fileExtension = filename.match(regex)[0];
+            // 循环读取变量types，验证fileExtension是否包含于types的list中,若包含则输出name
+            for (let i = 0; i < types.length; i++) {
+                if (types[i].list.includes(fileExtension)) {
+                    return types[i].name;
+                }
+            }
+            return 'folder'; // 如果没有匹配的类型，则返回文件夹
         }
     </script>
     <script type="text/html" id="name">
-        <span><img src="{{= getIcon(d.name) }}">{{= d.name }}</span>
+    {{#if (d.type == 0) { }}
+        <span class="folder" title="单击打开此文件夹（{{= d.path }}）">
+            <img class="icon" src="{{= fileIcon[6].folder }}"><a data-type="folder" data-name="{{= d.name }}" data-path="{{= d.path }}">{{= d.name }}</a>
+        </span>
+        {{# }else { }}
+            <span class="file" title="单击打开此文件（{{= d.path }}）">
+                <img class="icon" src="{{= getIcon(d.name) }}"><a data-type="file" data-name="{{= d.name }}" data-path="{{= d.path }}" data-filetype="{{= getFileType(d.name) }}">{{= d.name }}</a>
+            </span>
+            {{# } }}
     </script>
     <script type="text/html" id="atime">
     {{#if (d.atime != '') { }}
@@ -155,37 +180,48 @@
         {{# } }}
     </script>
     <script type="text/html" id="bar">
-        <button class="pear-btn pear-btn-primary pear-btn-sm" lay-event="edit"><i class="layui-icon layui-icon-edit"></i></button>
-        <button class="pear-btn pear-btn-danger pear-btn-sm" lay-event="remove"><i class="layui-icon layui-icon-delete"></i></button>
+        <div class="layui-clear-space">
+            <a class="layui-btn layui-bg-blue layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-bg-red layui-btn-xs" lay-event="remove">删除</a>
+        </div>
     </script>
 
     <script src="/sk-admin/component/layui/layui.js"></script>
     <script src="/sk-admin/component/pear/pear.js"></script>
     <script src="/sk-include/static/js/axios.min.js"></script>
     <script>
-        layui.use(['table', 'form', 'jquery', 'common', 'layer'], function() {
+        layui.use(['table', 'form', 'jquery', 'common', 'layer', 'util'], function() {
             let table = layui.table,
                 form = layui.form,
                 $ = layui.jquery,
                 common = layui.common,
-                layer = layui.layer;
+                layer = layui.layer,
+                util = layui.util;
 
-
+            // 获取数据
             document.addEventListener('click', function(event) {
-                if (event.srcElement.attributes[2] != null) {
-                    var nodeName = event.srcElement.attributes[2].nodeName;
-                    var nodeValue = event.srcElement.attributes[2].nodeValue
-                    if (nodeName == 'data-url') {
-                        console.log(nodeValue)
+                if (event.srcElement.attributes[0] != null && event.srcElement.attributes[1] != null && event.srcElement.attributes[2] != null) {
+                    var type = event.srcElement.attributes[0].nodeValue;
+                    var name = event.srcElement.attributes[1].nodeValue;
+                    var path = event.srcElement.attributes[2].nodeValue;
+                    if (type == 'file' && event.srcElement.attributes[3].nodeValue != null) {
+                        var filetype = event.srcElement.attributes[3].nodeValue;
+                    }
+                    var inputPath = document.getElementById('path');
+                    if (type == 'folder') {
+                        inputPath.value = path;
+                        table.reloadData('table', {
+                            url: MODULE_PATH + '/get?path=' + path
+                        })
+                    } else if (filetype != null && filetype == 'image') {
+                        console.log('打开图片')
                         layer.photos({
                             photos: {
-                                "title": "图片查看器",
+                                "title": "图片查看",
                                 "start": 0,
                                 "data": [{
-                                        "src": nodeValue,
-                                    },
-
-                                ]
+                                    'src': path.slice(path.indexOf('.') + 1)
+                                }]
                             }
                         });
                     }
@@ -194,20 +230,24 @@
 
             let MODULE_PATH = "/api/file";
 
-            window.addEventListener('load', function() {
-                form.on('input-affix(search)', function(data) {
-                    var elem = data.elem; // 输入框
-                    var value = elem.value; // 输入框的值
-                    if (!value) {
-                        layer.msg('请输入内容');
-                        return elem.focus()
-                    };
-                    table.reloadData('table', {
-                        url: MODULE_PATH + '/get?path=' + value
-                    })
-                    return false
-                });
-            })
+            // 监听搜索按钮
+            form.on('input-affix(search)', function(data) {
+                var elem = data.elem; // 输入框
+                var value = elem.value; // 输入框的值
+                if (!value) {
+                    layer.msg('请输入内容');
+                    return elem.focus()
+                };
+                table.reloadData('table', {
+                    url: MODULE_PATH + '/get?path=' + value
+                })
+                return false;
+            });
+
+
+
+
+
 
             let cols = [
                 [{
@@ -216,6 +256,7 @@
                     {
                         title: '文件名',
                         field: 'name',
+                        templet: '#name'
                     },
                     {
                         title: '文件大小',
@@ -259,8 +300,38 @@
                     title: '刷新',
                     layEvent: 'refresh',
                     icon: 'layui-icon-refresh',
-                }]
+                }],
+                done: function() {
+                    const pathInput = document.getElementById('path');
+                    const defaultPath = pathInput.value || './sk-content/upload/';
+
+                    // 监听回退按钮点击事件
+                    pathInput.addEventListener('keydown', (event) => {
+                        // 如果按下的键是回车键
+                        if (event.keyCode === 13) {
+                            // 执行查询操作
+                            if (pathInput.value === '') {
+                                layer.msg('请输入内容');
+                                return pathInput.focus();
+                            }
+
+                            const url = `/api/file/get?path=${pathInput.value}`;
+                            table.reloadData('table', {
+                                url
+                            });
+                            event.preventDefault();
+                        }
+                    });
+                }
             });
+
+            util.on({
+                        'back': function() {
+                            var value = pathInput.slice(pathInput.indexOf('.') + 1)
+                            value = value.split('/')
+                            console.log(value)
+                        }
+                    })
 
             table.on('tool(table)', function(obj) {
                 if (obj.event === 'remove') {
